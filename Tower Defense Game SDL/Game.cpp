@@ -1,6 +1,11 @@
 #include "Game.h"
+#include "TextureManager.h"
+#include "Map.h"
 
-Game::Game()
+SDL_Renderer* Game::renderer = nullptr;
+Map* map;
+
+Game::Game() : cnt(0)
 {
 	window = nullptr;
 	renderer = nullptr;
@@ -41,6 +46,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     {
         isRunning = false;
     }
+    map = new Map();
+
 }
 
 void Game::handleEvents()
@@ -66,9 +73,7 @@ void Game::update()
 void Game::render()
 {
     SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-	SDL_Rect rect = { 200, 200, 50, 50 };
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	map->DrawMap();
     SDL_RenderPresent(renderer);
 }
 

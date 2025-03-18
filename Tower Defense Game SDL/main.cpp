@@ -30,6 +30,6 @@ int main(int argc, char* argv[]) {
     }
 
     game->clean();
-    delete game;  // Prevent memory leaks
+    delete game;  
     return 0;
 }
