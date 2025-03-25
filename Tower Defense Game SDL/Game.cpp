@@ -5,7 +5,7 @@
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 
-Game::Game() : cnt(0)
+Game::Game() : cnt(0), isRunning(false), window(nullptr)
 {
 	window = nullptr;
 	renderer = nullptr;
@@ -47,7 +47,13 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
     map = new Map();
-
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) 
+    {
+        std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
+        isRunning = false;
+        return;
+    }
 }
 
 void Game::handleEvents()
@@ -59,11 +65,37 @@ void Game::handleEvents()
     case SDL_QUIT:
         isRunning = false;
         break;
+    case SDL_MOUSEBUTTONDOWN:
+        if (event.button.button == SDL_BUTTON_LEFT)
+        {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            placeTower(event.button.x, event.button.y);
+        }
+        break;
     default:
         break;
     }
 }
-
+bool Game::canPlaceTower(int x, int y)
+{
+    int gridX = x / 32;
+    int gridY = y / 32;
+    if (gridX < 0 || gridX >= 25 || gridY < 0 || gridY >= 20) {
+        return false;
+    }
+    return !map->IsEnemyPath(gridY, gridX);
+}
+void Game::placeTower(int x, int y)
+{
+    if (canPlaceTower(x, y))
+    {
+        int gridX = (x / 32) * 32;
+        int gridY = (y / 32) * 32;
+        CrossbowTower* newTower = new CrossbowTower(gridX, gridY, renderer);
+        towers.push_back(newTower);
+    }
+}
 void Game::update()
 {
     cnt++;
@@ -74,6 +106,10 @@ void Game::render()
 {
     SDL_RenderClear(renderer);
 	map->DrawMap();
+    for (auto tower : towers)
+    {
+        tower->Render();
+    }
     SDL_RenderPresent(renderer);
 }
 

@@ -138,11 +138,15 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Towers Code\CrossbowTower.cpp" />
+    <ClCompile Include="Towers Code\Tower.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Towers Code\CrossbowTower.h" />
+    <ClInclude Include="Towers Code\Tower.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

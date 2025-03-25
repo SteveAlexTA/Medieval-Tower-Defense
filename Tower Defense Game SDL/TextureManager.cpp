@@ -1,9 +1,14 @@
 #include "TextureManager.h"
+#include "Game.h"
 #include <SDL_image.h>
-SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* ren) 
+SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* rend)
 {
 	SDL_Surface* tempSurface = IMG_Load(texture);
-	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, tempSurface);
+	if (!tempSurface) {
+		std::cout << "Failed to load image: " << texture << IMG_GetError() << std::endl;
+		return nullptr;
+	}
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, tempSurface);
 	SDL_FreeSurface(tempSurface);
 	return tex;
 }
