@@ -99,7 +99,64 @@ void Game::placeTower(int x, int y)
 void Game::update()
 {
     cnt++;
-    std::cout << cnt << std::endl;
+    enemySpawnTimer++;
+    if (enemySpawnTimer >= 60) {
+        spawnEnemy();
+        enemySpawnTimer = 0;
+    }
+    std::cout << "Number of enemies: " << enemies.size() << std::endl;
+    for (auto it = enemies.begin(); it != enemies.end();) {
+        std::cout << "Moving enemy at: ("
+            << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+
+        (*it)->move();
+        std::cout << "Enemy moved to: ("
+            << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+
+        if ((*it)->isDead()) {
+            delete* it;
+            it = enemies.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+}
+
+void Game::spawnEnemy()
+{
+    if (!map) {
+        std::cerr << "Cannot spawn enemy: Map is null!" << std::endl;
+        return;
+    }
+
+    try {
+        // Print out the map for debugging
+        std::cout << "Map contents for path finding:" << std::endl;
+        for (int y = 0; y < 20; y++) {
+            for (int x = 0; x < 25; x++) {
+                std::cout << map->map[y][x] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        // Create new Goblin enemy
+        Goblin* newEnemy = new Goblin(0, 0, renderer, map->map);
+
+        // Verify path generation
+        PathFinder::Point start, end;
+        PathFinder::FindPathStartEnd(map->map, start, end);
+        std::cout << "Path Start: (" << start.x << ", " << start.y << ")" << std::endl;
+        std::cout << "Path End: (" << end.x << ", " << end.y << ")" << std::endl;
+
+        // Add to enemies vector
+        enemies.push_back(newEnemy);
+
+        std::cout << "Enemy spawned successfully! Total enemies: " << enemies.size() << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error spawning enemy: " << e.what() << std::endl;
+    }
 }
 
 void Game::render()
@@ -109,6 +166,10 @@ void Game::render()
     for (auto tower : towers)
     {
         tower->Render();
+    }
+    for (auto enemy : enemies)
+    {
+        enemy->display(renderer);
     }
     SDL_RenderPresent(renderer);
 }

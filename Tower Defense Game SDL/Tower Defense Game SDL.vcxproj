@@ -24,6 +24,7 @@
     <ProjectGuid>{9072cd15-9967-4543-8c5c-4871e3eacfe4}</ProjectGuid>
     <RootNamespace>TowerDefenseGameSDL</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Tower Defense Game SDL</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -134,19 +135,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Enemy%27s Code\Enemy.cpp" />
+    <ClCompile Include="Enemy%27s Code\Goblin.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Towers Code\CrossbowTower.cpp" />
-    <ClCompile Include="Towers Code\Tower.cpp" />
+    <ClCompile Include="Tower%27s Code\CrossbowTower.cpp" />
+    <ClCompile Include="Tower%27s Code\Tower.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Enemy%27s Code\Enemy.h" />
+    <ClInclude Include="Enemy%27s Code\Goblin.h" />
+    <ClInclude Include="Enemy%27s Code\Pathfinder.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="PathFinder.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Towers Code\CrossbowTower.h" />
-    <ClInclude Include="Towers Code\Tower.h" />
+    <ClInclude Include="Tower%27s Code\CrossbowTower.h" />
+    <ClInclude Include="Tower%27s Code\Tower.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

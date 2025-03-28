@@ -7,7 +7,10 @@
 #include <iostream>
 #include <vector>
 #include "Map.h"
-#include "Towers Code/CrossbowTower.h"
+#include "Tower's Code/CrossbowTower.h"
+#include "Enemy's Code/Enemy.h"
+#include "Enemy's Code/Goblin.h"
+
 class Map;
 class CrossbowTower;
 class Game {
@@ -23,6 +26,7 @@ public:
     bool running() { return isRunning; }
     void placeTower(int x, int y);
     bool canPlaceTower(int x, int y);
+    void spawnEnemy();
 	static SDL_Renderer* renderer;
 
 private:
@@ -31,6 +35,8 @@ private:
     SDL_Window* window;
     Map* map;
     std::vector<CrossbowTower*> towers;
+    std::vector<Enemy*> enemies;
+    int enemySpawnTimer = 0;
 };
 
 #endif //GAME_H

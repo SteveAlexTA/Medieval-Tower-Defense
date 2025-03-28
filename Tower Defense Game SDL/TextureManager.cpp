@@ -4,8 +4,9 @@
 SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* rend)
 {
 	SDL_Surface* tempSurface = IMG_Load(texture);
-	if (!tempSurface) {
-		std::cout << "Failed to load image: " << texture << IMG_GetError() << std::endl;
+	if (!tempSurface) 
+	{
+		std::cout << "Failed to load image! " << texture << IMG_GetError() << std::endl;
 		return nullptr;
 	}
 	SDL_Texture* tex = SDL_CreateTextureFromSurface(rend, tempSurface);
