@@ -11,11 +11,16 @@ Map::Map() { //Constructor
     src.h = dest.h = 32;
     dest.x = dest.y = 0;
 }
-Map::~Map() //Destructor
+Map::~Map() //Destructor 
 {
     if (dirt) SDL_DestroyTexture(dirt);
-    if (grass01) SDL_DestroyTexture(grass01);
+    if (grass01) SDL_DestroyTexture(grass01);   
     if (grass02) SDL_DestroyTexture(grass02);
+    for (auto& decoration : decorations) {
+        if (decoration.texture) {
+            SDL_DestroyTexture(decoration.texture);
+        }
+    }
 }
 void Map::LoadMap(int arr[20][25]) //Load map
 {
@@ -25,8 +30,24 @@ void Map::LoadMap(int arr[20][25]) //Load map
         }
     }
 }
-void Map::DrawMap() //Draw map = texture
-{
+void Map::AddDecoration(const char* texturePath, int row, int col) {
+	if (row < 0 || row >= 20 || col < 0 || col >= 25) {
+		std::cerr << "ERROR: Invalid decoration position (" << row << ", " << col << ")" << std::endl;
+		return;
+	}
+    int tileType = map[row][col];
+    if (tileType == 0 || tileType == 1 || tileType == 2) {
+		SDL_Texture* decorTexture = TextureManager::LoadTexture(texturePath, Game::renderer);
+        if (decorTexture) {
+            Decoration decoration;
+            decoration.texture = decorTexture;
+			decoration.row = row;
+			decoration.col = col;
+            decorations.push_back(decoration);
+        }
+    }
+}
+void Map::DrawMap() { //Draw map
     int type = 0;
     for (int row = 0; row < 20; row++) {
         for (int column = 0; column < 25; column++) {
@@ -48,6 +69,11 @@ void Map::DrawMap() //Draw map = texture
                 break;
             }
         }
+    }
+    for (const auto& decoration : decorations) {
+		dest.x = decoration.col * 32;
+		dest.y = decoration.row * 32;
+		TextureManager::Draw(decoration.texture, src, dest);
     }
 }
 bool Map::IsEnemyPath(int row, int column) const

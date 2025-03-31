@@ -6,37 +6,30 @@ Enemy::Enemy(int x, int y, int hp, int speed) : m_x(x), m_y(y), m_hp(hp), m_spee
 
 Enemy::~Enemy() {}
 
-bool Enemy::isDead() const
-{
+bool Enemy::isDead() const {
 	if (m_hp <= 0) return true;
 	else return false;
 }
-void Enemy::takeDamage(int damage) 
-{
+void Enemy::takeDamage(int damage)  {
 	m_hp -= damage;
 	if (m_hp <= 0) {
 		m_alive = false;
 		m_hp = 0;
 	}
 }
-int Enemy::getHP() const
-{
+int Enemy::getHP() const {
 	return m_hp;
 }
-int Enemy::getSpeed() const
-{
+int Enemy::getSpeed() const {
 	return m_speed;
 }
-int Enemy::getX() const
-{
+int Enemy::getX() const {
 	return m_x;
 }
-int Enemy::getY() const
-{
+int Enemy::getY() const {
 	return m_y;
 }
-void Enemy::initPath(int map[20][25]) 
-{
+void Enemy::initPath(int map[20][25]) {
     PathFinder::Point start, end;
     PathFinder::FindPathStartEnd(map, start, end);
 

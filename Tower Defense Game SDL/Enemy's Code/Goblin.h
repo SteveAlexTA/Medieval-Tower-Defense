@@ -5,8 +5,7 @@
 #include <string>
 #include <cmath>
 
-class Goblin : public Enemy
-{
+class Goblin : public Enemy {
 public:
 	Goblin(int x, int y, SDL_Renderer* renderer, int map[20][25]);
 	~Goblin();
@@ -17,4 +16,11 @@ private:
 	SDL_Renderer* m_renderer;
 	SDL_Texture* m_texture;
 	SDL_Texture* LoadTexture(const std::string& filename);
+
+	int frameWidth = 12;   // Width of a single frame 
+	int frameHeight = 8;   // Height of a single frame
+	int totalFrames = 2;   // Number of frames in the animation
+	int currentFrame = 0;  // Current frame index
+	Uint32 lastFrameTime = 0; // Last time the frame was updated
+	Uint32 frameDelay = 100;
 };

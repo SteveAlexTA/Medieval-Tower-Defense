@@ -1,8 +1,7 @@
 #include "TextureManager.h"
 #include "Game.h"
 #include <SDL_image.h>
-SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* rend)
-{
+SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* rend) {
 	SDL_Surface* tempSurface = IMG_Load(texture);
 	if (!tempSurface) 
 	{
@@ -13,7 +12,6 @@ SDL_Texture* TextureManager::LoadTexture(const char* texture, SDL_Renderer* rend
 	SDL_FreeSurface(tempSurface);
 	return tex;
 }
-void TextureManager::Draw(SDL_Texture* tex, SDL_Rect src, SDL_Rect dest)
-{
+void TextureManager::Draw(SDL_Texture* tex, SDL_Rect src, SDL_Rect dest) {
 	SDL_RenderCopy(Game::renderer, tex, &src, &dest);
 }

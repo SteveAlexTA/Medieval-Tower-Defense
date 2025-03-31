@@ -2,8 +2,7 @@
 #include "../PathFinder.h"
 #include <SDL.h>
 #include <vector>
-class Enemy
-{
+class Enemy {
 public:
 	Enemy(int x, int y, int hp, int speed);
 	virtual ~Enemy(); //Virtual for polymorphism with multiple enemy types

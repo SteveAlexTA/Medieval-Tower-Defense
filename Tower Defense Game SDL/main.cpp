@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 	int frameTime;
 
     game = new Game();
-    game->init("TowerDefense", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, false);
+    game->init("TowerDefense", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
     while (game->running()) {
         frameStart = SDL_GetTicks();

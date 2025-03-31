@@ -3,6 +3,11 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <vector>
+struct Decoration
+{
+    SDL_Texture* texture;
+    int row, col;
+};
 class Map
 {
 public:
@@ -11,13 +16,14 @@ public:
 	void LoadMap(int arr[20][25]);
 	void DrawMap();
     bool IsEnemyPath(int row, int col) const;
+	void AddDecoration(const char* texturePath, int row, int col);
     int map[20][25];
 private:
 	SDL_Rect src, dest;
 	SDL_Texture* dirt;
 	SDL_Texture* grass01;
 	SDL_Texture* grass02;
-
+	std::vector<Decoration> decorations;
     int lvl1[20][25] = {
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },

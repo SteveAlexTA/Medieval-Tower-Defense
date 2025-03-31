@@ -5,20 +5,15 @@
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
 
-Game::Game() : cnt(0), isRunning(false), window(nullptr)
-{
+Game::Game() : cnt(0), isRunning(false), window(nullptr) {
 	window = nullptr;
 	renderer = nullptr;
 	isRunning = false;
 }
 
-Game::~Game()
-{
+Game::~Game() {}
 
-}
-
-void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
-{
+void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
     int flags = 0;
     if (fullscreen)
     {
@@ -54,10 +49,14 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
+    //Decorations
+    map->AddDecoration("Assets/Map/spr_tree_01_normal.png", 1, 5);
+    map->AddDecoration("Assets/Map/spr_rock_02.png", 1, 7);
+    map->AddDecoration("Assets/Map/spr_tree_02_normal.png", 4, 8);
+	map->AddDecoration("Assets/Map/spr_tree_01_normal.png", 6, 8);
 }
 
-void Game::handleEvents()
-{
+void Game::handleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
     switch (event.type)
@@ -77,8 +76,7 @@ void Game::handleEvents()
         break;
     }
 }
-bool Game::canPlaceTower(int x, int y)
-{
+bool Game::canPlaceTower(int x, int y) {
     int gridX = x / 32;
     int gridY = y / 32;
     if (gridX < 0 || gridX >= 25 || gridY < 0 || gridY >= 20) {
@@ -86,8 +84,7 @@ bool Game::canPlaceTower(int x, int y)
     }
     return !map->IsEnemyPath(gridY, gridX);
 }
-void Game::placeTower(int x, int y)
-{
+void Game::placeTower(int x, int y) {
     if (canPlaceTower(x, y))
     {
         int gridX = (x / 32) * 32;
@@ -96,8 +93,7 @@ void Game::placeTower(int x, int y)
         towers.push_back(newTower);
     }
 }
-void Game::update()
-{
+void Game::update() {
     cnt++;
     enemySpawnTimer++;
     if (enemySpawnTimer >= 60) {
@@ -106,12 +102,10 @@ void Game::update()
     }
     std::cout << "Number of enemies: " << enemies.size() << std::endl;
     for (auto it = enemies.begin(); it != enemies.end();) {
-        std::cout << "Moving enemy at: ("
-            << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+        std::cout << "Moving enemy at: (" << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
 
         (*it)->move();
-        std::cout << "Enemy moved to: ("
-            << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+        std::cout << "Enemy moved to: (" << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
 
         if ((*it)->isDead()) {
             delete* it;
@@ -123,8 +117,7 @@ void Game::update()
     }
 }
 
-void Game::spawnEnemy()
-{
+void Game::spawnEnemy() {
     if (!map) {
         std::cerr << "Cannot spawn enemy: Map is null!" << std::endl;
         return;
@@ -159,8 +152,7 @@ void Game::spawnEnemy()
     }
 }
 
-void Game::render()
-{
+void Game::render() {
     SDL_RenderClear(renderer);
 	map->DrawMap();
     for (auto tower : towers)
@@ -174,8 +166,7 @@ void Game::render()
     SDL_RenderPresent(renderer);
 }
 
-void Game::clean()
-{
+void Game::clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
