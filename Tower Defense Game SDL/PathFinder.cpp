@@ -59,17 +59,17 @@ std::vector<PathFinder::Point> PathFinder::FindPath(int map[20][25]) {
 void PathFinder::FindPathStartEnd(int map[20][25], Point& start, Point& end){
     start = Point(-1, -1);
     end = Point(-1, -1);
-    //Find start point (1st dirt tile)
+    //Find start point (Spawning area)
     for (int y = 0; y < 20; y++) {
-        if (map[y][0] == 2) {
-            start = Point(0, y);    
+        if (map[y][24] == 2) {
+            start = Point(24, y);    
             break;
         }
     }
-    //Find end point (Last dirt tile)
+    //Find end point (Defense area)
     for (int y = 0; y < 20; y++) {
-        if (map[y][24] == 2) {
-            end = Point(24, y);
+        if (map[y][20] == 2) {
+            end = Point(0, y);
             break;
         }
     }

@@ -49,11 +49,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
-    //Decorations
-    map->AddDecoration("Assets/Map/spr_tree_01_normal.png", 1, 5);
-    map->AddDecoration("Assets/Map/spr_rock_02.png", 1, 7);
-    map->AddDecoration("Assets/Map/spr_tree_02_normal.png", 4, 8);
-	map->AddDecoration("Assets/Map/spr_tree_01_normal.png", 6, 8);
 }
 
 void Game::handleEvents() {
@@ -89,7 +84,7 @@ void Game::placeTower(int x, int y) {
     {
         int gridX = (x / 32) * 32;
         int gridY = (y / 32) * 32;
-        CrossbowTower* newTower = new CrossbowTower(gridX, gridY, renderer);
+        Tower* newTower = new CrossbowTower(gridX, gridY, renderer);
         towers.push_back(newTower);
     }
 }
@@ -100,7 +95,10 @@ void Game::update() {
         spawnEnemy();
         enemySpawnTimer = 0;
     }
-    std::cout << "Number of enemies: " << enemies.size() << std::endl;
+	for (auto tower : towers)
+	{
+		tower->Update(enemies);
+	}
     for (auto it = enemies.begin(); it != enemies.end();) {
         std::cout << "Moving enemy at: (" << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
 
@@ -124,31 +122,13 @@ void Game::spawnEnemy() {
     }
 
     try {
-        // Print out the map for debugging
-        std::cout << "Map contents for path finding:" << std::endl;
-        for (int y = 0; y < 20; y++) {
-            for (int x = 0; x < 25; x++) {
-                std::cout << map->map[y][x] << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        // Create new Goblin enemy
+		// Spawn enemy at the start of the path
         Goblin* newEnemy = new Goblin(0, 0, renderer, map->map);
-
-        // Verify path generation
-        PathFinder::Point start, end;
-        PathFinder::FindPathStartEnd(map->map, start, end);
-        std::cout << "Path Start: (" << start.x << ", " << start.y << ")" << std::endl;
-        std::cout << "Path End: (" << end.x << ", " << end.y << ")" << std::endl;
-
         // Add to enemies vector
         enemies.push_back(newEnemy);
-
-        std::cout << "Enemy spawned successfully! Total enemies: " << enemies.size() << std::endl;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error spawning enemy: " << e.what() << std::endl;
+        std::cerr << "Error spawning enemies! " << e.what() << std::endl;
     }
 }
 

@@ -7,12 +7,12 @@
 #include <iostream>
 #include <vector>
 #include "Map.h"
-#include "Tower's Code/CrossbowTower.h"
+#include "Tower's Code/Tower.h"
 #include "Enemy's Code/Enemy.h"
 #include "Enemy's Code/Goblin.h"
 
 class Map;
-class CrossbowTower;
+class Tower;
 class Game {
 public:
     Game();
@@ -34,7 +34,7 @@ private:
     bool isRunning;
     SDL_Window* window;
     Map* map;
-    std::vector<CrossbowTower*> towers;
+    std::vector<Tower*> towers;
     std::vector<Enemy*> enemies;
     int enemySpawnTimer = 0;
 };

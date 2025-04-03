@@ -27,9 +27,6 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tower%27s Code\CrossbowTower.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tower%27s Code\Tower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,6 +39,9 @@
     <ClCompile Include="Enemy%27s Code\Goblin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tower%27s Code\Projectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -51,9 +51,6 @@
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
-      <Filter>Resource Files\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tower%27s Code\CrossbowTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tower%27s Code\Tower.h">
@@ -69,6 +66,9 @@
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy%27s Code\Goblin.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower%27s Code\Projectile.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

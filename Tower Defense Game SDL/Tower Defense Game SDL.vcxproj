@@ -142,7 +142,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Tower%27s Code\CrossbowTower.cpp" />
+    <ClCompile Include="Tower%27s Code\Projectile.cpp" />
     <ClCompile Include="Tower%27s Code\Tower.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +153,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Tower%27s Code\CrossbowTower.h" />
+    <ClInclude Include="Tower%27s Code\Projectile.h" />
     <ClInclude Include="Tower%27s Code\Tower.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
