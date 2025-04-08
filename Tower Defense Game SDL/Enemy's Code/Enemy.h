@@ -1,26 +1,88 @@
 #pragma once
 #include "../PathFinder.h"
 #include <SDL.h>
+#include <SDL_image.h>
+#include <string>
 #include <vector>
+#include <iostream>
+#include <cmath>
 class Enemy {
 public:
-	Enemy(int x, int y, int hp, int speed);
+	Enemy(float x, float y, int hp, float speed);
 	virtual ~Enemy(); //Virtual for polymorphism with multiple enemy types
-    bool isDead() const;
-    void takeDamage(int damage);
 
-    int getHP() const;
-    int getX() const;
-    int getY() const;
-    int getSpeed() const;
+    bool isDead() const { return m_hp <= 0; }
+    bool isAlive() const { return m_alive; }
+    void takeDamage(int damage);
+    void deactivate() { m_alive = false; }
+
+    int getHP() const { return m_hp; }
+    int getX() const { return static_cast<int>(m_x); }
+    int getY() const { return static_cast<int>(m_y); }
+    float getSpeed() const { return m_speed; }
 
     void initPath(int map[20][25]);
-    virtual void move();
+    virtual void move(float deltaTime);
     virtual void display(SDL_Renderer* renderer) = 0;
+    virtual void renderHPBar(SDL_Renderer* renderer) const;
 
+    virtual void reset(int map[20][25]) {
+        m_alive = true;
+        initPath(map);
+    }
 protected:
-    int m_hp, m_x, m_y, m_speed;
+    float m_x, m_y, m_speed;
+    int m_hp;
     bool m_alive;
     std::vector<PathFinder::Point> m_path;
     size_t m_currentPathIndex;
+};
+
+class Goblin : public Enemy {
+public:
+	static const int GOBLIN_HP = 100;
+	static const int GOBLIN_SPEED = 60;
+
+    Goblin(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
+    ~Goblin();
+
+    void display(SDL_Renderer* renderer) override;
+    void reset(int map[20][25]) override {
+        m_hp = GOBLIN_HP;
+        Enemy::reset(map);
+    }
+private:
+    SDL_Renderer* m_renderer;
+    SDL_Texture* m_texture;
+
+    int frameWidth = 12;   // Width of a single frame 
+    int frameHeight = 8;   // Height of a single frame
+    int totalFrames = 2;   // Number of frames in the animation
+    int currentFrame = 0;  // Current frame index
+    Uint32 lastFrameTime = 0; // Last time the frame was updated
+    Uint32 frameDelay = 100;
+};
+
+class WaveSystem {
+public:
+    WaveSystem(int initialWaveSize = 5, float spawnInterval = 1.0f);
+
+    void update(float deltaTime);
+    bool shouldSpawnEnemy();
+    bool isWaveComplete() const;
+    void startNextWave();
+
+    int getCurrentWave() const { return m_currentWave; }
+    int getRemainingEnemies() const { return m_remainingEnemiesInWave; }
+    float getTimeBetweenWaves() const { return m_timeBetweenWaves; }
+
+private:
+    int m_currentWave;
+    int m_waveSize;
+    int m_remainingEnemiesInWave;
+    float m_spawnInterval;
+    float m_currentSpawnTimer;
+    float m_waveBreakTimer;
+    float m_timeBetweenWaves;
+    bool m_waveInProgress;
 };

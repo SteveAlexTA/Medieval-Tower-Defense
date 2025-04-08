@@ -10,6 +10,12 @@ Map::Map() { //Constructor
     src.w = dest.w = 32;
     src.h = dest.h = 32;
     dest.x = dest.y = 0;
+
+    base = TextureManager::LoadTexture("Assets/Tower/spr_castle_blue.png", Game::renderer);
+    baseSrcRect = { 0, 0, 38, 38 }; // Each frame is 38x38
+    baseDestRect[0] = { 0 * 32, 17 * 32, 32, 32 }; // Tile (17,0)
+    baseFrame = 0;
+    baseFrameTime = 0;
 }
 Map::~Map() //Destructor 
 {
@@ -21,6 +27,7 @@ Map::~Map() //Destructor
             SDL_DestroyTexture(decoration.texture);
         }
     }
+	if (base) SDL_DestroyTexture(base);
 }
 void Map::LoadMap(int arr[20][25]) //Load map
 {
@@ -75,6 +82,14 @@ void Map::DrawMap() { //Draw map
 		dest.y = decoration.row * 32;
 		TextureManager::Draw(decoration.texture, src, dest);
     }
+    baseFrameTime++;
+    if (baseFrameTime >= 10) {
+        baseFrameTime = 0;
+        baseFrame = (baseFrame + 1) % 4; // 4 frames in your sprite sheet
+        baseSrcRect.x = baseFrame * 32;
+    }
+    SDL_RenderCopy(Game::renderer, base, &baseSrcRect, &baseDestRect[0]);
+
 }
 bool Map::IsEnemyPath(int row, int column) const
 {

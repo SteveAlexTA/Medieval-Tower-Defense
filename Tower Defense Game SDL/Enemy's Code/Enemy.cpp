@@ -2,14 +2,10 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-Enemy::Enemy(int x, int y, int hp, int speed) : m_x(x), m_y(y), m_hp(hp), m_speed(speed), m_alive(true), m_currentPathIndex(0) {};
+Enemy::Enemy(float x, float y, int hp, float speed) : m_x(x), m_y(y), m_hp(hp), m_speed(speed), m_alive(true), m_currentPathIndex(0) {};
 
 Enemy::~Enemy() {}
 
-bool Enemy::isDead() const {
-	if (m_hp <= 0) return true;
-	else return false;
-}
 void Enemy::takeDamage(int damage)  {
 	m_hp -= damage;
 	if (m_hp <= 0) {
@@ -17,33 +13,33 @@ void Enemy::takeDamage(int damage)  {
 		m_hp = 0;
 	}
 }
-int Enemy::getHP() const {
-	return m_hp;
+void Enemy::renderHPBar(SDL_Renderer* renderer) const {
+    if (!m_alive) return;
+
+    // Set up health bar dimensions
+    const int BAR_W = 30;
+    const int BAR_H = 5;
+    const int BAR_OFFSET_Y = -20; // Display bar above the enemy
+
+    // Calculate health percentage and remaining health bar width
+    float healthPercentage = static_cast<float>(m_hp) / 100.0f; 
+    int healthWidth = static_cast<int>(BAR_W * healthPercentage);
+
+    // Draw current health bar (green)
+    int barX = m_x - (healthWidth / 2);
+    int barY = m_y + BAR_OFFSET_Y;
+
+    SDL_Rect healthBar = { barX, barY, healthWidth, BAR_H };
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green only
+    SDL_RenderFillRect(renderer, &healthBar);
 }
-int Enemy::getSpeed() const {
-	return m_speed;
-}
-int Enemy::getX() const {
-	return m_x;
-}
-int Enemy::getY() const {
-	return m_y;
-}
+
 void Enemy::initPath(int map[20][25]) {
     PathFinder::Point start, end;
     PathFinder::FindPathStartEnd(map, start, end);
 
     if (start.x == -1 || end.x == -1) {
         std::cerr << "ERROR: No valid start or end position found!" << std::endl;
-        std::cerr << "Start: (" << start.x << ", " << start.y << ")" << std::endl;
-        std::cerr << "End: (" << end.x << ", " << end.y << ")" << std::endl;
-        std::cerr << "Map contents:" << std::endl;
-        for (int y = 0; y < 20; y++) {
-            for (int x = 0; x < 25; x++) {
-                std::cerr << map[y][x] << " ";
-            }
-            std::cerr << std::endl;
-        }
         return;
     }
 
@@ -60,16 +56,10 @@ void Enemy::initPath(int map[20][25]) {
     }
 
     m_currentPathIndex = 0;
-
-    for (size_t i = 0; i < m_path.size(); ++i) {
-        std::cout << "Path Point " << i << ": ("
-            << m_path[i].x << ", " << m_path[i].y << ")" << std::endl;
-    }
 }
 
-void Enemy::move() {
+void Enemy::move(float deltaTime) {
     if (m_path.empty() || m_currentPathIndex >= m_path.size()-1) {
-        std::cout << "ERROR: Path is empty!" << std::endl;
         return;
     }
 
@@ -77,38 +67,96 @@ void Enemy::move() {
     PathFinder::Point next = m_path[m_currentPathIndex + 1];
 
     // Calculate target pixel coordinates
-    int targetX = next.x * 32;
-    int targetY = next.y * 32;
+    float targetX = next.x * 32 + 16;
+    float targetY = next.y * 32 + 16;
+    // Adjust speed based on delta time
+	float dx = targetX - m_x;
+	float dy = targetY - m_y;
 
-    // Simplified movement logic
-    bool movedX = false, movedY = false;
-
-    // Move X coordinate
-    if (m_x < targetX) {
-        m_x += m_speed;
-        movedX = true;
-    }
-    else if (m_x > targetX) {
-        m_x -= m_speed;
-        movedX = true;
-    }
-
-    // Move Y coordinate
-    if (m_y < targetY) {
-        m_y += m_speed;
-        movedY = true;
-    }
-    else if (m_y > targetY) {
-        m_y -= m_speed;
-        movedY = true;
-    }
-
-    // Check if reached next point
-    if (std::abs(m_x - targetX) <= m_speed && std::abs(m_y - targetY) <= m_speed) {
-        m_x = targetX;
-        m_y = targetY;
-        m_currentPathIndex++;
-    }
+	float dist = sqrt(dx * dx + dy * dy);
+	if (dist < 2.0f) {
+		m_currentPathIndex++;
+        return;
+	}
+    float dirX = dx / dist;
+    float dirY = dy / dist;
+    float moveStep = m_speed * deltaTime;
+    m_x += dirX * moveStep;
+    m_y += dirY * moveStep;
 }
 
+Goblin::Goblin(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture) : Enemy(x, y, GOBLIN_HP, GOBLIN_SPEED), m_renderer(renderer), m_texture(texture) {
+    initPath(map);
+}
 
+Goblin::~Goblin() {}
+
+void Goblin::display(SDL_Renderer* renderer) {
+    if (!renderer || !m_texture || !m_alive) return;
+
+    // Update animation frame
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime > lastFrameTime + frameDelay) {
+        currentFrame = (currentFrame + 1) % totalFrames;
+        lastFrameTime = currentTime;
+    }
+
+    // Draw the enemy with proper animation frame
+    SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
+    SDL_Rect dest = { static_cast<int>(m_x - 6), static_cast<int>(m_y - 4), 12, 8 };
+    SDL_RenderCopy(renderer, m_texture, &src, &dest);
+
+    // Draw the health bar
+    renderHPBar(renderer);
+}
+
+WaveSystem::WaveSystem(int initialWaveSize, float spawnInterval)
+    : m_currentWave(0),
+    m_waveSize(initialWaveSize),
+    m_remainingEnemiesInWave(0),
+    m_spawnInterval(spawnInterval),
+    m_currentSpawnTimer(0.0f),
+    m_waveBreakTimer(0.0f),
+    m_timeBetweenWaves(5.0f),
+    m_waveInProgress(false) {
+}
+
+void WaveSystem::update(float deltaTime) {
+    if (m_waveInProgress) {
+        // Wave in progress - update spawn timer
+        if (m_remainingEnemiesInWave > 0) {
+            m_currentSpawnTimer += deltaTime;
+        }
+    }
+    else {
+        // Between waves - update break timer
+        m_waveBreakTimer += deltaTime;
+        if (m_waveBreakTimer >= m_timeBetweenWaves) {
+            startNextWave();
+        }
+    }
+}
+bool WaveSystem::shouldSpawnEnemy() {
+    if (m_waveInProgress && m_remainingEnemiesInWave > 0 && m_currentSpawnTimer >= m_spawnInterval) {
+        m_currentSpawnTimer = 0.0f;
+        m_remainingEnemiesInWave--;
+        return true;
+    }
+    return false;
+}
+
+bool WaveSystem::isWaveComplete() const {
+    return m_waveInProgress && m_remainingEnemiesInWave <= 0;
+}
+
+void WaveSystem::startNextWave() {
+    m_currentWave++;
+    m_waveSize = m_currentWave * 5; // Increase enemies per wave
+    m_remainingEnemiesInWave = m_waveSize;
+    m_waveBreakTimer = 0.0f;
+    m_currentSpawnTimer = 0.0f;
+    m_waveInProgress = true;
+
+    // Make waves harder over time
+    m_spawnInterval = std::max(0.5f, m_spawnInterval * 0.9f);
+}

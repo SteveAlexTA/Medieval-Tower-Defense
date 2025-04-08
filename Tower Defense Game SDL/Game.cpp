@@ -11,7 +11,21 @@ Game::Game() : cnt(0), isRunning(false), window(nullptr) {
 	isRunning = false;
 }
 
-Game::~Game() {}
+Game::~Game() {
+	for (auto enemy : enemyPool) {
+		delete enemy;
+	}
+    enemyPool.clear();
+	for (auto tower : towers) {
+		delete tower;
+	}
+	towers.clear();
+	delete waveSystem;
+	if (m_enemyTexture) {
+		SDL_DestroyTexture(m_enemyTexture);
+		m_enemyTexture = nullptr;
+	}
+}
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
     int flags = 0;
@@ -29,7 +43,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
             std::cout << "Window created successfully!" << std::endl;
         }
 
-        renderer = SDL_CreateRenderer(window, -1, 0);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (renderer)
         {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -48,6 +62,28 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
         isRunning = false;
         return;
+    }
+	waveSystem = new WaveSystem(5, 1.0f);
+	waveSystem->startNextWave();
+
+	preloadResources();
+	createEnemyPool();
+}
+void Game::preloadResources() {
+    if (!m_resourcesPreloaded) {
+        m_enemyTexture = TextureManager::LoadTexture("Assets/Enemy/spr_goblin.png", renderer);
+        if (!m_enemyTexture) {
+            std::cout << "Failed to load enemy texture!" << std::endl;
+            isRunning = false;
+        }
+        m_resourcesPreloaded = true;
+    }
+}
+void Game::createEnemyPool(int poolSize) {
+    for (int i = 0; i < poolSize; ++i) {
+        Goblin* enemy = new Goblin(0, 0, renderer, map->map, m_enemyTexture);
+        enemy->deactivate();
+        enemyPool.push_back(enemy);
     }
 }
 
@@ -89,25 +125,39 @@ void Game::placeTower(int x, int y) {
     }
 }
 void Game::update() {
-    cnt++;
-    enemySpawnTimer++;
-    if (enemySpawnTimer >= 60) {
-        spawnEnemy();
-        enemySpawnTimer = 0;
-    }
-	for (auto tower : towers)
-	{
-		tower->Update(enemies);
+    static Uint32 lastFrameTime = SDL_GetTicks();
+	Uint32 currentFrameTime = SDL_GetTicks();
+	deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f; // Calculate delta time
+	if (deltaTime > 0.1f) { // Cap deltaTime to avoid large jumps
+		deltaTime = 0.1f;
 	}
-    for (auto it = enemies.begin(); it != enemies.end();) {
-        std::cout << "Moving enemy at: (" << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+	lastFrameTime = currentFrameTime;
 
-        (*it)->move();
-        std::cout << "Enemy moved to: (" << (*it)->getX() << ", " << (*it)->getY() << ")" << std::endl;
+    cnt++;
+    waveSystem->update(deltaTime);
+
+    // Check if we should spawn an enemy
+    if (waveSystem->shouldSpawnEnemy()) {
+        spawnEnemy();
+    }
+
+    // If current wave is complete, advance to next wave
+    if (waveSystem->isWaveComplete() && activeEnemies.empty()) {
+        waveSystem->startNextWave();
+    }
+
+    // Update towers
+    for (auto tower : towers) {
+        tower->Update(activeEnemies);
+    }
+
+    // Update enemies
+    for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
+        (*it)->move(deltaTime);
 
         if ((*it)->isDead()) {
-            delete* it;
-            it = enemies.erase(it);
+            (*it)->deactivate();
+            it = activeEnemies.erase(it);
         }
         else {
             ++it;
@@ -116,32 +166,27 @@ void Game::update() {
 }
 
 void Game::spawnEnemy() {
-    if (!map) {
-        std::cerr << "Cannot spawn enemy: Map is null!" << std::endl;
-        return;
-    }
-
-    try {
-		// Spawn enemy at the start of the path
-        Goblin* newEnemy = new Goblin(0, 0, renderer, map->map);
-        // Add to enemies vector
-        enemies.push_back(newEnemy);
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error spawning enemies! " << e.what() << std::endl;
+    for (Enemy* enemy : enemyPool) {
+        Goblin* goblin = dynamic_cast<Goblin*>(enemy);
+        if (goblin && !goblin->isAlive()) {
+            goblin->reset(map->map);
+            activeEnemies.push_back(goblin);
+            break;
+        }
     }
 }
 
 void Game::render() {
     SDL_RenderClear(renderer);
-	map->DrawMap();
+    map->DrawMap();
     for (auto tower : towers)
     {
         tower->Render();
     }
-    for (auto enemy : enemies)
-    {
-        enemy->display(renderer);
+    for (auto& enemy : activeEnemies) {
+        if (enemy && !enemy->isDead()) {
+            enemy->display(renderer);
+        }
     }
     SDL_RenderPresent(renderer);
 }

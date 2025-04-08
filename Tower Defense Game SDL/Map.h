@@ -23,6 +23,11 @@ private:
 	SDL_Texture* dirt;
 	SDL_Texture* grass01;
 	SDL_Texture* grass02;
+    SDL_Texture* base;
+    SDL_Rect baseSrcRect;
+    SDL_Rect baseDestRect[2];
+    int baseFrame;
+    int baseFrameTime;
 	std::vector<Decoration> decorations;
     int lvl1[20][25] = {
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
