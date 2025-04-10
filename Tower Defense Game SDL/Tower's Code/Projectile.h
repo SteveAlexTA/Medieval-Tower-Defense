@@ -9,6 +9,7 @@ public:
 	void Render();
 	bool isOutOfBounds() const;
 	bool enemyHit();
+	Enemy* getTarget() const;
 private:
 	int x, y;
 	SDL_Texture* texture;
@@ -16,5 +17,5 @@ private:
 	SDL_Rect src;
 	SDL_Renderer* renderer;
 	Enemy* target;
-	int speed;
+	float speed;
 };

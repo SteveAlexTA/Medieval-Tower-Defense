@@ -3,11 +3,11 @@
 #include "../TextureManager.h"
 #include "../Enemy's Code/Enemy.h"
 #include <vector>
-class Projectile; // Forward declaration
+class Projectile; 
 class Tower
 {
 public:
-	Tower(int x, int y, SDL_Renderer* renderer, const char* texturePath);
+	Tower(int x, int y, SDL_Renderer* renderer, const char* texturePath, int damage);
 	virtual ~Tower();
 	virtual void Update(std::vector<Enemy*>& enemies);
 	virtual void Render();
@@ -15,6 +15,7 @@ public:
 
 	int getX() const { return x; }
 	int getY() const { return y; }
+	int getDamage() const { return damage; }
 protected:
 	int x, y; //Position
 	SDL_Texture* texture;
@@ -22,6 +23,7 @@ protected:
 	SDL_Rect src;
 	SDL_Renderer* renderer;
 	int fireRate = 0;
+	int damage;
 	std::vector<Projectile*> projectiles;
 };
 class CrossbowTower : public Tower {

@@ -1,6 +1,8 @@
 #include "Game.h"
 #include "TextureManager.h"
 #include "Map.h"
+#include "Enemy's Code/Enemy.h"
+#include "Enemy's Code/Wave.h"
 
 SDL_Renderer* Game::renderer = nullptr;
 Map* map;
@@ -21,31 +23,24 @@ Game::~Game() {
 	}
 	towers.clear();
 	delete waveSystem;
-	if (m_enemyTexture) {
-		SDL_DestroyTexture(m_enemyTexture);
-		m_enemyTexture = nullptr;
-	}
+    delete map;
+	if (m_enemyTexture) SDL_DestroyTexture(m_enemyTexture);
+	if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
     int flags = 0;
-    if (fullscreen)
-    {
+    if (fullscreen) {
         flags = SDL_WINDOW_FULLSCREEN;
     }
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
-    {
+    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
         std::cout << "Subsystem Initialised!..." << std::endl;
-
         window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-        if (window)
-        {
+        if (window) {
             std::cout << "Window created successfully!" << std::endl;
         }
-
         renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (renderer)
-        {
+        if (renderer) {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             std::cout << "Renderer created successfully!" << std::endl;
         }
@@ -56,18 +51,17 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
     map = new Map();
+	waveSystem = new WaveSystem(5, 1.0f);
     int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) 
-    {
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
         std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
         isRunning = false;
         return;
     }
 	waveSystem = new WaveSystem(5, 1.0f);
-	waveSystem->startNextWave();
-
 	preloadResources();
-	createEnemyPool();
+	createEnemyPool(50);
+	waveSystem->startNextWave();
 }
 void Game::preloadResources() {
     if (!m_resourcesPreloaded) {
@@ -76,28 +70,36 @@ void Game::preloadResources() {
             std::cout << "Failed to load enemy texture!" << std::endl;
             isRunning = false;
         }
+        m_skeletonTexture = TextureManager::LoadTexture("Assets/Enemy/spr_skeleton.png", renderer);
+        if (!m_skeletonTexture) {
+            std::cout << "Failed to load skeleton texture!" << std::endl;
+            isRunning = false;
+        }
         m_resourcesPreloaded = true;
     }
 }
 void Game::createEnemyPool(int poolSize) {
-    for (int i = 0; i < poolSize; ++i) {
-        Goblin* enemy = new Goblin(0, 0, renderer, map->map, m_enemyTexture);
+    int halfPoolSize = poolSize / 2;
+    // Pre-create enemies for object pooling
+    for (int i = 0; i < halfPoolSize; ++i) {
+        enemyPool.push_back(new Goblin(0, 0, renderer, map->map, m_enemyTexture));
+        enemyPool.push_back(new Skeleton(0, 0, renderer, map->map, m_skeletonTexture));
+    }
+    // Deactivate all enemies initially
+    for (auto& enemy : enemyPool) {
         enemy->deactivate();
-        enemyPool.push_back(enemy);
     }
 }
 
 void Game::handleEvents() {
     SDL_Event event;
     SDL_PollEvent(&event);
-    switch (event.type)
-    {
+    switch (event.type) {
     case SDL_QUIT:
         isRunning = false;
         break;
     case SDL_MOUSEBUTTONDOWN:
-        if (event.button.button == SDL_BUTTON_LEFT)
-        {
+        if (event.button.button == SDL_BUTTON_LEFT) {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
             placeTower(event.button.x, event.button.y);
@@ -135,26 +137,21 @@ void Game::update() {
 
     cnt++;
     waveSystem->update(deltaTime);
-
     // Check if we should spawn an enemy
-    if (waveSystem->shouldSpawnEnemy()) {
+    if (waveSystem->aboutToSpawnEnemy()) {
         spawnEnemy();
     }
-
     // If current wave is complete, advance to next wave
-    if (waveSystem->isWaveComplete() && activeEnemies.empty()) {
+    if (waveSystem->isWaveCompleted() && activeEnemies.empty()) {
         waveSystem->startNextWave();
     }
-
     // Update towers
     for (auto tower : towers) {
         tower->Update(activeEnemies);
     }
-
     // Update enemies
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
-
         if ((*it)->isDead()) {
             (*it)->deactivate();
             it = activeEnemies.erase(it);
@@ -166,13 +163,45 @@ void Game::update() {
 }
 
 void Game::spawnEnemy() {
-    for (Enemy* enemy : enemyPool) {
-        Goblin* goblin = dynamic_cast<Goblin*>(enemy);
-        if (goblin && !goblin->isAlive()) {
-            goblin->reset(map->map);
-            activeEnemies.push_back(goblin);
-            break;
+    int wave = waveSystem->getCurrentWave();
+    bool spawnSkeleton = (rand() % 100) < (10 * wave); // Increase skeleton chance by 10% per wave
+	Enemy* spawnedEnemy = nullptr;
+    if (spawnSkeleton) {
+        for (Enemy* enemy : enemyPool) {
+            if (Skeleton* skeleton = dynamic_cast<Skeleton*>(enemy)) {
+                if (!skeleton->isAlive()) {
+                    spawnedEnemy = skeleton;
+                    break;
+                }
+            }
         }
+    }
+    else {
+        for (Enemy* enemy : enemyPool) {
+            if (Goblin* goblin = dynamic_cast<Goblin*>(enemy)) {
+                if (!goblin->isAlive()) {
+                    spawnedEnemy = goblin;
+                    break;
+                }
+            }
+        }
+    }
+    // If no preferred type is available, use any available enemy
+    if (!spawnedEnemy) {
+        for (Enemy* enemy : enemyPool) {
+            if (!enemy->isAlive()) {
+                spawnedEnemy = enemy;
+                break;
+            }
+        }
+    }
+    // If we found an enemy to spawn, reset it and add to active enemies
+    if (spawnedEnemy) {
+        spawnedEnemy->reset(map->map);
+        activeEnemies.push_back(spawnedEnemy);
+    }
+    else {
+        std::cout << "WARNING: Unable to spawn enemy - pool exhausted" << std::endl;
     }
 }
 

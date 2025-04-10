@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-Enemy::Enemy(float x, float y, int hp, float speed) : m_x(x), m_y(y), m_hp(hp), m_speed(speed), m_alive(true), m_currentPathIndex(0) {};
+Enemy::Enemy(float x, float y, int hp, float speed) : m_x(x), m_y(y), m_hp(hp), m_maxHP(hp), m_speed(speed), m_alive(true), m_currentPathIndex(0) {};
 
 Enemy::~Enemy() {}
 
@@ -22,7 +22,7 @@ void Enemy::renderHPBar(SDL_Renderer* renderer) const {
     const int BAR_OFFSET_Y = -20; // Display bar above the enemy
 
     // Calculate health percentage and remaining health bar width
-    float healthPercentage = static_cast<float>(m_hp) / 100.0f; 
+    float healthPercentage = static_cast<float>(m_hp) / m_maxHP; 
     int healthWidth = static_cast<int>(BAR_W * healthPercentage);
 
     // Draw current health bar (green)
@@ -39,14 +39,11 @@ void Enemy::initPath(int map[20][25]) {
     PathFinder::FindPathStartEnd(map, start, end);
 
     if (start.x == -1 || end.x == -1) {
-        std::cerr << "ERROR: No valid start or end position found!" << std::endl;
         return;
     }
-
     // Set initial position to start of path
     m_x = start.x * 32;
     m_y = start.y * 32;
-
     // Find the path
     m_path = PathFinder::FindPath(map);
 
@@ -54,7 +51,6 @@ void Enemy::initPath(int map[20][25]) {
         std::cerr << "ERROR: Path finding failed. No path generated!" << std::endl;
         return;
     }
-
     m_currentPathIndex = 0;
 }
 
@@ -86,6 +82,7 @@ void Enemy::move(float deltaTime) {
 }
 
 Goblin::Goblin(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture) : Enemy(x, y, GOBLIN_HP, GOBLIN_SPEED), m_renderer(renderer), m_texture(texture) {
+    m_maxHP = GOBLIN_HP;
     initPath(map);
 }
 
@@ -103,60 +100,37 @@ void Goblin::display(SDL_Renderer* renderer) {
 
     // Draw the enemy with proper animation frame
     SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
-    SDL_Rect dest = { static_cast<int>(m_x - 6), static_cast<int>(m_y - 4), 12, 8 };
+    SDL_Rect dest = { static_cast<int>(m_x - 16), static_cast<int>(m_y - 16), 32, 32 }; // Scale to 32x32
     SDL_RenderCopy(renderer, m_texture, &src, &dest);
 
     // Draw the health bar
     renderHPBar(renderer);
 }
 
-WaveSystem::WaveSystem(int initialWaveSize, float spawnInterval)
-    : m_currentWave(0),
-    m_waveSize(initialWaveSize),
-    m_remainingEnemiesInWave(0),
-    m_spawnInterval(spawnInterval),
-    m_currentSpawnTimer(0.0f),
-    m_waveBreakTimer(0.0f),
-    m_timeBetweenWaves(5.0f),
-    m_waveInProgress(false) {
+Skeleton::Skeleton(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture) : Enemy(x, y, SKELETON_HP, SKELETON_SPEED), m_renderer(renderer), m_texture(texture) {
+    m_maxHP = SKELETON_HP;
+	initPath(map);
 }
 
-void WaveSystem::update(float deltaTime) {
-    if (m_waveInProgress) {
-        // Wave in progress - update spawn timer
-        if (m_remainingEnemiesInWave > 0) {
-            m_currentSpawnTimer += deltaTime;
-        }
+Skeleton::~Skeleton() {}
+
+void Skeleton::display(SDL_Renderer* renderer) {
+    if (!renderer || !m_texture || !m_alive) return;
+
+    // Update animation frame
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime > lastFrameTime + frameDelay) {
+        currentFrame = (currentFrame + 1) % totalFrames;
+        lastFrameTime = currentTime;
     }
-    else {
-        // Between waves - update break timer
-        m_waveBreakTimer += deltaTime;
-        if (m_waveBreakTimer >= m_timeBetweenWaves) {
-            startNextWave();
-        }
-    }
-}
-bool WaveSystem::shouldSpawnEnemy() {
-    if (m_waveInProgress && m_remainingEnemiesInWave > 0 && m_currentSpawnTimer >= m_spawnInterval) {
-        m_currentSpawnTimer = 0.0f;
-        m_remainingEnemiesInWave--;
-        return true;
-    }
-    return false;
-}
 
-bool WaveSystem::isWaveComplete() const {
-    return m_waveInProgress && m_remainingEnemiesInWave <= 0;
-}
+    SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
+    // Centers the sprite on the path point and scales to 32x32
+    int destX = static_cast<int>(m_x - 16);
+    int destY = static_cast<int>(m_y - 16);
 
-void WaveSystem::startNextWave() {
-    m_currentWave++;
-    m_waveSize = m_currentWave * 5; // Increase enemies per wave
-    m_remainingEnemiesInWave = m_waveSize;
-    m_waveBreakTimer = 0.0f;
-    m_currentSpawnTimer = 0.0f;
-    m_waveInProgress = true;
-
-    // Make waves harder over time
-    m_spawnInterval = std::max(0.5f, m_spawnInterval * 0.9f);
+    SDL_Rect dest = { destX, destY, 32, 32 }; // Scale to 32x32
+    SDL_RenderCopy(renderer, m_texture, &src, &dest);
+    // Draw the health bar
+    renderHPBar(renderer);
 }

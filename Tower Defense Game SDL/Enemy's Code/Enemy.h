@@ -17,6 +17,7 @@ public:
     void deactivate() { m_alive = false; }
 
     int getHP() const { return m_hp; }
+    int getMaxHP() const { return m_maxHP; }
     int getX() const { return static_cast<int>(m_x); }
     int getY() const { return static_cast<int>(m_y); }
     float getSpeed() const { return m_speed; }
@@ -28,11 +29,12 @@ public:
 
     virtual void reset(int map[20][25]) {
         m_alive = true;
+        m_hp = m_maxHP;
         initPath(map);
     }
 protected:
     float m_x, m_y, m_speed;
-    int m_hp;
+    int m_hp, m_maxHP;
     bool m_alive;
     std::vector<PathFinder::Point> m_path;
     size_t m_currentPathIndex;
@@ -47,10 +49,6 @@ public:
     ~Goblin();
 
     void display(SDL_Renderer* renderer) override;
-    void reset(int map[20][25]) override {
-        m_hp = GOBLIN_HP;
-        Enemy::reset(map);
-    }
 private:
     SDL_Renderer* m_renderer;
     SDL_Texture* m_texture;
@@ -63,26 +61,21 @@ private:
     Uint32 frameDelay = 100;
 };
 
-class WaveSystem {
+class Skeleton : public Enemy {
 public:
-    WaveSystem(int initialWaveSize = 5, float spawnInterval = 1.0f);
-
-    void update(float deltaTime);
-    bool shouldSpawnEnemy();
-    bool isWaveComplete() const;
-    void startNextWave();
-
-    int getCurrentWave() const { return m_currentWave; }
-    int getRemainingEnemies() const { return m_remainingEnemiesInWave; }
-    float getTimeBetweenWaves() const { return m_timeBetweenWaves; }
-
+	static const int SKELETON_HP = 150;
+	static const int SKELETON_SPEED = 50;
+	Skeleton(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
+	~Skeleton();
+	void display(SDL_Renderer* renderer) override;
 private:
-    int m_currentWave;
-    int m_waveSize;
-    int m_remainingEnemiesInWave;
-    float m_spawnInterval;
-    float m_currentSpawnTimer;
-    float m_waveBreakTimer;
-    float m_timeBetweenWaves;
-    bool m_waveInProgress;
+	SDL_Renderer* m_renderer;
+	SDL_Texture* m_texture;
+
+	int frameWidth = 8;   // Width of a single frame
+	int frameHeight = 7;   // Height of a single frame
+	int totalFrames = 4;   // Number of frames in the animation
+	int currentFrame = 0;  // Current frame index
+	Uint32 lastFrameTime = 0; // Last time the frame was updated
+	Uint32 frameDelay = 100;
 };

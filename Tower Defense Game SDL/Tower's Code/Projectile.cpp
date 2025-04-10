@@ -8,13 +8,15 @@ Projectile::Projectile(int x, int y, Enemy* target, SDL_Renderer* renderer): x(x
 }
 
 Projectile::~Projectile() {
-    SDL_DestroyTexture(texture);
+    if (texture) SDL_DestroyTexture(texture);
 }
 
 void Projectile::Update() {
-    // Move the projectile towards the target
-    int deltaX = target->getX() - x; //Target distance X-axis
-	int deltaY = target->getY() - y; //Target distance Y-axis
+	if (!target || !target->isAlive()) {
+		return; // If no target or target is dead, do nothing
+	}
+    float deltaX = target->getX() - x; //Target distance X-axis
+	float deltaY = target->getY() - y; //Target distance Y-axis
 	float distance = sqrt(deltaX * deltaX + deltaY * deltaY); //Euclidean to calculate distance
 	x += static_cast<int>(speed * (deltaX / distance)); //Move the projectile X-axis
 	y += static_cast<int>(speed * (deltaY / distance)); //Move the projectile Y-axis
@@ -31,8 +33,12 @@ bool Projectile::isOutOfBounds() const {
 }
 
 bool Projectile::enemyHit() {
-	if (!target) return false;
+	if (!target || !target->isAlive()) return false;
 	int dx = x - (target->getX() + 16);
 	int dy = y - (target->getY() + 16);
 	return sqrt(dx * dx + dy * dy) < 16; 
+}
+
+Enemy* Projectile::getTarget() const {
+	return target;
 }

@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "Tower's Code/Tower.h"
 #include "Enemy's Code/Enemy.h"
+#include "Enemy's Code/Wave.h"
 
 class Map;
 class Tower;
@@ -44,6 +45,7 @@ private:
 	WaveSystem* waveSystem;
 
     SDL_Texture* m_enemyTexture = nullptr;
+	SDL_Texture* m_skeletonTexture = nullptr;
     bool m_resourcesPreloaded = false;
 };
 
