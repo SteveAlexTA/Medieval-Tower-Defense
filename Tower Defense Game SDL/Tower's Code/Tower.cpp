@@ -25,15 +25,15 @@ void Tower::Update(std::vector<Enemy*>& enemies) {
 	}
 	for (auto it = projectiles.begin(); it != projectiles.end();) {
 		(*it)->Update();
-		if ((*it)->isOutOfBounds()) {
+		Enemy* target = (*it)->getTarget();
+		bool isTargetInvalid = !target || !target->isAlive();
+		if (!isTargetInvalid && (*it)->enemyHit()) {
+			target->takeDamage(damage);
 			delete* it;
 			it = projectiles.erase(it);
+			continue;
 		}
-		else if ((*it)->enemyHit()) {
-			Enemy* target = (*it)->getTarget();
-			if (target && target->isAlive()) {
-				target->takeDamage(damage);
-			}
+		if ((*it)->isOutOfBounds() || isTargetInvalid) {
 			delete* it;
 			it = projectiles.erase(it);
 		}

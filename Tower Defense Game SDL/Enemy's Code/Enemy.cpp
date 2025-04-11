@@ -98,12 +98,9 @@ void Goblin::display(SDL_Renderer* renderer) {
         lastFrameTime = currentTime;
     }
 
-    // Draw the enemy with proper animation frame
     SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
-    SDL_Rect dest = { static_cast<int>(m_x - 16), static_cast<int>(m_y - 16), 32, 32 }; // Scale to 32x32
+    SDL_Rect dest = { static_cast<int>(m_x - 16), static_cast<int>(m_y - 16), 32, 32 }; 
     SDL_RenderCopy(renderer, m_texture, &src, &dest);
-
-    // Draw the health bar
     renderHPBar(renderer);
 }
 
@@ -129,8 +126,7 @@ void Skeleton::display(SDL_Renderer* renderer) {
     int destX = static_cast<int>(m_x - 16);
     int destY = static_cast<int>(m_y - 16);
 
-    SDL_Rect dest = { destX, destY, 32, 32 }; // Scale to 32x32
+    SDL_Rect dest = { destX, destY, 32, 32 }; 
     SDL_RenderCopy(renderer, m_texture, &src, &dest);
-    // Draw the health bar
     renderHPBar(renderer);
 }

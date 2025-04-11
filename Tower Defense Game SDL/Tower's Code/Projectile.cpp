@@ -15,13 +15,20 @@ void Projectile::Update() {
 	if (!target || !target->isAlive()) {
 		return; // If no target or target is dead, do nothing
 	}
-    float deltaX = target->getX() - x; //Target distance X-axis
-	float deltaY = target->getY() - y; //Target distance Y-axis
-	float distance = sqrt(deltaX * deltaX + deltaY * deltaY); //Euclidean to calculate distance
-	x += static_cast<int>(speed * (deltaX / distance)); //Move the projectile X-axis
-	y += static_cast<int>(speed * (deltaY / distance)); //Move the projectile Y-axis
-    dest.x = x - 8;
-    dest.y = y - 8;
+    float targetX = target->getX() + 16; // Target center X
+    float targetY = target->getY() + 16; // Target center Y
+    float deltaX = targetX - x;
+    float deltaY = targetY - y;
+    float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
+    if (distance > 0) {
+        float moveAmount = std::min(distance, static_cast<float>(speed));
+        float dirX = deltaX / distance;
+        float dirY = deltaY / distance;
+        x += static_cast<int>(dirX * moveAmount);
+        y += static_cast<int>(dirY * moveAmount);
+        dest.x = x - 8;  // Center the projectile sprite
+        dest.y = y - 8;
+    }
 }
 
 void Projectile::Render() {
@@ -36,7 +43,8 @@ bool Projectile::enemyHit() {
 	if (!target || !target->isAlive()) return false;
 	int dx = x - (target->getX() + 16);
 	int dy = y - (target->getY() + 16);
-	return sqrt(dx * dx + dy * dy) < 16; 
+	float distance = sqrt(dx * dx + dy * dy);
+    return distance < 16;
 }
 
 Enemy* Projectile::getTarget() const {
