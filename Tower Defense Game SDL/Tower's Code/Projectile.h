@@ -10,6 +10,11 @@ public:
 	bool isOutOfBounds() const;
 	bool enemyHit();
 	Enemy* getTarget() const;
+	SDL_Texture* getProjectileTexture() const { return texture; }
+	void setProjectileTexture(SDL_Texture* newTexture) {
+		if (texture) SDL_DestroyTexture(texture);
+		texture = newTexture;
+	}
 private:
 	int x, y;
 	SDL_Texture* texture;

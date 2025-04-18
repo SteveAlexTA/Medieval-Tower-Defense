@@ -140,10 +140,12 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Money.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Tower%27s Code\Projectile.cpp" />
     <ClCompile Include="Tower%27s Code\Tower.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy%27s Code\Enemy.h" />
@@ -151,10 +153,12 @@
     <ClInclude Include="Enemy%27s Code\Wave.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Money.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Tower%27s Code\Projectile.h" />
     <ClInclude Include="Tower%27s Code\Tower.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

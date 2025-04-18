@@ -1,6 +1,5 @@
 #ifndef GAME_H
 #define GAME_H
-
 #include <SDL.h>
 #include <SDL_image.h>
 #pragma once
@@ -10,7 +9,8 @@
 #include "Tower's Code/Tower.h"
 #include "Enemy's Code/Enemy.h"
 #include "Enemy's Code/Wave.h"
-
+#include "Money.h"
+#include "UIManager.h"
 class Map;
 class Tower;
 class Game {
@@ -40,13 +40,24 @@ private:
     std::vector<Tower*> towers;
     std::vector<Enemy*> activeEnemies;
     std::vector<Enemy*> enemyPool;
-    float deltaTime = 0.0f;
+    float deltaTime;
 
 	WaveSystem* waveSystem;
+    Money* moneySystem;
+    UI* UISystem;
 
     SDL_Texture* m_enemyTexture = nullptr;
 	SDL_Texture* m_skeletonTexture = nullptr;
     bool m_resourcesPreloaded = false;
+
+    Tower* selectedTower = nullptr;
+    void selectTowerAt(int x, int y);
+    void upgradeTower(Tower* tower);
+    void deleteTower(Tower* tower);
+    bool isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower);
+    bool isClickInDeleteUI(int mouseX, int mouseY, Tower* tower);
+
+    void rewardEnemyKilled(Enemy* enemy);
 };
 
 #endif //GAME_H

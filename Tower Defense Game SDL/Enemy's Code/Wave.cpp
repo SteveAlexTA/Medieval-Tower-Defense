@@ -1,7 +1,14 @@
 #include "Wave.h"
 #include <algorithm>
 
-WaveSystem::WaveSystem(int initialWaveSize, float spawnInterval) : m_currentWave(0), m_waveSize(initialWaveSize), m_remainingEnemiesInWave(0), m_spawnInterval(spawnInterval), m_currentSpawnTimer(0.0f), m_waveBreakTimer(0.0f), m_timeBetweenWaves(5.0f), m_waveInProgress(false) {}
+WaveSystem::WaveSystem(int initialWaveSize, float spawnInterval, bool easyMode) : m_currentWave(0), m_waveSize(initialWaveSize), m_remainingEnemiesInWave(0), m_spawnInterval(spawnInterval), m_currentSpawnTimer(0.0f), m_waveBreakTimer(0.0f), m_timeBetweenWaves(5.0f), m_waveInProgress(false), m_easyMode(easyMode), m_currentEnemyType(EnemyType::GOBLIN) {
+	for (int i = 0; i < 7; i++) {
+		m_waveEnemyTypes.push_back(EnemyType::GOBLIN);
+	}
+	for (int i = 0; i < 3; i++) {
+		m_waveEnemyTypes.push_back(EnemyType::SKELETON);
+	}
+}
 
 void WaveSystem::update(float deltaTime) {
 	if (m_waveInProgress) {
@@ -34,4 +41,11 @@ void WaveSystem::startNextWave() {
 	m_waveBreakTimer = 0.0f;
 	m_waveInProgress = true;
 	m_spawnInterval = std::max(0.5f, m_spawnInterval * 0.9f); 
+	int waveIndex = m_currentWave - 1;
+	if (waveIndex < m_waveEnemyTypes.size()) {
+		m_currentEnemyType = m_waveEnemyTypes[waveIndex];
+	}
+	else {
+		m_currentEnemyType = EnemyType::RANDOM;
+	}
 }

@@ -42,6 +42,12 @@
     <ClCompile Include="Enemy%27s Code\Wave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Money.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -69,6 +75,12 @@
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy%27s Code\Wave.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Money.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

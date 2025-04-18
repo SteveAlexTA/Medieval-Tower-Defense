@@ -47,7 +47,6 @@ std::vector<PathFinder::Point> PathFinder::FindPath(int map[20][25]) {
         }
         if (!moved) break;
     }
-
     // Print out full path
     std::cout << "Generated Path:" << std::endl;
     for (const auto& point : path) {

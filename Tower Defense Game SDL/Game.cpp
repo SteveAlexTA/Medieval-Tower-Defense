@@ -5,13 +5,21 @@
 #include "Enemy's Code/Wave.h"
 
 SDL_Renderer* Game::renderer = nullptr;
-Map* map;
 
-Game::Game() : cnt(0), isRunning(false), window(nullptr) {
-	window = nullptr;
-	renderer = nullptr;
-	isRunning = false;
-}
+Game::Game()
+    : cnt(0)
+    , isRunning(false)
+    , window(nullptr)
+    , map(nullptr)
+    , waveSystem(nullptr)
+	, moneySystem(nullptr)
+	, UISystem(nullptr)
+    , m_enemyTexture(nullptr)
+    , m_skeletonTexture(nullptr)
+    , m_resourcesPreloaded(false)
+    , selectedTower(nullptr)
+    , deltaTime(0.0f)
+{}
 
 Game::~Game() {
 	for (auto enemy : enemyPool) {
@@ -24,6 +32,8 @@ Game::~Game() {
 	towers.clear();
 	delete waveSystem;
     delete map;
+    delete moneySystem;
+	delete UISystem;
 	if (m_enemyTexture) SDL_DestroyTexture(m_enemyTexture);
 	if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
 }
@@ -50,18 +60,24 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     {
         isRunning = false;
     }
-    map = new Map();
-	waveSystem = new WaveSystem(5, 1.0f);
     int imgFlags = IMG_INIT_PNG;
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
         isRunning = false;
         return;
     }
-	waveSystem = new WaveSystem(5, 1.0f);
 	preloadResources();
+    map = new Map();
+    waveSystem = new WaveSystem();
 	createEnemyPool(50);
 	waveSystem->startNextWave();
+	moneySystem = new Money(200);
+	UISystem = new UI(renderer);
+	if (!UISystem->init()) {
+		std::cout << "Failed to initialize UI!" << std::endl;
+		isRunning = false;
+        return;
+	}
 }
 void Game::preloadResources() {
     if (!m_resourcesPreloaded) {
@@ -90,23 +106,44 @@ void Game::createEnemyPool(int poolSize) {
         enemy->deactivate();
     }
 }
-
 void Game::handleEvents() {
     SDL_Event event;
-    SDL_PollEvent(&event);
-    switch (event.type) {
-    case SDL_QUIT:
-        isRunning = false;
-        break;
-    case SDL_MOUSEBUTTONDOWN:
-        if (event.button.button == SDL_BUTTON_LEFT) {
-            int mouseX, mouseY;
-            SDL_GetMouseState(&mouseX, &mouseY);
-            placeTower(event.button.x, event.button.y);
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+        case SDL_QUIT:
+            isRunning = false;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                int mouseX = event.button.x;
+                int mouseY = event.button.y;
+                if (selectedTower) {
+                    if (isClickInUpgradeUI(mouseX, mouseY, selectedTower)) {
+                        upgradeTower(selectedTower);
+                        return;
+                    }
+                    else if (isClickInDeleteUI(mouseX, mouseY, selectedTower)) {
+                        deleteTower(selectedTower);
+                        return;
+                    }
+                }
+                selectTowerAt(mouseX, mouseY);
+                if (!selectedTower) {
+                    placeTower(mouseX, mouseY);
+                }
+            }
+            break;
+        case SDL_KEYDOWN:
+            if (event.key.keysym.sym == SDLK_ESCAPE) {
+                if (selectedTower) {
+                    selectedTower->setSelected(false);
+                    selectedTower = nullptr;
+                }
+            }
+            break;
+        default:
+            break;
         }
-        break;
-    default:
-        break;
     }
 }
 bool Game::canPlaceTower(int x, int y) {
@@ -118,13 +155,90 @@ bool Game::canPlaceTower(int x, int y) {
     return !map->IsEnemyPath(gridY, gridX);
 }
 void Game::placeTower(int x, int y) {
-    if (canPlaceTower(x, y))
-    {
+    if (canPlaceTower(x, y) && moneySystem->spendMoney(Money::TOWER_BASE_COST)) {
         int gridX = (x / 32) * 32;
         int gridY = (y / 32) * 32;
-        Tower* newTower = new CrossbowTower(gridX, gridY, renderer);
+        Tower* newTower = new BaseTowerOne(gridX, gridY, renderer, 25);
         towers.push_back(newTower);
+	}
+    else {
+        std::cout << "Cannot place tower here!" << std::endl;
     }
+}
+void Game::selectTowerAt(int x, int y) {
+    if (selectedTower) {
+        selectedTower->setSelected(false);
+        selectedTower = nullptr;
+    }
+    for (auto& tower : towers) {
+        int towerX = tower->getX();
+        int towerY = tower->getY();
+        if (x >= towerX && x < towerX + 32 && y >= towerY && y < towerY + 32) {
+            selectedTower = tower;
+            selectedTower->setSelected(true);
+            return;
+        }
+    }
+}
+void Game::upgradeTower(Tower* tower) {
+    if (!tower || !tower->canUpgrade()) return;
+    int upgradeCost = 0;
+    if (tower->getLevel() == TowerLevel::LEVEL2) {
+        upgradeCost = Money::TOWER_UPGRADE_ARCHER_COST;
+    }
+    else if (tower->getLevel() == TowerLevel::LEVEL3) {
+        upgradeCost = Money::TOWER_UPGRADE_CANNON_COST;
+    }
+    if (moneySystem->spendMoney(upgradeCost)) {
+        tower->upgrade();
+    }
+}
+void Game::deleteTower(Tower* tower) {
+    if (!tower) return;
+    for (auto it = towers.begin(); it != towers.end(); ++it) {
+        if (*it == tower) {
+			int refund = 0;
+            switch (tower->getLevel()) {
+            case TowerLevel::LEVEL1:
+                refund = Money::TOWER_BASE_COST / 2; //1/2 the original cost
+                break;
+            case TowerLevel::LEVEL2:
+                refund = (Money::TOWER_BASE_COST + Money::TOWER_UPGRADE_ARCHER_COST) / 2;
+                break;
+            case TowerLevel::LEVEL3:
+                refund = (Money::TOWER_BASE_COST + Money::TOWER_UPGRADE_ARCHER_COST + Money::TOWER_UPGRADE_CANNON_COST) / 2;
+                break;
+            }
+			moneySystem->addMoney(refund);
+            delete* it;
+            towers.erase(it);
+            selectedTower = nullptr;
+            return;
+        }
+    }
+}
+void Game::rewardEnemyKilled(Enemy* enemy) {
+    if (dynamic_cast<Goblin*>(enemy)) {
+        moneySystem->addMoney(Money::GOBLIN_REWARD);
+    }
+    else if (dynamic_cast<Skeleton*>(enemy)) {
+        moneySystem->addMoney(Money::SKELETON_REWARD);
+    }
+}
+bool Game::isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower) {
+    if (!tower || !tower->canUpgrade()) return false;
+    int towerX = tower->getX();
+    int towerY = tower->getY();
+    SDL_Rect upgradeRect = { towerX - 16, towerY - 40, 32, 32 };
+    return (mouseX >= upgradeRect.x && mouseX < upgradeRect.x + upgradeRect.w && mouseY >= upgradeRect.y && mouseY < upgradeRect.y + upgradeRect.h);
+}
+
+bool Game::isClickInDeleteUI(int mouseX, int mouseY, Tower* tower) {
+    if (!tower) return false;
+    int towerX = tower->getX();
+    int towerY = tower->getY();
+    SDL_Rect deleteRect = { towerX + 16, towerY - 40, 32, 32 };
+    return (mouseX >= deleteRect.x && mouseX < deleteRect.x + deleteRect.w && mouseY >= deleteRect.y && mouseY < deleteRect.y + deleteRect.h);
 }
 void Game::update() {
     static Uint32 lastFrameTime = SDL_GetTicks();
@@ -137,22 +251,20 @@ void Game::update() {
 
     cnt++;
     waveSystem->update(deltaTime);
-    // Check if we should spawn an enemy
+
     if (waveSystem->aboutToSpawnEnemy()) {
         spawnEnemy();
     }
-    // If current wave is complete, advance to next wave
     if (waveSystem->isWaveCompleted() && activeEnemies.empty()) {
         waveSystem->startNextWave();
     }
-    // Update towers
     for (auto tower : towers) {
         tower->Update(activeEnemies);
     }
-    // Update enemies
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
         if ((*it)->isDead()) {
+			rewardEnemyKilled(*it);
             (*it)->deactivate();
             it = activeEnemies.erase(it);
         }
@@ -160,11 +272,24 @@ void Game::update() {
             ++it;
         }
     }
+	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), 100); 
 }
 
 void Game::spawnEnemy() {
     int wave = waveSystem->getCurrentWave();
-    bool spawnSkeleton = (rand() % 100) < (10 * wave); // Increase skeleton chance by 10% per wave
+    EnemyType waveEnemyType = waveSystem->getCurrentEnemyType();
+    bool spawnSkeleton = false; 
+
+    switch (waveEnemyType) {
+	case EnemyType::GOBLIN:
+		spawnSkeleton = false;
+		break;
+	case EnemyType::SKELETON:
+		spawnSkeleton = true;
+		break;
+    default:
+        break;
+    }
 	Enemy* spawnedEnemy = nullptr;
     if (spawnSkeleton) {
         for (Enemy* enemy : enemyPool) {
@@ -208,8 +333,7 @@ void Game::spawnEnemy() {
 void Game::render() {
     SDL_RenderClear(renderer);
     map->DrawMap();
-    for (auto tower : towers)
-    {
+    for (auto tower : towers) {
         tower->Render();
     }
     for (auto& enemy : activeEnemies) {
@@ -217,6 +341,7 @@ void Game::render() {
             enemy->display(renderer);
         }
     }
+    UISystem->render(renderer);
     SDL_RenderPresent(renderer);
 }
 
