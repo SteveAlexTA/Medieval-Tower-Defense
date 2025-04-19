@@ -25,7 +25,7 @@ UI::UI(SDL_Renderer* renderer) :
 		std::cout << "Font load error: " << TTF_GetError() << std::endl;
 		return;
 	}
-	moneyIcon = TextureManager::LoadTexture("Assets/UI/emerald_icon_clean_32x32.png", renderer);
+	moneyIcon = TextureManager::LoadTexture("Assets/UI/emerald_icon.png", renderer);
 	healthIcon = TextureManager::LoadTexture("Assets/UI/hp_icon.png", renderer);
 	moneyIconRect = { 10, 10, 32, 32 };
 	moneyTextRect = { 50, 10, 100, 32 };

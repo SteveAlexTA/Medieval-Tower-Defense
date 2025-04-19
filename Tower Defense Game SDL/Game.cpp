@@ -183,10 +183,10 @@ void Game::selectTowerAt(int x, int y) {
 void Game::upgradeTower(Tower* tower) {
     if (!tower || !tower->canUpgrade()) return;
     int upgradeCost = 0;
-    if (tower->getLevel() == TowerLevel::LEVEL2) {
+    if (tower->getLevel() == TowerLevel::LEVEL1) {
         upgradeCost = Money::TOWER_UPGRADE_ARCHER_COST;
     }
-    else if (tower->getLevel() == TowerLevel::LEVEL3) {
+    else if (tower->getLevel() == TowerLevel::LEVEL2) {
         upgradeCost = Money::TOWER_UPGRADE_CANNON_COST;
     }
     if (moneySystem->spendMoney(upgradeCost)) {
