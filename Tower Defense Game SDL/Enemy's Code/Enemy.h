@@ -13,6 +13,8 @@ public:
 
     bool isDead() const { return m_hp <= 0; }
     bool isAlive() const { return m_alive; }
+	bool hasReachedEnd() const { return m_reachedEnd; }
+
     void takeDamage(int damage);
     void deactivate() { m_alive = false; }
 
@@ -30,6 +32,7 @@ public:
     virtual void reset(int map[20][25]) {
         m_alive = true;
         m_hp = m_maxHP;
+        m_reachedEnd = false;
         initPath(map);
     }
 protected:
@@ -38,11 +41,12 @@ protected:
     bool m_alive;
     std::vector<PathFinder::Point> m_path;
     size_t m_currentPathIndex;
+	bool m_reachedEnd = false;
 };
 
 class Goblin : public Enemy {
 public:
-	static const int GOBLIN_HP = 100;
+	static const int GOBLIN_HP = 150;
 	static const int GOBLIN_SPEED = 100;
 
     Goblin(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
@@ -52,7 +56,6 @@ public:
 private:
     SDL_Renderer* m_renderer;
     SDL_Texture* m_texture;
-
     int frameWidth = 12;   // Width of a single frame 
     int frameHeight = 8;   // Height of a single frame
     int totalFrames = 2;   // Number of frames in the animation
@@ -63,8 +66,8 @@ private:
 
 class Skeleton : public Enemy {
 public:
-	static const int SKELETON_HP = 150;
-	static const int SKELETON_SPEED = 150;
+	static const int SKELETON_HP = 300;
+	static const int SKELETON_SPEED = 200;
 	Skeleton(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
 	~Skeleton();
 	void display(SDL_Renderer* renderer) override;

@@ -29,6 +29,8 @@ public:
     bool canPlaceTower(int x, int y);
     void spawnEnemy();
 	static SDL_Renderer* renderer;
+    bool isGameOver() const { return gameOver; }
+    int getBaseHealth() const { return baseHP; }
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
@@ -42,6 +44,9 @@ private:
     std::vector<Enemy*> enemyPool;
     float deltaTime;
 
+    int baseHP = 100;
+	bool gameOver = false;
+
 	WaveSystem* waveSystem;
     Money* moneySystem;
     UI* UISystem;
@@ -49,6 +54,7 @@ private:
     SDL_Texture* m_enemyTexture = nullptr;
 	SDL_Texture* m_skeletonTexture = nullptr;
     bool m_resourcesPreloaded = false;
+	bool buildTowerMode = false;
 
     Tower* selectedTower = nullptr;
     void selectTowerAt(int x, int y);

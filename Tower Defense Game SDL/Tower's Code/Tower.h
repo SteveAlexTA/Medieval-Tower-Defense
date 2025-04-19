@@ -9,8 +9,7 @@ enum class TowerLevel {
 	LEVEL2,
 	LEVEL3
 };
-class Tower
-{
+class Tower {
 public:
 	Tower(int x, int y, SDL_Renderer* renderer, int damage);
 	virtual ~Tower();
@@ -28,6 +27,22 @@ public:
 	void setSelected(bool selected) { m_isSelected = selected; }
 	void RenderUpgradeUI();
 	TowerLevel getLevel() const { return m_level; }
+
+	float getRange() const { return range; }
+	bool isInRange(Enemy* enemy) const {
+		if (!enemy || !enemy->isAlive()) return false;
+		// Calculate distance from tower center -> enemy center
+		float towerCenterX = x + 16; // Tower center 
+		float towerCenterY = y + 16;
+		float enemyCenterX = enemy->getX() + 16; // Enemy center 
+		float enemyCenterY = enemy->getY() + 16;
+		float dx = towerCenterX - enemyCenterX;
+		float dy = towerCenterY - enemyCenterY;
+		float distanceSquared = dx * dx + dy * dy;
+		return distanceSquared <= (range * range);
+	}
+	void renderRangeCircle() const;
+	void renderTowerLevel() const;
 protected:
 	int x, y; //Position
 	SDL_Texture* texture;
@@ -35,6 +50,7 @@ protected:
 	SDL_Rect src;
 	SDL_Renderer* renderer;
 	int fireRate = 0;
+	float range; //Range
 	int damage;
 	std::vector<Projectile*> projectiles;
 
@@ -50,4 +66,7 @@ class BaseTowerOne : public Tower {
 public:
 	BaseTowerOne(int x, int y, SDL_Renderer* renderer, int damage);
 	virtual void shoot(std::vector<Enemy*>& enemies) override;
+	SDL_Texture* s_archerTexture = nullptr;
+	SDL_Texture* s_canonTexture = nullptr;
+	SDL_Texture* s_deleteTexture = nullptr;
 };

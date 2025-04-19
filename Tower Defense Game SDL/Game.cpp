@@ -73,6 +73,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	waveSystem->startNextWave();
 	moneySystem = new Money(200);
 	UISystem = new UI(renderer);
+    baseHP = 100;
+    gameOver = false;
 	if (!UISystem->init()) {
 		std::cout << "Failed to initialize UI!" << std::endl;
 		isRunning = false;
@@ -108,15 +110,39 @@ void Game::createEnemyPool(int poolSize) {
 }
 void Game::handleEvents() {
     SDL_Event event;
+    int mouseX = 0;
+	int mouseY = 0;
     while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_MOUSEMOTION) {
+            mouseX = event.motion.x;
+            mouseY = event.motion.y;
+        }
+        else if (event.type == SDL_MOUSEBUTTONDOWN) {
+            mouseX = event.button.x;
+            mouseY = event.button.y;
+        }
         switch (event.type) {
         case SDL_QUIT:
             isRunning = false;
             break;
+        case SDL_MOUSEMOTION:
+            UISystem->isBuildTowerHovered = UISystem->isBuildTowerClicked(mouseX, mouseY);
+            break;
         case SDL_MOUSEBUTTONDOWN:
+            if (UISystem->isBuildTowerClicked(mouseX, mouseY)) {
+                buildTowerMode = !buildTowerMode;
+                if (buildTowerMode && selectedTower) {
+                    selectedTower->setSelected(false);
+                    selectedTower = nullptr;
+                }
+                return;
+            }
+            if (buildTowerMode) {
+                placeTower(mouseX, mouseY);
+                buildTowerMode = false;
+                return;
+            }
             if (event.button.button == SDL_BUTTON_LEFT) {
-                int mouseX = event.button.x;
-                int mouseY = event.button.y;
                 if (selectedTower) {
                     if (isClickInUpgradeUI(mouseX, mouseY, selectedTower)) {
                         upgradeTower(selectedTower);
@@ -248,6 +274,9 @@ void Game::update() {
 		deltaTime = 0.1f;
 	}
 	lastFrameTime = currentFrameTime;
+	if (gameOver) {
+		return;
+	}
 
     cnt++;
     waveSystem->update(deltaTime);
@@ -263,7 +292,17 @@ void Game::update() {
     }
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
-        if ((*it)->isDead()) {
+		if ((*it)->hasReachedEnd()) {
+			baseHP -= 10;
+			if (baseHP <= 0) {
+                baseHP = 0;
+				gameOver = true;
+				std::cout << "Game Over!" << std::endl;
+			}
+			(*it)->deactivate();
+			it = activeEnemies.erase(it);
+		}
+		else if ((*it)->isDead()) {
 			rewardEnemyKilled(*it);
             (*it)->deactivate();
             it = activeEnemies.erase(it);
@@ -342,6 +381,33 @@ void Game::render() {
         }
     }
     UISystem->render(renderer);
+    if (buildTowerMode) {
+        int mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        int gridX = (mouseX / 32) * 32;
+        int gridY = (mouseY / 32) * 32;
+        SDL_Texture* previewTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_crossbow.png", renderer);
+        SDL_Rect previewRect = { gridX, gridY, 32, 32 };
+        // Show valid/invalid placement
+        if (canPlaceTower(mouseX, mouseY)) {
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
+            SDL_RenderFillRect(renderer, &previewRect);
+            SDL_RenderCopy(renderer, previewTexture, nullptr, &previewRect);
+        }
+        else {
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+            SDL_RenderFillRect(renderer, &previewRect);
+        }
+        SDL_DestroyTexture(previewTexture);
+    }
+    if (gameOver) {
+        SDL_Rect gameOverRect = { 200, 150, 400, 300 };
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+        SDL_RenderFillRect(renderer, &gameOverRect);
+        UISystem->renderText("GAME OVER", 320, 280, renderer);
+    }
     SDL_RenderPresent(renderer);
 }
 

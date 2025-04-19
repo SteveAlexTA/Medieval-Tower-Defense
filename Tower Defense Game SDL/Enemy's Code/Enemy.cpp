@@ -15,20 +15,16 @@ void Enemy::takeDamage(int damage)  {
 }
 void Enemy::renderHPBar(SDL_Renderer* renderer) const {
     if (!m_alive) return;
-
     // Set up health bar dimensions
     const int BAR_W = 30;
     const int BAR_H = 5;
     const int BAR_OFFSET_Y = -20; // Display bar above the enemy
-
     // Calculate health percentage and remaining health bar width
     float healthPercentage = static_cast<float>(m_hp) / m_maxHP; 
     int healthWidth = static_cast<int>(BAR_W * healthPercentage);
-
     // Draw current health bar (green)
     int barX = m_x - (healthWidth / 2);
     int barY = m_y + BAR_OFFSET_Y;
-
     SDL_Rect healthBar = { barX, barY, healthWidth, BAR_H };
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green only
     SDL_RenderFillRect(renderer, &healthBar);
@@ -37,7 +33,6 @@ void Enemy::renderHPBar(SDL_Renderer* renderer) const {
 void Enemy::initPath(int map[20][25]) {
     PathFinder::Point start, end;
     PathFinder::FindPathStartEnd(map, start, end);
-
     if (start.x == -1 || end.x == -1) {
         return;
     }
@@ -46,7 +41,6 @@ void Enemy::initPath(int map[20][25]) {
     m_y = start.y * 32;
     // Find the path
     m_path = PathFinder::FindPath(map);
-
     if (m_path.empty()) {
         std::cerr << "ERROR: Path finding failed. No path generated!" << std::endl;
         return;
@@ -58,20 +52,20 @@ void Enemy::move(float deltaTime) {
     if (m_path.empty() || m_currentPathIndex >= m_path.size()-1) {
         return;
     }
-
     PathFinder::Point current = m_path[m_currentPathIndex];
     PathFinder::Point next = m_path[m_currentPathIndex + 1];
-
     // Calculate target pixel coordinates
     float targetX = next.x * 32 + 16;
     float targetY = next.y * 32 + 16;
     // Adjust speed based on delta time
 	float dx = targetX - m_x;
 	float dy = targetY - m_y;
-
 	float dist = sqrt(dx * dx + dy * dy);
 	if (dist < 2.0f) {
 		m_currentPathIndex++;
+        if (m_currentPathIndex >= m_path.size() - 1) {
+            m_reachedEnd = true;
+        }
         return;
 	}
     float dirX = dx / dist;
@@ -90,14 +84,12 @@ Goblin::~Goblin() {}
 
 void Goblin::display(SDL_Renderer* renderer) {
     if (!renderer || !m_texture || !m_alive) return;
-
     // Update animation frame
     Uint32 currentTime = SDL_GetTicks();
     if (currentTime > lastFrameTime + frameDelay) {
         currentFrame = (currentFrame + 1) % totalFrames;
         lastFrameTime = currentTime;
     }
-
     SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
     SDL_Rect dest = { static_cast<int>(m_x - 16), static_cast<int>(m_y - 16), 32, 32 }; 
     SDL_RenderCopy(renderer, m_texture, &src, &dest);
@@ -113,19 +105,16 @@ Skeleton::~Skeleton() {}
 
 void Skeleton::display(SDL_Renderer* renderer) {
     if (!renderer || !m_texture || !m_alive) return;
-
     // Update animation frame
     Uint32 currentTime = SDL_GetTicks();
     if (currentTime > lastFrameTime + frameDelay) {
         currentFrame = (currentFrame + 1) % totalFrames;
         lastFrameTime = currentTime;
     }
-
     SDL_Rect src = { currentFrame * frameWidth, 0, frameWidth, frameHeight };
     // Centers the sprite on the path point and scales to 32x32
     int destX = static_cast<int>(m_x - 16);
     int destY = static_cast<int>(m_y - 16);
-
     SDL_Rect dest = { destX, destY, 32, 32 }; 
     SDL_RenderCopy(renderer, m_texture, &src, &dest);
     renderHPBar(renderer);

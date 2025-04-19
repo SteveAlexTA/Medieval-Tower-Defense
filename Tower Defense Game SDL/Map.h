@@ -11,7 +11,6 @@ public:
 	void LoadMap(int arr[20][25]);
 	void DrawMap();
     bool IsEnemyPath(int row, int col) const;
-	void AddDecoration(const char* texturePath, int row, int col);
     int map[20][25];
 private:
 	SDL_Rect src, dest;

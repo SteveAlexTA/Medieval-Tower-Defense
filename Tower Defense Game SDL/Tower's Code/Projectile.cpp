@@ -44,7 +44,7 @@ bool Projectile::enemyHit() {
 	int dx = x - (target->getX() + 16);
 	int dy = y - (target->getY() + 16);
 	float distance = sqrt(dx * dx + dy * dy);
-    return distance < 16;
+    return distance < 24;
 }
 
 Enemy* Projectile::getTarget() const {
