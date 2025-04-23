@@ -44,5 +44,4 @@ private:
     void updateMoneyText(SDL_Renderer* renderer);
     void updateWaveText(SDL_Renderer* renderer);
     void updateHealthText(SDL_Renderer* renderer);
-
 };

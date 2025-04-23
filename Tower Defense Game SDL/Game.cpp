@@ -81,6 +81,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         return;
 	}
 }
+
 void Game::preloadResources() {
     if (!m_resourcesPreloaded) {
         m_enemyTexture = TextureManager::LoadTexture("Assets/Enemy/spr_goblin.png", renderer);
@@ -96,6 +97,7 @@ void Game::preloadResources() {
         m_resourcesPreloaded = true;
     }
 }
+
 void Game::createEnemyPool(int poolSize) {
     int halfPoolSize = poolSize / 2;
     // Pre-create enemies for object pooling
@@ -108,6 +110,7 @@ void Game::createEnemyPool(int poolSize) {
         enemy->deactivate();
     }
 }
+
 void Game::handleEvents() {
     SDL_Event event;
     int mouseX = 0;
@@ -154,9 +157,6 @@ void Game::handleEvents() {
                     }
                 }
                 selectTowerAt(mouseX, mouseY);
-                if (!selectedTower) {
-                    placeTower(mouseX, mouseY);
-                }
             }
             break;
         case SDL_KEYDOWN:
@@ -172,6 +172,7 @@ void Game::handleEvents() {
         }
     }
 }
+
 bool Game::canPlaceTower(int x, int y) {
     int gridX = x / 32;
     int gridY = y / 32;
@@ -180,6 +181,7 @@ bool Game::canPlaceTower(int x, int y) {
     }
     return !map->IsEnemyPath(gridY, gridX);
 }
+
 void Game::placeTower(int x, int y) {
     if (canPlaceTower(x, y) && moneySystem->spendMoney(Money::TOWER_BASE_COST)) {
         int gridX = (x / 32) * 32;
@@ -191,6 +193,7 @@ void Game::placeTower(int x, int y) {
         std::cout << "Cannot place tower here!" << std::endl;
     }
 }
+
 void Game::selectTowerAt(int x, int y) {
     if (selectedTower) {
         selectedTower->setSelected(false);
@@ -206,6 +209,7 @@ void Game::selectTowerAt(int x, int y) {
         }
     }
 }
+
 void Game::upgradeTower(Tower* tower) {
     if (!tower || !tower->canUpgrade()) return;
     int upgradeCost = 0;
@@ -219,6 +223,7 @@ void Game::upgradeTower(Tower* tower) {
         tower->upgrade();
     }
 }
+
 void Game::deleteTower(Tower* tower) {
     if (!tower) return;
     for (auto it = towers.begin(); it != towers.end(); ++it) {
@@ -243,6 +248,7 @@ void Game::deleteTower(Tower* tower) {
         }
     }
 }
+
 void Game::rewardEnemyKilled(Enemy* enemy) {
     if (dynamic_cast<Goblin*>(enemy)) {
         moneySystem->addMoney(Money::GOBLIN_REWARD);
@@ -251,6 +257,7 @@ void Game::rewardEnemyKilled(Enemy* enemy) {
         moneySystem->addMoney(Money::SKELETON_REWARD);
     }
 }
+
 bool Game::isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower) {
     if (!tower || !tower->canUpgrade()) return false;
     int towerX = tower->getX();
@@ -266,6 +273,7 @@ bool Game::isClickInDeleteUI(int mouseX, int mouseY, Tower* tower) {
     SDL_Rect deleteRect = { towerX + 16, towerY - 40, 32, 32 };
     return (mouseX >= deleteRect.x && mouseX < deleteRect.x + deleteRect.w && mouseY >= deleteRect.y && mouseY < deleteRect.y + deleteRect.h);
 }
+
 void Game::update() {
     static Uint32 lastFrameTime = SDL_GetTicks();
 	Uint32 currentFrameTime = SDL_GetTicks();
@@ -311,7 +319,7 @@ void Game::update() {
             ++it;
         }
     }
-	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), 100); 
+	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), baseHP); 
 }
 
 void Game::spawnEnemy() {

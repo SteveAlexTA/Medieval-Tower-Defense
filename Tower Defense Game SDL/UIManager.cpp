@@ -34,7 +34,7 @@ UI::UI(SDL_Renderer* renderer) :
 	healthIconRect = { 680, 8, 24, 24 };  
 	healthTextRect = { 710, 8, 70, 24 };  
 	waveTextRect = { 350, 8, 100, 24 };   
-	buildTowerRect = { 10, 540, 40, 40 };
+	buildTowerRect = { 10, 560, 32, 32 };
 }
 UI::~UI() {
 	if (moneyText) SDL_DestroyTexture(moneyText);
@@ -70,12 +70,12 @@ void UI::update(int money, int wave, int health) {
 }
 void UI::render(SDL_Renderer* renderer) {
 	// Render top bar
-	SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+	SDL_SetRenderDrawColor(renderer, 92, 60, 29, 255);
 	SDL_Rect topBar = { 0, 0, 800, 32 };
 	SDL_RenderFillRect(renderer, &topBar);
 	// Render tower build UI at bottom
-	SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-	SDL_Rect buildPanel = { 0, 538, 150, 62 };
+	SDL_SetRenderDrawColor(renderer, 92, 60, 29, 255);
+	SDL_Rect buildPanel = { 0, 558, 100, 62 };
 	SDL_RenderFillRect(renderer, &buildPanel);
 
 	SDL_RenderCopy(renderer, moneyIcon, nullptr, &moneyIconRect);
@@ -94,7 +94,7 @@ void UI::render(SDL_Renderer* renderer) {
 	SDL_RenderCopy(renderer, waveText, nullptr, &waveTextRect);
 	SDL_RenderCopy(renderer, healthText, nullptr, &healthTextRect);
 
-	SDL_Color textColor = { 0, 0, 0, 255 };
+	SDL_Color textColor = { 240, 220, 180, 255 };
 	SDL_Surface* costSurface = TTF_RenderText_Solid(font, "100 Emeralds", textColor);
 	SDL_Texture* costText = SDL_CreateTextureFromSurface(renderer, costSurface);
 	SDL_Rect costRect = { buildTowerRect.x, buildTowerRect.y + buildTowerRect.h + 5, costSurface->w, costSurface->h };
@@ -103,13 +103,14 @@ void UI::render(SDL_Renderer* renderer) {
 	SDL_DestroyTexture(costText);
 	// Highlight tower if hovered
 	if (isBuildTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
 		SDL_Rect highlightRect = { buildTowerRect.x - 2, buildTowerRect.y - 2, buildTowerRect.w + 4, buildTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 }
+
 void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 255, 0, 0, 255 }; // Red text
+	SDL_Color textColor = { 240, 220, 180, 255 }; 
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
@@ -121,8 +122,9 @@ void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* rendere
 	SDL_FreeSurface(surface);
 	SDL_DestroyTexture(texture);
 }
+
 SDL_Texture* UI::createTextTexture(const std::string& text, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 0, 0, 0, 255 }; //Black text
+	SDL_Color textColor = { 240, 220, 180, 255 }; 
 	SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;

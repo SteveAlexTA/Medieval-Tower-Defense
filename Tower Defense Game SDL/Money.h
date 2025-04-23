@@ -9,11 +9,11 @@ public:
 	bool spendMoney(int amount);
 	//Tower cost
 	static const int TOWER_BASE_COST = 100;
-	static const int TOWER_UPGRADE_ARCHER_COST = 300;
-	static const int TOWER_UPGRADE_CANNON_COST = 700;
+	static const int TOWER_UPGRADE_ARCHER_COST = 250;
+	static const int TOWER_UPGRADE_CANNON_COST = 500;
 	//Enemy reward
-	static const int GOBLIN_REWARD = 20;
-	static const int SKELETON_REWARD = 40;
+	static const int GOBLIN_REWARD = 30;
+	static const int SKELETON_REWARD = 50;
 private:
 	int money;
 };

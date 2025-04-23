@@ -12,28 +12,6 @@ Tower::Tower(int x, int y, SDL_Renderer* renderer, int damage) : x(x), y(y), ren
 		s_archerTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
 		s_canonTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
 		s_deleteTexture = TextureManager::LoadTexture("Assets/UI/X_icon.png", renderer);
-		/*
-		if (!s_textureLoaded) {
-			s_archerTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
-			s_canonTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
-			s_deleteTexture = TextureManager::LoadTexture("Assets/UI/X_icon.png", renderer);
-			TTF_Font* font = TTF_OpenFont("Assets/UI/times.ttf", 14);
-			if (font) {
-				SDL_Color white = { 255, 255, 255, 255 };
-				SDL_Surface* surf1 = TTF_RenderText_Solid(font, "Lvl 1", white);
-				SDL_Surface* surf2 = TTF_RenderText_Solid(font, "Lvl 2", white);
-				SDL_Surface* surf3 = TTF_RenderText_Solid(font, "Lvl 3", white);
-				if (surf1 && surf2 && surf3) {
-					level1Text = SDL_CreateTextureFromSurface(renderer, surf1);
-					level2Text = SDL_CreateTextureFromSurface(renderer, surf2);
-					level3Text = SDL_CreateTextureFromSurface(renderer, surf3);
-					SDL_FreeSurface(surf1);
-					SDL_FreeSurface(surf2);
-					SDL_FreeSurface(surf3);
-				}
-				TTF_CloseFont(font);
-			}
-			*/
 		s_textureLoaded = true;
 	}
 	src = {0,0,32,32}; //Source rectangle = full texture
@@ -58,7 +36,7 @@ void Tower::Update(std::vector<Enemy*>& enemies) {
 			fireThreshold = 25;
 		}
 		else if (m_level == TowerLevel::LEVEL3) {
-			fireThreshold = 20;
+			fireThreshold = 15;
 		}
 		if (fireRate >= fireThreshold) {
 			shoot(enemies);
@@ -78,7 +56,7 @@ void Tower::Update(std::vector<Enemy*>& enemies) {
 				damageToApply = damage * 1.5;
 			}
 			else if (m_level == TowerLevel::LEVEL3) {
-				damageToApply = damage * 3;
+				damageToApply = damage * 2.5;
 			}
 			target->takeDamage(damageToApply);
 			delete* it;
