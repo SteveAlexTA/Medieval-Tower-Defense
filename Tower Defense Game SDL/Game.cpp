@@ -3,7 +3,8 @@
 #include "Map.h"
 #include "Enemy's Code/Enemy.h"
 #include "Enemy's Code/Wave.h"
-
+#include "Enemy's Code/Goblin.h"
+#include "Enemy's Code/Skeleton.h"
 SDL_Renderer* Game::renderer = nullptr;
 
 Game::Game()
@@ -73,7 +74,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	waveSystem->startNextWave();
 	moneySystem = new Money(200);
 	UISystem = new UI(renderer);
-    baseHP = 100;
+    lives = 3;
     gameOver = false;
 	if (!UISystem->init()) {
 		std::cout << "Failed to initialize UI!" << std::endl;
@@ -301,9 +302,9 @@ void Game::update() {
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
 		if ((*it)->hasReachedEnd()) {
-			baseHP -= 10;
-			if (baseHP <= 0) {
-                baseHP = 0;
+			lives -= 1;
+			if (lives <= 0) {
+                lives = 0;
 				gameOver = true;
 				std::cout << "Game Over!" << std::endl;
 			}
@@ -319,26 +320,14 @@ void Game::update() {
             ++it;
         }
     }
-	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), baseHP); 
+	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), lives); 
 }
 
 void Game::spawnEnemy() {
-    int wave = waveSystem->getCurrentWave();
-    EnemyType waveEnemyType = waveSystem->getCurrentEnemyType();
-    bool spawnSkeleton = false; 
+    EnemyType waveEnemyType = waveSystem->getNextEnemyType();
+    Enemy* spawnedEnemy = nullptr;
 
-    switch (waveEnemyType) {
-	case EnemyType::GOBLIN:
-		spawnSkeleton = false;
-		break;
-	case EnemyType::SKELETON:
-		spawnSkeleton = true;
-		break;
-    default:
-        break;
-    }
-	Enemy* spawnedEnemy = nullptr;
-    if (spawnSkeleton) {
+    if (waveEnemyType == EnemyType::SKELETON) {
         for (Enemy* enemy : enemyPool) {
             if (Skeleton* skeleton = dynamic_cast<Skeleton*>(enemy)) {
                 if (!skeleton->isAlive()) {
@@ -358,7 +347,6 @@ void Game::spawnEnemy() {
             }
         }
     }
-    // If no preferred type is available, use any available enemy
     if (!spawnedEnemy) {
         for (Enemy* enemy : enemyPool) {
             if (!enemy->isAlive()) {
@@ -367,7 +355,6 @@ void Game::spawnEnemy() {
             }
         }
     }
-    // If we found an enemy to spawn, reset it and add to active enemies
     if (spawnedEnemy) {
         spawnedEnemy->reset(map->map);
         activeEnemies.push_back(spawnedEnemy);

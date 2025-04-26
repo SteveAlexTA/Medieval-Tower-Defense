@@ -136,6 +136,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Enemy%27s Code\Enemy.cpp" />
+    <ClCompile Include="Enemy%27s Code\Goblin.cpp" />
+    <ClCompile Include="Enemy%27s Code\HealthBar.cpp" />
+    <ClCompile Include="Enemy%27s Code\Skeleton.cpp" />
     <ClCompile Include="Enemy%27s Code\Wave.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -149,7 +152,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy%27s Code\Enemy.h" />
+    <ClInclude Include="Enemy%27s Code\Goblin.h" />
+    <ClInclude Include="Enemy%27s Code\HealthBar.h" />
     <ClInclude Include="Enemy%27s Code\Pathfinder.h" />
+    <ClInclude Include="Enemy%27s Code\Skeleton.h" />
     <ClInclude Include="Enemy%27s Code\Wave.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Map.h" />

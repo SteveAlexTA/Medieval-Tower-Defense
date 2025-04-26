@@ -41,8 +41,6 @@ public:
 		float distanceSquared = dx * dx + dy * dy;
 		return distanceSquared <= (range * range);
 	}
-	void renderRangeCircle() const;
-	void renderTowerLevel() const;
 protected:
 	int x, y; //Position
 	SDL_Texture* texture;

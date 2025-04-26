@@ -32,6 +32,7 @@ std::vector<PathFinder::Point> PathFinder::FindPath(int map[20][25]) {
         }
         if (!moved) break;
     }
+    return path;
 }
 void PathFinder::FindPathStartEnd(int map[20][25], Point& start, Point& end){
     start = Point(-1, -1);

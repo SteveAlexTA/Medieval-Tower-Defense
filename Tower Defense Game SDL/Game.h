@@ -30,7 +30,7 @@ public:
     void spawnEnemy();
 	static SDL_Renderer* renderer;
     bool isGameOver() const { return gameOver; }
-    int getBaseHealth() const { return baseHP; }
+    int getBaseLives() const { return lives; }
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
@@ -44,7 +44,7 @@ private:
     std::vector<Enemy*> enemyPool;
     float deltaTime;
 
-    int baseHP = 100;
+    int lives = 3;
 	bool gameOver = false;
 
 	WaveSystem* waveSystem;
