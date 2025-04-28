@@ -16,6 +16,6 @@ bool Money::spendMoney(int spent) {
 		std::cout << "Spent " << spent << " Emeralds. Remaining: " << money << " Emeralds" << std::endl;
 		return true;
 	}
-	std::cout << "Not enough Emeralds to spend " << spent << ". Remaining: " << money << " Emeralds" << std::endl;
+	std::cout << "Not enough Emeralds! " << spent << ". Remaining: " << money << " Emeralds" << std::endl;
 	return false;
 }

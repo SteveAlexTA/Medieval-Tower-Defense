@@ -11,8 +11,12 @@
 #include "Enemy's Code/Wave.h"
 #include "Money.h"
 #include "UIManager.h"
+
 class Map;
 class Tower;
+class Enemy;
+enum class TowerType;
+
 class Game {
 public:
     Game();
@@ -31,6 +35,7 @@ public:
 	static SDL_Renderer* renderer;
     bool isGameOver() const { return gameOver; }
     int getBaseLives() const { return lives; }
+
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
@@ -62,6 +67,12 @@ private:
     void deleteTower(Tower* tower);
     bool isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower);
     bool isClickInDeleteUI(int mouseX, int mouseY, Tower* tower);
+
+    Tower* createTower(TowerSelection type, int x, int y);
+    int getTowerCost(TowerSelection type) const;
+    TowerType getTowerType(Tower* tower) const;
+    int getUpgradeCost(TowerType type, int currentLevel) const;
+    int getRefundAmount(TowerType type, int level) const;
 
     void rewardEnemyKilled(Enemy* enemy);
 };

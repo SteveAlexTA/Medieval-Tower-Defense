@@ -5,6 +5,10 @@
 #include "Enemy's Code/Wave.h"
 #include "Enemy's Code/Goblin.h"
 #include "Enemy's Code/Skeleton.h"
+#include "Tower's Code/Tower.h"
+#include "Tower's Code/ArcherTower.h"
+#include "Tower's Code/CannonTower.h"
+
 SDL_Renderer* Game::renderer = nullptr;
 
 Game::Game()
@@ -130,10 +134,20 @@ void Game::handleEvents() {
             isRunning = false;
             break;
         case SDL_MOUSEMOTION:
-            UISystem->isBuildTowerHovered = UISystem->isBuildTowerClicked(mouseX, mouseY);
+            UISystem->archerTowerHovered = UISystem->isArcherTowerClicked(mouseX, mouseY);
+            UISystem->cannonTowerHovered = UISystem->isCannonTowerClicked(mouseX, mouseY);
             break;
         case SDL_MOUSEBUTTONDOWN:
-            if (UISystem->isBuildTowerClicked(mouseX, mouseY)) {
+            if (UISystem->isArcherTowerClicked(mouseX, mouseY)) {
+                buildTowerMode = !buildTowerMode;
+                if (buildTowerMode && selectedTower) {
+                    selectedTower->setSelected(false);
+                    selectedTower = nullptr;
+                }
+                return;
+            }
+            else if (UISystem->isCannonTowerClicked(mouseX, mouseY)) {
+                UISystem->setSelectedTower(TowerSelection::CANNON);
                 buildTowerMode = !buildTowerMode;
                 if (buildTowerMode && selectedTower) {
                     selectedTower->setSelected(false);
@@ -184,12 +198,16 @@ bool Game::canPlaceTower(int x, int y) {
 }
 
 void Game::placeTower(int x, int y) {
-    if (canPlaceTower(x, y) && moneySystem->spendMoney(Money::TOWER_BASE_COST)) {
+    TowerSelection selectedType = UISystem->getSelectedTower();
+    int cost = getTowerCost(selectedType);
+    if (canPlaceTower(x, y) && moneySystem->spendMoney(cost)) {
         int gridX = (x / 32) * 32;
         int gridY = (y / 32) * 32;
-        Tower* newTower = new BaseTowerOne(gridX, gridY, renderer, 25);
-        towers.push_back(newTower);
-	}
+        Tower* newTower = createTower(selectedType, gridX, gridY);
+        if (newTower) {
+            towers.push_back(newTower);
+        }
+    }
     else {
         std::cout << "Cannot place tower here!" << std::endl;
     }
@@ -213,14 +231,11 @@ void Game::selectTowerAt(int x, int y) {
 
 void Game::upgradeTower(Tower* tower) {
     if (!tower || !tower->canUpgrade()) return;
-    int upgradeCost = 0;
-    if (tower->getLevel() == TowerLevel::LEVEL1) {
-        upgradeCost = Money::TOWER_UPGRADE_ARCHER_COST;
-    }
-    else if (tower->getLevel() == TowerLevel::LEVEL2) {
-        upgradeCost = Money::TOWER_UPGRADE_CANNON_COST;
-    }
-    if (moneySystem->spendMoney(upgradeCost)) {
+    TowerType type = getTowerType(tower);
+    int level = static_cast<int>(tower->getLevel());
+    int upgradeCost = getUpgradeCost(type, level);
+
+    if (upgradeCost > 0 && moneySystem->spendMoney(upgradeCost)) {
         tower->upgrade();
     }
 }
@@ -229,19 +244,10 @@ void Game::deleteTower(Tower* tower) {
     if (!tower) return;
     for (auto it = towers.begin(); it != towers.end(); ++it) {
         if (*it == tower) {
-			int refund = 0;
-            switch (tower->getLevel()) {
-            case TowerLevel::LEVEL1:
-                refund = Money::TOWER_BASE_COST / 2; //1/2 the original cost
-                break;
-            case TowerLevel::LEVEL2:
-                refund = (Money::TOWER_BASE_COST + Money::TOWER_UPGRADE_ARCHER_COST) / 2;
-                break;
-            case TowerLevel::LEVEL3:
-                refund = (Money::TOWER_BASE_COST + Money::TOWER_UPGRADE_ARCHER_COST + Money::TOWER_UPGRADE_CANNON_COST) / 2;
-                break;
-            }
-			moneySystem->addMoney(refund);
+            TowerType type = getTowerType(tower);
+            int level = static_cast<int>(tower->getLevel());
+            int refund = getRefundAmount(type, level);
+            moneySystem->addMoney(refund);
             delete* it;
             towers.erase(it);
             selectedTower = nullptr;
@@ -273,6 +279,77 @@ bool Game::isClickInDeleteUI(int mouseX, int mouseY, Tower* tower) {
     int towerY = tower->getY();
     SDL_Rect deleteRect = { towerX + 16, towerY - 40, 32, 32 };
     return (mouseX >= deleteRect.x && mouseX < deleteRect.x + deleteRect.w && mouseY >= deleteRect.y && mouseY < deleteRect.y + deleteRect.h);
+}
+
+Tower* Game::createTower(TowerSelection type, int x, int y) {
+    switch (type) {
+    case TowerSelection::ARCHER:
+        return new ArcherTower(x, y, renderer, 25);
+    case TowerSelection::CANNON:
+        return new CannonTower(x, y, renderer, 35);
+    default:
+        return new ArcherTower(x, y, renderer, 25);
+    }
+}
+
+int Game::getTowerCost(TowerSelection type) const {
+    switch (type) {
+    case TowerSelection::ARCHER:
+        return Money::ARCHER_TOWER_COST;
+    case TowerSelection::CANNON:
+        return Money::CANNON_TOWER_COST;
+    default:
+        return Money::ARCHER_TOWER_COST;
+    }
+}
+
+TowerType Game::getTowerType(Tower* tower) const {
+    if (dynamic_cast<ArcherTower*>(tower)) {
+        return TowerType::ARCHER;
+    }
+    if (dynamic_cast<CannonTower*>(tower)) {
+        return TowerType::CANNON;
+    }
+    return TowerType::NONE;
+}
+
+int Game::getUpgradeCost(TowerType type, int currentLevel) const {
+    switch (type) {
+    case TowerType::ARCHER:
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
+            return Money::ARCHER_UPGRADE_LVL2_COST;
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
+            return Money::ARCHER_UPGRADE_LVL3_COST;
+        break;
+    case TowerType::CANNON:
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
+            return Money::CANNON_UPGRADE_LVL2_COST;
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
+            return Money::CANNON_UPGRADE_LVL3_COST;
+        break;
+    }
+    return 0;
+}
+
+int Game::getRefundAmount(TowerType type, int level) const {
+    int totalCost = 0;
+    switch (type) {
+    case TowerType::ARCHER:
+        totalCost = Money::ARCHER_TOWER_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL2))
+            totalCost += Money::ARCHER_UPGRADE_LVL2_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL3))
+            totalCost += Money::ARCHER_UPGRADE_LVL3_COST;
+        break;
+    case TowerType::CANNON:
+        totalCost = Money::CANNON_TOWER_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL2))
+            totalCost += Money::CANNON_UPGRADE_LVL2_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL3))
+            totalCost += Money::CANNON_UPGRADE_LVL3_COST;
+        break;
+    }
+    return totalCost / 2; 
 }
 
 void Game::update() {
@@ -381,7 +458,17 @@ void Game::render() {
         SDL_GetMouseState(&mouseX, &mouseY);
         int gridX = (mouseX / 32) * 32;
         int gridY = (mouseY / 32) * 32;
-        SDL_Texture* previewTexture = TextureManager::LoadTexture("Assets/Tower/spr_tower_crossbow.png", renderer);
+        const char* texturePath;
+        switch (UISystem->getSelectedTower()) {
+        case TowerSelection::CANNON:
+            texturePath = "Assets/Tower/spr_tower_cannon.png";
+            break;
+        case TowerSelection::ARCHER:
+        default:
+            texturePath = "Assets/Tower/spr_tower_crossbow.png";
+            break;
+        }
+        SDL_Texture* previewTexture = TextureManager::LoadTexture(texturePath, renderer);
         SDL_Rect previewRect = { gridX, gridY, 32, 32 };
         // Show valid/invalid placement
         if (canPlaceTower(mouseX, mouseY)) {

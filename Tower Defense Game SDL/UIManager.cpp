@@ -10,7 +10,8 @@ UI::UI(SDL_Renderer* renderer) :
 	, healthIcon(nullptr)
 	, healthText(nullptr)
 	, font(nullptr)
-	, buildTowerIcon(nullptr)
+	, archerTowerIcon(nullptr)
+	, cannonTowerIcon(nullptr)
 	, currentMoney(0)
 	, currentWave(0)
 	, currentHealth(0)
@@ -21,31 +22,35 @@ UI::UI(SDL_Renderer* renderer) :
 			return;
 		}
 	}
-	font = TTF_OpenFont("Assets/UI/times.ttf", 24);
+	font = TTF_OpenFont("Assets/UI/consola.ttf", 24);
 	if (!font) {
 		std::cout << "Font load error: " << TTF_GetError() << std::endl;
 		return;
 	}
 	moneyIcon = TextureManager::LoadTexture("Assets/UI/emerald_icon.png", renderer);
 	healthIcon = TextureManager::LoadTexture("Assets/UI/hp_icon.png", renderer);
-	buildTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_crossbow.png", renderer);
+	archerTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
+	cannonTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
 	moneyIconRect = { 10, 8, 24, 24 };   
 	moneyTextRect = { 40, 8, 70, 24 };   
 	healthIconRect = { 680, 8, 24, 24 };  
 	healthTextRect = { 710, 8, 70, 24 };  
 	waveTextRect = { 350, 8, 100, 24 };   
-	buildTowerRect = { 10, 560, 32, 32 };
+	buildPanelRect = { 0, 558, 200, 42 };
+	archerTowerRect = { 10, 560, 32, 32 };  
+	cannonTowerRect = { 70, 560, 32, 32 };
 }
 UI::~UI() {
 	if (moneyText) SDL_DestroyTexture(moneyText);
 	if (waveText) SDL_DestroyTexture(waveText);
 	if (healthText) SDL_DestroyTexture(healthText);
-	if (buildTowerIcon) SDL_DestroyTexture(buildTowerIcon);
+	if (archerTowerIcon) SDL_DestroyTexture(archerTowerIcon);
+	if (cannonTowerIcon) SDL_DestroyTexture(cannonTowerIcon);
 	if (font) TTF_CloseFont(font);
 	TTF_Quit();
 }
 bool UI::init() {
-	if (!moneyIcon || !healthIcon || !buildTowerIcon) {
+	if (!moneyIcon || !healthIcon || !archerTowerIcon || !cannonTowerIcon) {
 		std::cout << "Error loading UI textures!" << std::endl;
 		return false;
 	}
@@ -70,47 +75,75 @@ void UI::update(int money, int wave, int health) {
 }
 void UI::render(SDL_Renderer* renderer) {
 	// Render top bar
-	SDL_SetRenderDrawColor(renderer, 92, 60, 29, 255);
+	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
 	SDL_Rect topBar = { 0, 0, 800, 32 };
 	SDL_RenderFillRect(renderer, &topBar);
 	// Render tower build UI at bottom
-	SDL_SetRenderDrawColor(renderer, 92, 60, 29, 255);
-	SDL_Rect buildPanel = { 0, 558, 100, 62 };
-	SDL_RenderFillRect(renderer, &buildPanel);
+	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+	SDL_RenderFillRect(renderer, &buildPanelRect);
 
 	SDL_RenderCopy(renderer, moneyIcon, nullptr, &moneyIconRect);
 	SDL_RenderCopy(renderer, healthIcon, nullptr, &healthIconRect);
-	SDL_RenderCopy(renderer, buildTowerIcon, nullptr, &buildTowerRect);
-	if (!moneyText) {
-		updateMoneyText(renderer);
-	}
-	if (!waveText) {
-		updateWaveText(renderer);
-	}
-	if (!healthText) {
-		updateHealthText(renderer);
-	}
+
+	if (!moneyText) updateMoneyText(renderer);
+	if (!waveText) updateWaveText(renderer);
+	if (!healthText) updateHealthText(renderer);
+
 	SDL_RenderCopy(renderer, moneyText, nullptr, &moneyTextRect);
 	SDL_RenderCopy(renderer, waveText, nullptr, &waveTextRect);
 	SDL_RenderCopy(renderer, healthText, nullptr, &healthTextRect);
 
-	SDL_Color textColor = { 240, 220, 180, 255 };
-	SDL_Surface* costSurface = TTF_RenderText_Solid(font, "100 Emeralds", textColor);
-	SDL_Texture* costText = SDL_CreateTextureFromSurface(renderer, costSurface);
-	SDL_Rect costRect = { buildTowerRect.x, buildTowerRect.y + buildTowerRect.h + 5, costSurface->w, costSurface->h };
-	SDL_RenderCopy(renderer, costText, nullptr, &costRect);
-	SDL_FreeSurface(costSurface);
-	SDL_DestroyTexture(costText);
-	// Highlight tower if hovered
-	if (isBuildTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-		SDL_Rect highlightRect = { buildTowerRect.x - 2, buildTowerRect.y - 2, buildTowerRect.w + 4, buildTowerRect.h + 4 };
+	renderTowerSelectionPanel(renderer);
+}
+
+void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
+	// Draw archer tower icon
+	SDL_RenderCopy(renderer, archerTowerIcon, nullptr, &archerTowerRect);
+
+	// Draw cannon tower icon
+	SDL_RenderCopy(renderer, cannonTowerIcon, nullptr, &cannonTowerRect);
+
+	// Draw cost labels
+	SDL_Color textColor = { 255, 255, 255, 255 };
+
+	// Archer tower cost text (below the icon)
+	std::string archerCost = std::to_string(Money::ARCHER_TOWER_COST);
+	SDL_Surface* archerCostSurface = TTF_RenderText_Solid(font, archerCost.c_str(), textColor);
+	SDL_Texture* archerCostText = SDL_CreateTextureFromSurface(renderer, archerCostSurface);
+	SDL_Rect archerCostRect = { archerTowerRect.x, archerTowerRect.y + archerTowerRect.h + 2,
+							   archerCostSurface->w, archerCostSurface->h };
+	SDL_RenderCopy(renderer, archerCostText, nullptr, &archerCostRect);
+	SDL_FreeSurface(archerCostSurface);
+	SDL_DestroyTexture(archerCostText);
+
+	// Cannon tower cost text (below the icon)
+	std::string cannonCost = std::to_string(Money::CANNON_TOWER_COST);
+	SDL_Surface* cannonCostSurface = TTF_RenderText_Solid(font, cannonCost.c_str(), textColor);
+	SDL_Texture* cannonCostText = SDL_CreateTextureFromSurface(renderer, cannonCostSurface);
+	SDL_Rect cannonCostRect = { cannonTowerRect.x, cannonTowerRect.y + cannonTowerRect.h + 2,
+							  cannonCostSurface->w, cannonCostSurface->h };
+	SDL_RenderCopy(renderer, cannonCostText, nullptr, &cannonCostRect);
+	SDL_FreeSurface(cannonCostSurface);
+	SDL_DestroyTexture(cannonCostText);
+
+	// Highlight selected tower type
+	if (selectedTower == TowerSelection::ARCHER || archerTowerHovered) {
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
+		SDL_Rect highlightRect = { archerTowerRect.x - 2, archerTowerRect.y - 2,
+								 archerTowerRect.w + 4, archerTowerRect.h + 4 };
+		SDL_RenderDrawRect(renderer, &highlightRect);
+	}
+
+	if (selectedTower == TowerSelection::CANNON || cannonTowerHovered) {
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
+		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2,
+								 cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 }
 
 void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 240, 220, 180, 255 }; 
+	SDL_Color textColor = { 255, 255, 255, 255 }; 
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
@@ -124,7 +157,7 @@ void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* rendere
 }
 
 SDL_Texture* UI::createTextTexture(const std::string& text, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 240, 220, 180, 255 }; 
+	SDL_Color textColor = { 255, 255, 255, 255 }; 
 	SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
@@ -134,15 +167,18 @@ SDL_Texture* UI::createTextTexture(const std::string& text, SDL_Renderer* render
 	SDL_FreeSurface(surface);
 	return texture;
 }
+
 void UI::updateMoneyText(SDL_Renderer* renderer) {
 	if (moneyText) SDL_DestroyTexture(moneyText);
 	moneyText = createTextTexture(std::to_string(currentMoney), renderer);
 }
+
 void UI::updateWaveText(SDL_Renderer* renderer) {
 	if (waveText) SDL_DestroyTexture(waveText);
 	std::string waveStr = "Wave: " + std::to_string(currentWave);
 	waveText = createTextTexture(waveStr, renderer);
 }
+
 void UI::updateHealthText(SDL_Renderer* renderer) {
 	if (healthText) SDL_DestroyTexture(healthText);
 	healthText = createTextTexture(std::to_string(currentHealth), renderer);
