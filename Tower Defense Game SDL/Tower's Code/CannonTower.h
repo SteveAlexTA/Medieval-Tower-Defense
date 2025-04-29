@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include "../TextureManager.h"
+#include "../SoundManager.h"
 #include "../Enemy's Code/Enemy.h"
 #include <vector>
 #include "Tower.h"
@@ -36,4 +37,5 @@ public:
 
 private:
     std::vector<CannonProjectile*> projectiles;
+	Mix_Chunk* shootSound;
 };

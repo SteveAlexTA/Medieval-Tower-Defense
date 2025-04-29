@@ -2,59 +2,11 @@
 #include "../TextureManager.h"
 #include <cmath>
 
-CannonProjectile::CannonProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
-    : x(x), y(y), target(target), renderer(renderer), speed(7) {  
-    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon_projectile.png", renderer);
-    src = { 0, 0, 32, 32 };
-    dest = { x - 12, y - 12, 24, 24 };  
-}
-
-CannonProjectile::~CannonProjectile() {
-    if (texture) SDL_DestroyTexture(texture);
-}
-
-void CannonProjectile::Update() {
-    if (!target || !target->isAlive()) {
-        return; 
-    }
-
-    float targetX = target->getX() + 16; // Target center X
-    float targetY = target->getY() + 16; // Target center Y
-    float deltaX = targetX - x;
-    float deltaY = targetY - y;
-    float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    if (distance > 0) {
-        float moveAmount = std::min(distance, static_cast<float>(speed));
-        float dirX = deltaX / distance;
-        float dirY = deltaY / distance;
-        x += static_cast<int>(dirX * moveAmount);
-        y += static_cast<int>(dirY * moveAmount);
-        dest.x = x - 12;  
-        dest.y = y - 12;
-    }
-}
-
-void CannonProjectile::Render() {
-    SDL_RenderCopy(renderer, texture, &src, &dest);
-}
-
-bool CannonProjectile::isOutOfBounds() const {
-    return x < 0 || x > 800 || y < 0 || y > 600;
-}
-
-bool CannonProjectile::enemyHit() {
-    if (!target || !target->isAlive()) return false;
-    int dx = x - (target->getX() + 16);
-    int dy = y - (target->getY() + 16);
-    float distance = sqrt(dx * dx + dy * dy);
-    return distance < 28;  // Larger hit area
-}
-
 CannonTower::CannonTower(int x, int y, SDL_Renderer* renderer, int damage)
-    : Tower(x, y, renderer, damage * 2) {  // Higher base damage
+    : Tower(x, y, renderer, damage * 2) {  
     texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
     range = 250.0f;  
+	shootSound = Sound::GetSound("Assets/Sound/cannon.wav");
 }
 
 CannonTower::~CannonTower() {
@@ -162,5 +114,55 @@ void CannonTower::shoot(std::vector<Enemy*>& enemies) {
     if (strongestEnemy) {
         CannonProjectile* projectile = new CannonProjectile(x + 16, y + 16, strongestEnemy, renderer);
         projectiles.push_back(projectile);
+        Sound::PlaySound(shootSound);
     }
+}
+
+CannonProjectile::CannonProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
+    : x(x), y(y), target(target), renderer(renderer), speed(6) {
+    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon_projectile.png", renderer);
+    src = { 0, 0, 32, 32 };
+    dest = { x - 12, y - 12, 24, 24 };
+}
+
+CannonProjectile::~CannonProjectile() {
+    if (texture) SDL_DestroyTexture(texture);
+}
+
+void CannonProjectile::Update() {
+    if (!target || !target->isAlive()) {
+        return;
+    }
+
+    float targetX = target->getX() + 16; // Target center X
+    float targetY = target->getY() + 16; // Target center Y
+    float deltaX = targetX - x;
+    float deltaY = targetY - y;
+    float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    if (distance > 0) {
+        float moveAmount = std::min(distance, static_cast<float>(speed));
+        float dirX = deltaX / distance;
+        float dirY = deltaY / distance;
+        x += static_cast<int>(dirX * moveAmount);
+        y += static_cast<int>(dirY * moveAmount);
+        dest.x = x - 12;
+        dest.y = y - 12;
+    }
+}
+
+void CannonProjectile::Render() {
+    SDL_RenderCopy(renderer, texture, &src, &dest);
+}
+
+bool CannonProjectile::isOutOfBounds() const {
+    return x < 0 || x > 800 || y < 0 || y > 600;
+}
+
+bool CannonProjectile::enemyHit() {
+    if (!target || !target->isAlive()) return false;
+    int dx = x - (target->getX() + 16);
+    int dy = y - (target->getY() + 16);
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance < 28;  // Larger hit area
 }

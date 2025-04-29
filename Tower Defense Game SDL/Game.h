@@ -11,6 +11,7 @@
 #include "Enemy's Code/Wave.h"
 #include "Money.h"
 #include "UIManager.h"
+#include "SoundManager.h"
 
 class Map;
 class Tower;
@@ -39,6 +40,7 @@ public:
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
+	void initBackgroundMusic();
 
     int cnt;
     bool isRunning;
@@ -75,6 +77,8 @@ private:
     int getRefundAmount(TowerType type, int level) const;
 
     void rewardEnemyKilled(Enemy* enemy);
+
+    Mix_Music* backgroundMusic;
 };
 
 #endif //GAME_H

@@ -27,11 +27,13 @@ Game::Game()
 {}
 
 Game::~Game() {
-	for (auto enemy : enemyPool) {
+	for (auto enemy : enemyPool) 
+    {
 		delete enemy;
 	}
     enemyPool.clear();
-	for (auto tower : towers) {
+	for (auto tower : towers) 
+    {
 		delete tower;
 	}
 	towers.clear();
@@ -45,10 +47,12 @@ Game::~Game() {
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
     int flags = 0;
-    if (fullscreen) {
+    if (fullscreen) 
+    {
         flags = SDL_WINDOW_FULLSCREEN;
     }
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
+    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) 
+    {
         std::cout << "Subsystem Initialised!..." << std::endl;
         window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
         if (window) {
@@ -66,8 +70,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
     int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) {
+    if (!(IMG_Init(imgFlags) & imgFlags)) 
+    {
         std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
+        isRunning = false;
+        return;
+    }
+    if (!Sound::Init()) 
+    {
+        std::cout << "Sound system failed to initialize!" << std::endl;
         isRunning = false;
         return;
     }
@@ -77,14 +88,33 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	createEnemyPool(50);
 	waveSystem->startNextWave();
 	moneySystem = new Money(200);
-	UISystem = new UI(renderer);
     lives = 3;
     gameOver = false;
-	if (!UISystem->init()) {
+	initBackgroundMusic();
+    UISystem = new UI(renderer);
+	if (!UISystem->init()) 
+    {
 		std::cout << "Failed to initialize UI!" << std::endl;
 		isRunning = false;
         return;
 	}
+}
+
+void Game::initBackgroundMusic() 
+{
+    backgroundMusic = Sound::GetMusic("Assets/Sound/easy_mode_background_music.mp3");
+
+    if (!backgroundMusic) 
+    {
+        std::cout << "Failed to load background music!" << std::endl;
+        return;
+    }
+
+    // Set music volume (0-128)
+    Sound::SetMusicVolume(128);  // 100% volume
+
+    // Loop -1 = infinite
+    Sound::PlayMusic(backgroundMusic, -1);
 }
 
 void Game::preloadResources() {
@@ -465,7 +495,7 @@ void Game::render() {
             break;
         case TowerSelection::ARCHER:
         default:
-            texturePath = "Assets/Tower/spr_tower_crossbow.png";
+            texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
         }
         SDL_Texture* previewTexture = TextureManager::LoadTexture(texturePath, renderer);
@@ -496,6 +526,8 @@ void Game::render() {
 void Game::clean() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
+	Sound::Clean();
+    Sound::StopMusic();
     SDL_Quit();
     std::cout << "Game Cleaned" << std::endl;
 }

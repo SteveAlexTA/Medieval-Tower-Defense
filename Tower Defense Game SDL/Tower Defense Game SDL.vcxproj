@@ -145,6 +145,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Money.cpp" />
     <ClCompile Include="PathFinder.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Tower%27s Code\ArcherTower.cpp" />
     <ClCompile Include="Tower%27s Code\CannonTower.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Money.h" />
     <ClInclude Include="PathFinder.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Tower%27s Code\ArcherTower.h" />
     <ClInclude Include="Tower%27s Code\CannonTower.h" />

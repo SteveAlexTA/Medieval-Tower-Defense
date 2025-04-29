@@ -3,8 +3,8 @@
 
 class Goblin : public Enemy {
 public:
-    static const int GOBLIN_HP = 150;
-    static const int GOBLIN_SPEED = 100;
+    static const int GOBLIN_HP = 200;
+    static const int GOBLIN_SPEED = 50;
 
     Goblin(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
     ~Goblin();
