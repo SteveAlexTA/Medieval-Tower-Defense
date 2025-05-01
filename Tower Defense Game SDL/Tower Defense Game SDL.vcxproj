@@ -135,40 +135,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Enemy%27s Code\Enemy.cpp" />
-    <ClCompile Include="Enemy%27s Code\Goblin.cpp" />
-    <ClCompile Include="Enemy%27s Code\HealthBar.cpp" />
-    <ClCompile Include="Enemy%27s Code\Skeleton.cpp" />
-    <ClCompile Include="Enemy%27s Code\Wave.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Money.cpp" />
-    <ClCompile Include="PathFinder.cpp" />
-    <ClCompile Include="SoundManager.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="Tower%27s Code\ArcherTower.cpp" />
-    <ClCompile Include="Tower%27s Code\CannonTower.cpp" />
-    <ClCompile Include="Tower%27s Code\Tower.cpp" />
-    <ClCompile Include="UIManager.cpp" />
+    <ClCompile Include="Core\Game.cpp" />
+    <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\Money.cpp" />
+    <ClCompile Include="Core\TextureManager.cpp" />
+    <ClCompile Include="Enemy\Demon.cpp" />
+    <ClCompile Include="Enemy\Dragon.cpp" />
+    <ClCompile Include="Enemy\Enemy.cpp" />
+    <ClCompile Include="Enemy\Goblin.cpp" />
+    <ClCompile Include="Enemy\HealthBar.cpp" />
+    <ClCompile Include="Enemy\Skeleton.cpp" />
+    <ClCompile Include="Enemy\Wave.cpp" />
+    <ClCompile Include="Map\Map.cpp" />
+    <ClCompile Include="Map\PathFinder.cpp" />
+    <ClCompile Include="Tower\ArcherTower.cpp" />
+    <ClCompile Include="Tower\CannonTower.cpp" />
+    <ClCompile Include="Tower\Tower.cpp" />
+    <ClCompile Include="UI &amp; Sound\SoundManager.cpp" />
+    <ClCompile Include="UI &amp; Sound\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Enemy%27s Code\Enemy.h" />
-    <ClInclude Include="Enemy%27s Code\Goblin.h" />
-    <ClInclude Include="Enemy%27s Code\HealthBar.h" />
+    <ClInclude Include="Core\Game.h" />
+    <ClInclude Include="Core\Money.h" />
+    <ClInclude Include="Core\TextureManager.h" />
     <ClInclude Include="Enemy%27s Code\Pathfinder.h" />
-    <ClInclude Include="Enemy%27s Code\Skeleton.h" />
-    <ClInclude Include="Enemy%27s Code\Wave.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Money.h" />
-    <ClInclude Include="PathFinder.h" />
-    <ClInclude Include="SoundManager.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="Tower%27s Code\ArcherTower.h" />
-    <ClInclude Include="Tower%27s Code\CannonTower.h" />
-    <ClInclude Include="Tower%27s Code\Tower.h" />
-    <ClInclude Include="UIManager.h" />
+    <ClInclude Include="Enemy\Demon.h" />
+    <ClInclude Include="Enemy\Dragon.h" />
+    <ClInclude Include="Enemy\Enemy.h" />
+    <ClInclude Include="Enemy\Goblin.h" />
+    <ClInclude Include="Enemy\HealthBar.h" />
+    <ClInclude Include="Enemy\Skeleton.h" />
+    <ClInclude Include="Enemy\Wave.h" />
+    <ClInclude Include="Map\Map.h" />
+    <ClInclude Include="Map\PathFinder.h" />
+    <ClInclude Include="Tower\ArcherTower.h" />
+    <ClInclude Include="Tower\CannonTower.h" />
+    <ClInclude Include="Tower\Tower.h" />
+    <ClInclude Include="UI &amp; Sound\SoundManager.h" />
+    <ClInclude Include="UI &amp; Sound\UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
