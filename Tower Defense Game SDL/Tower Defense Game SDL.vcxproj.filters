@@ -69,6 +69,12 @@
     <ClCompile Include="Enemy\Dragon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tower\LightningTower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tower\ShooterTower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy%27s Code\Pathfinder.h">
@@ -123,6 +129,12 @@
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy\Dragon.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower\LightningTower.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower\ShooterTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

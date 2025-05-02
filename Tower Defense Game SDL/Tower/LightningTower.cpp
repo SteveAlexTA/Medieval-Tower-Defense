@@ -1,34 +1,34 @@
-#include "ArcherTower.h"
+#include "LightningTower.h"
 #include "../Core/TextureManager.h"
 #include <cmath>
 
-ArcherTower::ArcherTower(int x, int y, SDL_Renderer* renderer, int damage)
-    : Tower(x, y, renderer, damage) {
-    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
-    range = 200.0f;  
-	shootSound = Sound::GetSound("Assets/Sound/arrow.wav");
+LightningTower::LightningTower(int x, int y, SDL_Renderer* renderer, int damage)
+    : Tower(x, y, renderer, damage * 5) {
+    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_lightning.png", renderer);
+    range = 500.0f;
+    shootSound = Sound::GetSound("Assets/Sound/lightning_strike.wav");
 }
 
-ArcherTower::~ArcherTower() {
+LightningTower::~LightningTower() {
     for (auto projectile : projectiles) {
         delete projectile;
     }
 }
 
-void ArcherTower::Update(std::vector<Enemy*>& enemies) {
+void LightningTower::Update(std::vector<Enemy*>& enemies) {
     if (!enemies.empty()) {
         fireRate++;
 
-        // Low damage, fast fire rate
+        // Highest damage but very slow fire rate
         int fireThreshold;
         if (m_level == TowerLevel::LEVEL1) {
-            fireThreshold = 40;  
+            fireThreshold = 500;  // Slow firing rate
         }
         else if (m_level == TowerLevel::LEVEL2) {
-            fireThreshold = 20;  
+            fireThreshold = 250;
         }
         else {
-            fireThreshold = 20;  
+            fireThreshold = 250;
         }
 
         if (fireRate >= fireThreshold) {
@@ -43,7 +43,7 @@ void ArcherTower::Update(std::vector<Enemy*>& enemies) {
         bool isTargetInvalid = !target || !target->isAlive();
 
         if (!isTargetInvalid && (*it)->enemyHit()) {
-            // Damage increases w/lvl
+            // High damage 
             int damageToApply;
             if (m_level == TowerLevel::LEVEL1) {
                 damageToApply = damage;
@@ -52,7 +52,7 @@ void ArcherTower::Update(std::vector<Enemy*>& enemies) {
                 damageToApply = damage;
             }
             else {
-                damageToApply = damage * 2;
+                damageToApply = damage * 2.0;
             }
 
             target->takeDamage(damageToApply);
@@ -71,7 +71,7 @@ void ArcherTower::Update(std::vector<Enemy*>& enemies) {
     }
 }
 
-void ArcherTower::Render() {
+void LightningTower::Render() {
     SDL_RenderCopy(renderer, texture, nullptr, &dest);
 
     for (auto& projectile : projectiles) {
@@ -79,7 +79,6 @@ void ArcherTower::Render() {
     }
 
     if (m_isSelected) {
-        // Highlight the selected tower
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_Rect highlightRect = { dest.x - 2, dest.y - 2, dest.w + 4, dest.h + 4 };
         SDL_RenderDrawRect(renderer, &highlightRect);
@@ -87,7 +86,7 @@ void ArcherTower::Render() {
     }
 }
 
-void ArcherTower::upgrade() {
+void LightningTower::upgrade() {
     if (m_level == TowerLevel::LEVEL1) {
         m_level = TowerLevel::LEVEL2;
     }
@@ -96,31 +95,31 @@ void ArcherTower::upgrade() {
     }
 }
 
-void ArcherTower::shoot(std::vector<Enemy*>& enemies) {
+void LightningTower::shoot(std::vector<Enemy*>& enemies) {
     if (enemies.empty()) return;
 
     for (auto& enemy : enemies) {
         if (enemy && enemy->isAlive() && isInRange(enemy)) {
-            ArcherProjectile* projectile = new ArcherProjectile(x + 16, y + 16, enemy, renderer);
+            LightningProjectile* projectile = new LightningProjectile(x + 16, y + 16, enemy, renderer);
             projectiles.push_back(projectile);
-			Sound::PlaySound(shootSound);
+            Sound::PlaySound(shootSound);
             break;
         }
     }
 }
 
-ArcherProjectile::ArcherProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
-    : x(x), y(y), target(target), renderer(renderer), speed(10) {  // Faster projectile
-    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer_projectile.png", renderer);
+LightningProjectile::LightningProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
+    : x(x), y(y), target(target), renderer(renderer), speed(15) {
+    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_lightning_projectile.png", renderer);
     src = { 0, 0, 32, 32 };
-    dest = { x - 8, y - 8, 16, 16 };
+    dest = { x - 12, y - 12, 24, 24 };
 }
 
-ArcherProjectile::~ArcherProjectile() {
-        if (texture) SDL_DestroyTexture(texture);
+LightningProjectile::~LightningProjectile() {
+    if (texture) SDL_DestroyTexture(texture);
 }
 
-void ArcherProjectile::Update() {
+void LightningProjectile::Update() {
     if (!target || !target->isAlive()) {
         return;
     }
@@ -137,23 +136,23 @@ void ArcherProjectile::Update() {
         float dirY = deltaY / distance;
         x += static_cast<int>(dirX * moveAmount);
         y += static_cast<int>(dirY * moveAmount);
-        dest.x = x - 8;  // Center the projectile sprite
-        dest.y = y - 8;
+        dest.x = x - 12;
+        dest.y = y - 12;
     }
 }
 
-void ArcherProjectile::Render() {
+void LightningProjectile::Render() {
     SDL_RenderCopy(renderer, texture, &src, &dest);
 }
 
-bool ArcherProjectile::isOutOfBounds() const {
+bool LightningProjectile::isOutOfBounds() const {
     return x < 0 || x > 800 || y < 0 || y > 600;
 }
 
-bool ArcherProjectile::enemyHit() {
+bool LightningProjectile::enemyHit() {
     if (!target || !target->isAlive()) return false;
     int dx = x - (target->getX() + 16);
     int dy = y - (target->getY() + 16);
     float distance = sqrt(dx * dx + dy * dy);
-    return distance < 24;
+    return distance < 28;  // Larger hit area
 }

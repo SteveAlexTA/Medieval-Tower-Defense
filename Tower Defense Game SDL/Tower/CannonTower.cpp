@@ -5,7 +5,7 @@
 CannonTower::CannonTower(int x, int y, SDL_Renderer* renderer, int damage)
     : Tower(x, y, renderer, damage * 2) {  
     texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
-    range = 250.0f;  
+    range = 300.0f;  
 	shootSound = Sound::GetSound("Assets/Sound/cannon.wav");
 }
 

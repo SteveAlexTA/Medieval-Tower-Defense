@@ -3,22 +3,31 @@
 #include <SDL_ttf.h>
 class Money {
 public:
-	Money(int startingMoney = 150);
+	Money(int startingMoney = 100);
 	int getMoney() const { return money; }
 	void addMoney(int amount);
 	bool spendMoney(int amount);
 	//Tower cost
-	static const int ARCHER_TOWER_COST = 100;
+	static const int ARCHER_TOWER_COST = 50;
 	static const int CANNON_TOWER_COST = 200;
+	static const int LIGHTNING_TOWER_COST = 1000;
+	static const int SHOOTER_TOWER_COST = 500;
 
-	static const int ARCHER_UPGRADE_LVL2_COST = 200;
-	static const int ARCHER_UPGRADE_LVL3_COST = 400;
+	static const int ARCHER_UPGRADE_LVL2_COST = 100;
+	static const int ARCHER_UPGRADE_LVL3_COST = 300;
 
 	static const int CANNON_UPGRADE_LVL2_COST = 400;
 	static const int CANNON_UPGRADE_LVL3_COST = 800;
+
+	static const int LIGHTNING_UPGRADE_LVL2_COST = 1500;
+	static const int LIGHTNING_UPGRADE_LVL3_COST = 3000;
+
+	static const int SHOOTER_UPGRADE_LVL2_COST = 1000;
+	static const int SHOOTER_UPGRADE_LVL3_COST = 2500;
+
 	//Enemy reward
-	static const int GOBLIN_REWARD = 20;
-	static const int SKELETON_REWARD = 40;
+	static const int GOBLIN_REWARD = 10;
+	static const int SKELETON_REWARD = 20;
 	static const int DEMON_REWARD = 50;
 	static const int DRAGON_REWARD = 100;
 private:

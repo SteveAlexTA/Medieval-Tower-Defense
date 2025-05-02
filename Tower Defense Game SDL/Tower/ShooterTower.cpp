@@ -1,34 +1,34 @@
-#include "ArcherTower.h"
+#include "ShooterTower.h"
 #include "../Core/TextureManager.h"
 #include <cmath>
 
-ArcherTower::ArcherTower(int x, int y, SDL_Renderer* renderer, int damage)
-    : Tower(x, y, renderer, damage) {
-    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
-    range = 200.0f;  
-	shootSound = Sound::GetSound("Assets/Sound/arrow.wav");
+ShooterTower::ShooterTower(int x, int y, SDL_Renderer* renderer, int damage)
+    : Tower(x, y, renderer, damage * 1.25) {
+    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_shooter.png", renderer);
+    range = 250.0f;
+    shootSound = Sound::GetSound("Assets/Sound/battle_rifle.wav");
 }
 
-ArcherTower::~ArcherTower() {
+ShooterTower::~ShooterTower() {
     for (auto projectile : projectiles) {
         delete projectile;
     }
 }
 
-void ArcherTower::Update(std::vector<Enemy*>& enemies) {
+void ShooterTower::Update(std::vector<Enemy*>& enemies) {
     if (!enemies.empty()) {
         fireRate++;
 
-        // Low damage, fast fire rate
+        // Medium damage, very fast fire rate
         int fireThreshold;
         if (m_level == TowerLevel::LEVEL1) {
-            fireThreshold = 40;  
+            fireThreshold = 15;
         }
         else if (m_level == TowerLevel::LEVEL2) {
-            fireThreshold = 20;  
+            fireThreshold = 10;
         }
         else {
-            fireThreshold = 20;  
+            fireThreshold = 10;
         }
 
         if (fireRate >= fireThreshold) {
@@ -52,7 +52,7 @@ void ArcherTower::Update(std::vector<Enemy*>& enemies) {
                 damageToApply = damage;
             }
             else {
-                damageToApply = damage * 2;
+                damageToApply = damage * 2.5;
             }
 
             target->takeDamage(damageToApply);
@@ -71,7 +71,7 @@ void ArcherTower::Update(std::vector<Enemy*>& enemies) {
     }
 }
 
-void ArcherTower::Render() {
+void ShooterTower::Render() {
     SDL_RenderCopy(renderer, texture, nullptr, &dest);
 
     for (auto& projectile : projectiles) {
@@ -87,7 +87,7 @@ void ArcherTower::Render() {
     }
 }
 
-void ArcherTower::upgrade() {
+void ShooterTower::upgrade() {
     if (m_level == TowerLevel::LEVEL1) {
         m_level = TowerLevel::LEVEL2;
     }
@@ -96,31 +96,31 @@ void ArcherTower::upgrade() {
     }
 }
 
-void ArcherTower::shoot(std::vector<Enemy*>& enemies) {
+void ShooterTower::shoot(std::vector<Enemy*>& enemies) {
     if (enemies.empty()) return;
 
     for (auto& enemy : enemies) {
         if (enemy && enemy->isAlive() && isInRange(enemy)) {
-            ArcherProjectile* projectile = new ArcherProjectile(x + 16, y + 16, enemy, renderer);
+            ShooterProjectile* projectile = new ShooterProjectile(x + 16, y + 16, enemy, renderer);
             projectiles.push_back(projectile);
-			Sound::PlaySound(shootSound);
+            Sound::PlaySound(shootSound);
             break;
         }
     }
 }
 
-ArcherProjectile::ArcherProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
-    : x(x), y(y), target(target), renderer(renderer), speed(10) {  // Faster projectile
-    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer_projectile.png", renderer);
+ShooterProjectile::ShooterProjectile(int x, int y, Enemy* target, SDL_Renderer* renderer)
+    : x(x), y(y), target(target), renderer(renderer), speed(20) {  // Faster projectile
+    texture = TextureManager::LoadTexture("Assets/Tower/spr_tower_shooter_projectile.png", renderer);
     src = { 0, 0, 32, 32 };
     dest = { x - 8, y - 8, 16, 16 };
 }
 
-ArcherProjectile::~ArcherProjectile() {
-        if (texture) SDL_DestroyTexture(texture);
+ShooterProjectile::~ShooterProjectile() {
+     if (texture) SDL_DestroyTexture(texture);
 }
 
-void ArcherProjectile::Update() {
+void ShooterProjectile::Update() {
     if (!target || !target->isAlive()) {
         return;
     }
@@ -142,15 +142,15 @@ void ArcherProjectile::Update() {
     }
 }
 
-void ArcherProjectile::Render() {
+void ShooterProjectile::Render() {
     SDL_RenderCopy(renderer, texture, &src, &dest);
 }
 
-bool ArcherProjectile::isOutOfBounds() const {
+bool ShooterProjectile::isOutOfBounds() const {
     return x < 0 || x > 800 || y < 0 || y > 600;
 }
 
-bool ArcherProjectile::enemyHit() {
+bool ShooterProjectile::enemyHit() {
     if (!target || !target->isAlive()) return false;
     int dx = x - (target->getX() + 16);
     int dy = y - (target->getY() + 16);

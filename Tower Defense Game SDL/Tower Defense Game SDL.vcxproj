@@ -150,6 +150,8 @@
     <ClCompile Include="Map\PathFinder.cpp" />
     <ClCompile Include="Tower\ArcherTower.cpp" />
     <ClCompile Include="Tower\CannonTower.cpp" />
+    <ClCompile Include="Tower\LightningTower.cpp" />
+    <ClCompile Include="Tower\ShooterTower.cpp" />
     <ClCompile Include="Tower\Tower.cpp" />
     <ClCompile Include="UI &amp; Sound\SoundManager.cpp" />
     <ClCompile Include="UI &amp; Sound\UIManager.cpp" />
@@ -170,6 +172,8 @@
     <ClInclude Include="Map\PathFinder.h" />
     <ClInclude Include="Tower\ArcherTower.h" />
     <ClInclude Include="Tower\CannonTower.h" />
+    <ClInclude Include="Tower\LightningTower.h" />
+    <ClInclude Include="Tower\ShooterTower.h" />
     <ClInclude Include="Tower\Tower.h" />
     <ClInclude Include="UI &amp; Sound\SoundManager.h" />
     <ClInclude Include="UI &amp; Sound\UIManager.h" />

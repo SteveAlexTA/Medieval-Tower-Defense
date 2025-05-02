@@ -10,6 +10,8 @@
 #include "../Tower/Tower.h"
 #include "../Tower/ArcherTower.h"
 #include "../Tower/CannonTower.h"
+#include "../Tower/ShooterTower.h"
+#include "../Tower/LightningTower.h"
 
 SDL_Renderer* Game::renderer = nullptr;
 
@@ -187,7 +189,8 @@ void Game::handleEvents() {
         case SDL_MOUSEMOTION:
             UISystem->archerTowerHovered = UISystem->isArcherTowerClicked(mouseX, mouseY);
             UISystem->cannonTowerHovered = UISystem->isCannonTowerClicked(mouseX, mouseY);
-
+            UISystem->shooterTowerHovered = UISystem->isShooterTowerClicked(mouseX, mouseY);
+            UISystem->lightningTowerHovered = UISystem->isLightningTowerClicked(mouseX, mouseY);
             break;
         case SDL_MOUSEBUTTONDOWN:
             if (UISystem->isArcherTowerClicked(mouseX, mouseY)) {
@@ -200,6 +203,24 @@ void Game::handleEvents() {
             }
             else if (UISystem->isCannonTowerClicked(mouseX, mouseY)) {
                 UISystem->setSelectedTower(TowerSelection::CANNON);
+                buildTowerMode = !buildTowerMode;
+                if (buildTowerMode && selectedTower) {
+                    selectedTower->setSelected(false);
+                    selectedTower = nullptr;
+                }
+                return;
+            }
+            else if (UISystem->isShooterTowerClicked(mouseX, mouseY)) {
+                UISystem->setSelectedTower(TowerSelection::SHOOTER);
+                buildTowerMode = !buildTowerMode;
+                if (buildTowerMode && selectedTower) {
+                    selectedTower->setSelected(false);
+                    selectedTower = nullptr;
+                }
+                return;
+            }
+            else if (UISystem->isLightningTowerClicked(mouseX, mouseY)) {
+                UISystem->setSelectedTower(TowerSelection::LIGHTNING);
                 buildTowerMode = !buildTowerMode;
                 if (buildTowerMode && selectedTower) {
                     selectedTower->setSelected(false);
@@ -353,6 +374,10 @@ Tower* Game::createTower(TowerSelection type, int x, int y) {
         return new ArcherTower(x, y, renderer, 25);
     case TowerSelection::CANNON:
         return new CannonTower(x, y, renderer, 35);
+	case TowerSelection::SHOOTER:
+		return new ShooterTower(x, y, renderer, 50);
+	case TowerSelection::LIGHTNING:
+		return new LightningTower(x, y, renderer, 75);
     default:
         return new ArcherTower(x, y, renderer, 25);
     }
@@ -364,6 +389,10 @@ int Game::getTowerCost(TowerSelection type) const {
         return Money::ARCHER_TOWER_COST;
     case TowerSelection::CANNON:
         return Money::CANNON_TOWER_COST;
+	case TowerSelection::SHOOTER:
+		return Money::SHOOTER_TOWER_COST;
+	case TowerSelection::LIGHTNING:
+		return Money::LIGHTNING_TOWER_COST;
     default:
         return Money::ARCHER_TOWER_COST;
     }
@@ -376,6 +405,12 @@ TowerType Game::getTowerType(Tower* tower) const {
     if (dynamic_cast<CannonTower*>(tower)) {
         return TowerType::CANNON;
     }
+	if (dynamic_cast<ShooterTower*>(tower)) {
+		return TowerType::SHOOTER;
+	}
+	if (dynamic_cast<LightningTower*>(tower)) {
+		return TowerType::LIGHTNING;
+	}
     return TowerType::NONE;
 }
 
@@ -393,6 +428,18 @@ int Game::getUpgradeCost(TowerType type, int currentLevel) const {
         if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
             return Money::CANNON_UPGRADE_LVL3_COST;
         break;
+	case TowerType::SHOOTER:
+		if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
+			return Money::SHOOTER_UPGRADE_LVL2_COST;    
+		if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
+			return Money::SHOOTER_UPGRADE_LVL3_COST;
+		break;
+	case TowerType::LIGHTNING:
+		if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
+			return Money::LIGHTNING_UPGRADE_LVL2_COST;
+		if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
+			return Money::LIGHTNING_UPGRADE_LVL3_COST;
+		break;
     }
     return 0;
 }
@@ -414,6 +461,20 @@ int Game::getRefundAmount(TowerType type, int level) const {
         if (level >= static_cast<int>(TowerLevel::LEVEL3))
             totalCost += Money::CANNON_UPGRADE_LVL3_COST;
         break;
+	case TowerType::SHOOTER:
+		totalCost = Money::SHOOTER_TOWER_COST;
+		if (level >= static_cast<int>(TowerLevel::LEVEL2))
+			totalCost += Money::SHOOTER_UPGRADE_LVL2_COST;
+		if (level >= static_cast<int>(TowerLevel::LEVEL3))
+			totalCost += Money::SHOOTER_UPGRADE_LVL3_COST;
+		break;
+	case TowerType::LIGHTNING:
+		totalCost = Money::LIGHTNING_TOWER_COST;
+		if (level >= static_cast<int>(TowerLevel::LEVEL2))
+			totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
+		if (level >= static_cast<int>(TowerLevel::LEVEL3))
+			totalCost += Money::LIGHTNING_UPGRADE_LVL3_COST;
+		break;
     }
     return totalCost / 2; 
 }
@@ -554,6 +615,12 @@ void Game::render() {
         default:
             texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
+		case TowerSelection::SHOOTER:
+			texturePath = "Assets/Tower/spr_tower_shooter.png";
+			break;
+		case TowerSelection::LIGHTNING:
+			texturePath = "Assets/Tower/spr_tower_lightning.png";
+			break;
         }
         SDL_Texture* previewTexture = TextureManager::LoadTexture(texturePath, renderer);
         SDL_Rect previewRect = { gridX, gridY, 32, 32 };

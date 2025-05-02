@@ -6,7 +6,9 @@
 enum class TowerType {
 	NONE,
 	ARCHER,
-	CANNON
+	CANNON,
+	SHOOTER,
+	LIGHTNING,
 };
 
 enum class TowerLevel {

@@ -7,7 +7,9 @@
 enum TowerSelection {
     NONE,
     ARCHER,
-    CANNON
+    CANNON,
+    SHOOTER,
+	LIGHTNING,
 };
 
 class UI {
@@ -20,11 +22,19 @@ public:
 	void renderText(const std::string& text, int x, int y, SDL_Renderer* renderer);
     bool isArcherTowerClicked(int mouseX, int mouseY) {
         return mouseX >= archerTowerRect.x && mouseX < archerTowerRect.x + archerTowerRect.w &&
-            mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
+               mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
     }
     bool isCannonTowerClicked(int mouseX, int mouseY) {
         return mouseX >= cannonTowerRect.x && mouseX < cannonTowerRect.x + cannonTowerRect.w &&
-            mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
+               mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
+    }
+    bool isShooterTowerClicked(int mouseX, int mouseY) {
+        return mouseX >= shooterTowerRect.x && mouseX < shooterTowerRect.x + shooterTowerRect.w &&
+               mouseY >= shooterTowerRect.y && mouseY < shooterTowerRect.y + shooterTowerRect.h;
+    }
+    bool isLightningTowerClicked(int mouseX, int mouseY) {
+        return mouseX >= lightningTowerRect.x && mouseX < lightningTowerRect.x + lightningTowerRect.w &&
+               mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
     }
     TowerSelection getSelectedTower() const { return selectedTower; }
     void setSelectedTower(TowerSelection tower) { selectedTower = tower; }
@@ -32,12 +42,16 @@ public:
 
     bool archerTowerHovered = false;
     bool cannonTowerHovered = false;
+    bool shooterTowerHovered = false;  
+    bool lightningTowerHovered = false;
 private:
     SDL_Texture* moneyText;
     SDL_Texture* waveText;
     SDL_Texture* healthText;
     SDL_Texture* archerTowerIcon;
     SDL_Texture* cannonTowerIcon;
+    SDL_Texture* shooterTowerIcon;  
+    SDL_Texture* lightningTowerIcon;
     // Text font
     TTF_Font* font;
 	TTF_Font* getFont() const { return font; }
@@ -45,8 +59,10 @@ private:
     SDL_Rect moneyTextRect = { 0, 0, 0, 0 };
     SDL_Rect waveTextRect = { 0, 0, 0, 0 };
     SDL_Rect healthTextRect = { 0, 0, 0, 0 };
-    SDL_Rect archerTowerRect = { 740, 520, 32, 32 };
-    SDL_Rect cannonTowerRect = { 740, 570, 32, 32 };
+    SDL_Rect archerTowerRect = { 740, 420, 32, 32 };
+    SDL_Rect cannonTowerRect = { 740, 470, 32, 32 };
+    SDL_Rect shooterTowerRect = { 740, 520, 32, 32 };  
+    SDL_Rect lightningTowerRect = { 740, 570, 32, 32 };
     // Current values
     int currentMoney;
     int currentWave;
