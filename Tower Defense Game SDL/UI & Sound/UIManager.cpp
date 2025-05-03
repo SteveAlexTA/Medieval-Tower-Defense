@@ -81,7 +81,7 @@ void UI::render(SDL_Renderer* renderer) {
 	if (!healthText) updateHealthText(renderer);
 
 	// Render text 
-	renderText("Emerald: " + std::to_string(currentMoney), 10, 478, renderer);
+	renderText("Money: " + std::to_string(currentMoney), 10, 478, renderer);
 	renderText("Lives: " + std::to_string(currentHealth), 10, 508, renderer);
 	renderText("Wave: " + std::to_string(currentWave), 10, 538, renderer);
 
@@ -105,8 +105,7 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	std::string archerCost = std::to_string(Money::ARCHER_TOWER_COST);
 	SDL_Surface* archerCostSurface = TTF_RenderText_Solid(font, archerCost.c_str(), textColor);
 	SDL_Texture* archerCostText = SDL_CreateTextureFromSurface(renderer, archerCostSurface);
-	SDL_Rect archerCostRect = { archerTowerRect.x - 50, archerTowerRect.y + 4,
-							   archerCostSurface->w, archerCostSurface->h };
+	SDL_Rect archerCostRect = { archerTowerRect.x - 50, archerTowerRect.y + 4, archerCostSurface->w, archerCostSurface->h };
 	SDL_RenderCopy(renderer, archerCostText, nullptr, &archerCostRect);
 	SDL_FreeSurface(archerCostSurface);
 	SDL_DestroyTexture(archerCostText);
@@ -115,8 +114,7 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	std::string cannonCost = std::to_string(Money::CANNON_TOWER_COST);
 	SDL_Surface* cannonCostSurface = TTF_RenderText_Solid(font, cannonCost.c_str(), textColor);
 	SDL_Texture* cannonCostText = SDL_CreateTextureFromSurface(renderer, cannonCostSurface);
-	SDL_Rect cannonCostRect = { cannonTowerRect.x - 50, cannonTowerRect.y + 4,
-							  cannonCostSurface->w, cannonCostSurface->h };
+	SDL_Rect cannonCostRect = { cannonTowerRect.x - 50, cannonTowerRect.y + 4, cannonCostSurface->w, cannonCostSurface->h };
 	SDL_RenderCopy(renderer, cannonCostText, nullptr, &cannonCostRect);
 	SDL_FreeSurface(cannonCostSurface);
 	SDL_DestroyTexture(cannonCostText);
@@ -125,8 +123,7 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	std::string shooterCost = std::to_string(Money::SHOOTER_TOWER_COST);
 	SDL_Surface* shooterCostSurface = TTF_RenderText_Solid(font, shooterCost.c_str(), textColor);
 	SDL_Texture* shooterCostText = SDL_CreateTextureFromSurface(renderer, shooterCostSurface);
-	SDL_Rect shooterCostRect = { shooterTowerRect.x - 50, shooterTowerRect.y + 4,
-							  shooterCostSurface->w, shooterCostSurface->h };
+	SDL_Rect shooterCostRect = { shooterTowerRect.x - 50, shooterTowerRect.y + 4, shooterCostSurface->w, shooterCostSurface->h };
 	SDL_RenderCopy(renderer, shooterCostText, nullptr, &shooterCostRect);
 	SDL_FreeSurface(shooterCostSurface);
 	SDL_DestroyTexture(shooterCostText);
@@ -135,38 +132,33 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	std::string lightningCost = std::to_string(Money::LIGHTNING_TOWER_COST);
 	SDL_Surface* lightningCostSurface = TTF_RenderText_Solid(font, lightningCost.c_str(), textColor);
 	SDL_Texture* lightningCostText = SDL_CreateTextureFromSurface(renderer, lightningCostSurface);
-	SDL_Rect lightningCostRect = { lightningTowerRect.x - 50, lightningTowerRect.y + 4,
-							  lightningCostSurface->w, lightningCostSurface->h };
+	SDL_Rect lightningCostRect = { lightningTowerRect.x - 50, lightningTowerRect.y + 4, lightningCostSurface->w, lightningCostSurface->h };
 	SDL_RenderCopy(renderer, lightningCostText, nullptr, &lightningCostRect);
 	SDL_FreeSurface(lightningCostSurface);
 	SDL_DestroyTexture(lightningCostText);
 
 	// Highlight selected tower type
 	if (selectedTower == TowerSelection::ARCHER || archerTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
-		SDL_Rect highlightRect = { archerTowerRect.x - 2, archerTowerRect.y - 2,
-								 archerTowerRect.w + 4, archerTowerRect.h + 4 };
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  
+		SDL_Rect highlightRect = { archerTowerRect.x - 2, archerTowerRect.y - 2, archerTowerRect.w + 4, archerTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 
 	if (selectedTower == TowerSelection::CANNON || cannonTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
-		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2,
-								 cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  
+		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2, cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 
 	if (selectedTower == TowerSelection::SHOOTER || shooterTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
-		SDL_Rect highlightRect = { shooterTowerRect.x - 2, shooterTowerRect.y - 2,
-								 shooterTowerRect.w + 4, shooterTowerRect.h + 4 };
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255); 
+		SDL_Rect highlightRect = { shooterTowerRect.x - 2, shooterTowerRect.y - 2, shooterTowerRect.w + 4, shooterTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 
 	if (selectedTower == TowerSelection::LIGHTNING || lightningTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  // Gold color
-		SDL_Rect highlightRect = { lightningTowerRect.x - 2, lightningTowerRect.y - 2,
-								 lightningTowerRect.w + 4, lightningTowerRect.h + 4 };
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255); 
+		SDL_Rect highlightRect = { lightningTowerRect.x - 2, lightningTowerRect.y - 2, lightningTowerRect.w + 4, lightningTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 }

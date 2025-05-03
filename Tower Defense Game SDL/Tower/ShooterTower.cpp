@@ -22,7 +22,7 @@ void ShooterTower::Update(std::vector<Enemy*>& enemies) {
         // Medium damage, very fast fire rate
         int fireThreshold;
         if (m_level == TowerLevel::LEVEL1) {
-            fireThreshold = 15;
+            fireThreshold = 20;
         }
         else if (m_level == TowerLevel::LEVEL2) {
             fireThreshold = 10;

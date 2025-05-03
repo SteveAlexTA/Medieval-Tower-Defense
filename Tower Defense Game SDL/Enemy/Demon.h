@@ -3,8 +3,8 @@
 
 class Demon : public Enemy {
 public:
-	static const int DEMON_HP = 1000;
-	static const int DEMON_SPEED = 120;
+	static const int DEMON_HP = 1500;
+	static const int DEMON_SPEED = 100;
 
 	Demon(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
 	~Demon();

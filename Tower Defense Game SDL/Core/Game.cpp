@@ -99,7 +99,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	createEnemyPool(50);
 	waveSystem->startNextWave();
 	moneySystem = new Money(200);
-    lives = 3;
+    lives = 5;
     gameOver = false;
 	initBackgroundMusic();
     UISystem = new UI(renderer);

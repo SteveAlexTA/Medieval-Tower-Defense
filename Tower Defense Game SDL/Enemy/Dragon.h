@@ -3,8 +3,8 @@
 
 class Dragon : public Enemy {
 public:
-	static const int DRAGON_HP = 2000;
-	static const int DRAGON_SPEED = 100;
+	static const int DRAGON_HP = 3000;
+	static const int DRAGON_SPEED = 120;
 
 	Dragon(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
 	~Dragon();
