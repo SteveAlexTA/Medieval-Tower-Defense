@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="Core\Game.cpp" />
     <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\Menu.cpp" />
     <ClCompile Include="Core\Money.cpp" />
     <ClCompile Include="Core\TextureManager.cpp" />
     <ClCompile Include="Enemy\Demon.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
+    <ClInclude Include="Core\Menu.h" />
     <ClInclude Include="Core\Money.h" />
     <ClInclude Include="Core\TextureManager.h" />
     <ClInclude Include="Enemy%27s Code\Pathfinder.h" />

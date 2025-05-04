@@ -2,7 +2,6 @@
 #define GAME_H
 #include <SDL.h>
 #include <SDL_image.h>
-#pragma once
 #include <iostream>
 #include <vector>
 #include "../Map/Map.h"
@@ -10,13 +9,19 @@
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
 #include "Money.h"
+#include "Menu.h"
 #include "../UI & Sound/UIManager.h"
 #include "../UI & Sound/SoundManager.h"
 
 class Map;
 class Tower;
 class Enemy;
+class Menu;
+class UI;
+class Money;
+class WaveSystem;
 enum class TowerType;
+enum class MenuState;
 
 class Game {
 public:
@@ -41,6 +46,7 @@ private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
 	void initBackgroundMusic();
+    void startGame();
 
     int cnt;
     bool isRunning;
@@ -57,6 +63,7 @@ private:
 	WaveSystem* waveSystem;
     Money* moneySystem;
     UI* UISystem;
+    Menu* menuSystem;
 
     SDL_Texture* m_goblinTexture = nullptr;
 	SDL_Texture* m_skeletonTexture = nullptr;
@@ -65,6 +72,7 @@ private:
 
     bool m_resourcesPreloaded = false;
 	bool buildTowerMode = false;
+    bool inMenu = true;
 
     Tower* selectedTower = nullptr;
     void selectTowerAt(int x, int y);
@@ -72,6 +80,11 @@ private:
     void deleteTower(Tower* tower);
     bool isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower);
     bool isClickInDeleteUI(int mouseX, int mouseY, Tower* tower);
+
+    static const int MAX_TOWERS = 8;
+    bool showMaxTowersMessage = false;
+    Uint32 messageStartTime = 0;
+    const Uint32 MESSAGE_DURATION = 2000;
 
     Tower* createTower(TowerSelection type, int x, int y);
     int getTowerCost(TowerSelection type) const;

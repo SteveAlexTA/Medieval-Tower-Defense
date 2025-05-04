@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "TextureManager.h"
+#include "Menu.h"
 #include "../Map/Map.h"
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
@@ -23,12 +24,14 @@ Game::Game()
     , waveSystem(nullptr)
 	, moneySystem(nullptr)
 	, UISystem(nullptr)
+	, menuSystem(nullptr)
     , m_goblinTexture(nullptr)
     , m_skeletonTexture(nullptr)
 	, m_demonTexture(nullptr)
 	, m_dragonTexture(nullptr)
     , m_resourcesPreloaded(false)
     , selectedTower(nullptr)
+	, inMenu(true)
     , deltaTime(0.0f)
 {}
 
@@ -49,11 +52,17 @@ Game::~Game() {
     delete map;
     delete moneySystem;
 	delete UISystem;
+    delete menuSystem;
 
 	if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
 	if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
 	if (m_demonTexture) SDL_DestroyTexture(m_demonTexture);
 	if (m_dragonTexture) SDL_DestroyTexture(m_dragonTexture);
+    Sound::StopMusic();
+    if (backgroundMusic) {
+        Mix_FreeMusic(backgroundMusic);
+        backgroundMusic = nullptr;
+    }
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
@@ -93,6 +102,13 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
+    initBackgroundMusic();
+    menuSystem = new Menu(renderer);
+    if (!menuSystem->init()) {
+        std::cout << "Failed to initialize menu!" << std::endl;
+        isRunning = false;
+        return;
+    }
 	preloadResources();
     map = new Map();
     waveSystem = new WaveSystem();
@@ -111,19 +127,23 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 	}
 }
 
+void Game::startGame() {
+    if (waveSystem) {
+        waveSystem->startNextWave();
+    }
+    inMenu = false;
+}
+
 void Game::initBackgroundMusic() 
 {
-    backgroundMusic = Sound::GetMusic("Assets/Sound/easy_mode_background_music.mp3");
+    backgroundMusic = Sound::GetMusic("Assets/Sound/game_music.mp3");
 
     if (!backgroundMusic) 
     {
         std::cout << "Failed to load background music!" << std::endl;
         return;
     }
-
-    // Set music volume (0-128)
-    Sound::SetMusicVolume(128);  // 100% volume
-
+    Sound::SetMusicVolume(100);  // 100% volume
     // Loop -1 = infinite
     Sound::PlayMusic(backgroundMusic, -1);
 }
@@ -174,6 +194,21 @@ void Game::handleEvents() {
     int mouseX = 0;
 	int mouseY = 0;
     while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            isRunning = false;
+            return;
+        }
+        if (inMenu) {
+            menuSystem->handleEvents(event);
+            if (menuSystem->getMenuState() == MenuState::PLAY) {
+                startGame(); // Start the game when Play is clicked
+            }
+            else if (menuSystem->getMenuState() == MenuState::EXIT) {
+                isRunning = false; // Exit the game when Exit is clicked
+                return;
+            }
+            continue;
+        }
         if (event.type == SDL_MOUSEMOTION) {
             mouseX = event.motion.x;
             mouseY = event.motion.y;
@@ -276,6 +311,11 @@ bool Game::canPlaceTower(int x, int y) {
 }
 
 void Game::placeTower(int x, int y) {
+    if (towers.size() >= MAX_TOWERS) {
+        showMaxTowersMessage = true;
+        messageStartTime = SDL_GetTicks();
+        return;
+    }
     TowerSelection selectedType = UISystem->getSelectedTower();
     int cost = getTowerCost(selectedType);
     if (canPlaceTower(x, y) && moneySystem->spendMoney(cost)) {
@@ -487,10 +527,16 @@ void Game::update() {
 		deltaTime = 0.1f;
 	}
 	lastFrameTime = currentFrameTime;
+	if (inMenu) {
+        menuSystem->update();
+		return;
+	}
 	if (gameOver) {
 		return;
 	}
-
+    if (showMaxTowersMessage && SDL_GetTicks() - messageStartTime > MESSAGE_DURATION) {
+        showMaxTowersMessage = false;
+    }
     cnt++;
     waveSystem->update(deltaTime);
 
@@ -590,6 +636,10 @@ void Game::spawnEnemy() {
 }
 
 void Game::render() {
+    if (inMenu) {
+        menuSystem->render(renderer);
+        return;
+    }
     SDL_RenderClear(renderer);
     map->DrawMap();
     for (auto tower : towers) {
@@ -601,6 +651,12 @@ void Game::render() {
         }
     }
     UISystem->render(renderer);
+    if (showMaxTowersMessage) {
+        SDL_Rect messageRect = { 200, 200, 400, 50 };
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
+        SDL_RenderFillRect(renderer, &messageRect);
+        UISystem->renderText("Maximum towers placed!", 280, 215, renderer);
+    }
     if (buildTowerMode) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);

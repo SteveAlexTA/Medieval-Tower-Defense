@@ -1,5 +1,6 @@
 #include "UIManager.h"
 #include "../Core/TextureManager.h"
+#include <SDL_ttf.h>
 #include <string>
 
 UI::UI(SDL_Renderer* renderer) :
@@ -49,7 +50,6 @@ UI::~UI() {
 	if (shooterTowerIcon) SDL_DestroyTexture(shooterTowerIcon);
 	if (lightningTowerIcon) SDL_DestroyTexture(lightningTowerIcon);
 	if (font) TTF_CloseFont(font);
-	TTF_Quit();
 }
 bool UI::init() {
 	if ( !archerTowerIcon || !cannonTowerIcon || !shooterTowerIcon || !lightningTowerIcon) {
@@ -89,10 +89,6 @@ void UI::render(SDL_Renderer* renderer) {
 }
 
 void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 200);
-	SDL_Rect towerPanelRect = { 720, 400, 70, 200 };
-	SDL_RenderFillRect(renderer, &towerPanelRect);
-
 	SDL_RenderCopy(renderer, archerTowerIcon, nullptr, &archerTowerRect);
 	SDL_RenderCopy(renderer, cannonTowerIcon, nullptr, &cannonTowerRect);
 	SDL_RenderCopy(renderer, shooterTowerIcon, nullptr, &shooterTowerRect);
