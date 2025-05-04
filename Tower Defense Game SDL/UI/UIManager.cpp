@@ -22,7 +22,7 @@ UI::UI(SDL_Renderer* renderer) :
 			return;
 		}
 	}
-	font = TTF_OpenFont("Assets/UI/consola.ttf", 24);
+	font = TTF_OpenFont("Assets/Icon/consola.ttf", 24);
 	if (!font) {
 		std::cout << "Font load error: " << TTF_GetError() << std::endl;
 		return;

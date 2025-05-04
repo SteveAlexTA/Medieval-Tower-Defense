@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include "../Core/TextureManager.h"
-#include "../UI & Sound/SoundManager.h"
+#include "../Sound/SoundManager.h"
 #include "../Enemy/Enemy.h"
 #include <vector>
 #include "Tower.h"

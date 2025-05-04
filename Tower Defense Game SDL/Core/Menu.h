@@ -4,7 +4,7 @@
 #include <SDL_ttf.h>  
 #include <SDL_image.h>  
 #include <SDL_mixer.h>
-#include "../UI & Sound/UIManager.h"  
+#include "../UI/UIManager.h"  
 #include "TextureManager.h"
 #include <string>
 

@@ -154,8 +154,8 @@
     <ClCompile Include="Tower\LightningTower.cpp" />
     <ClCompile Include="Tower\ShooterTower.cpp" />
     <ClCompile Include="Tower\Tower.cpp" />
-    <ClCompile Include="UI &amp; Sound\SoundManager.cpp" />
-    <ClCompile Include="UI &amp; Sound\UIManager.cpp" />
+    <ClCompile Include="Sound\SoundManager.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
@@ -177,8 +177,8 @@
     <ClInclude Include="Tower\LightningTower.h" />
     <ClInclude Include="Tower\ShooterTower.h" />
     <ClInclude Include="Tower\Tower.h" />
-    <ClInclude Include="UI &amp; Sound\SoundManager.h" />
-    <ClInclude Include="UI &amp; Sound\UIManager.h" />
+    <ClInclude Include="Sound\SoundManager.h" />
+    <ClInclude Include="UI\UIManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

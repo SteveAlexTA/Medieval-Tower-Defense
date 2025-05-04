@@ -10,8 +10,8 @@
 #include "../Enemy/Wave.h"
 #include "Money.h"
 #include "Menu.h"
-#include "../UI & Sound/UIManager.h"
-#include "../UI & Sound/SoundManager.h"
+#include "../UI/UIManager.h"
+#include "../Sound/SoundManager.h"
 
 class Map;
 class Tower;

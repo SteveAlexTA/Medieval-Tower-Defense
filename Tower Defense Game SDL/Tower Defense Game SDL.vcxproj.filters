@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UI &amp; Sound\SoundManager.cpp">
+    <ClCompile Include="Sound\SoundManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UI &amp; Sound\UIManager.cpp">
+    <ClCompile Include="UI\UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Tower\ArcherTower.cpp">
@@ -83,10 +83,10 @@
     <ClInclude Include="Enemy%27s Code\Pathfinder.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UI &amp; Sound\SoundManager.h">
+    <ClInclude Include="Sound\SoundManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UI &amp; Sound\UIManager.h">
+    <ClInclude Include="UI\UIManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tower\ArcherTower.h">

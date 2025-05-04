@@ -1,5 +1,5 @@
 #include "Menu.h"
-#include "../UI & Sound/SoundManager.h"
+#include "../Sound/SoundManager.h"
 #include <iostream>
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
@@ -56,17 +56,17 @@ Menu::Menu(SDL_Renderer* renderer)
         std::cout << "Sound initialization failed!" << std::endl;
 	}
     // Load assets
-    backgroundTexture = TextureManager::LoadTexture("Assets/UI/menu_background.png", renderer);
+    backgroundTexture = TextureManager::LoadTexture("Assets/Icon/menu_background.png", renderer);
     if (!backgroundTexture) {
         std::cout << "Failed to load menu background!" << std::endl;
     }
 
     // Create buttons
-    playButton = new Button(300, 300, 200, 64, "Assets/UI/play_button.png", renderer);
-    exitButton = new Button(300, 400, 200, 64, "Assets/UI/exit_button.png", renderer);
+    playButton = new Button(300, 300, 200, 64, "Assets/Icon/play_button.png", renderer);
+    exitButton = new Button(300, 400, 200, 64, "Assets/Icon/exit_button.png", renderer);
 
     // Load title font
-    titleFont = TTF_OpenFont("Assets/UI/consola.ttf", 72);
+    titleFont = TTF_OpenFont("Assets/Icon/consola.ttf", 72);
     if (!titleFont) {
         std::cout << "Failed to load title font: " << TTF_GetError() << std::endl;
     }

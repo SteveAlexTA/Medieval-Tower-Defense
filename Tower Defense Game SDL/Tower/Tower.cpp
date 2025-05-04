@@ -6,8 +6,8 @@ bool Tower::s_textureLoaded = false;
 
 Tower::Tower(int x, int y, SDL_Renderer* renderer, int damage) : x(x), y(y), renderer(renderer), damage(damage), range(100.0f) { //Tower constructor
 	if (!s_textureLoaded) {
-		s_upgradeTexture = TextureManager::LoadTexture("Assets/UI/upgrade_icon.png", renderer);
-		s_deleteTexture = TextureManager::LoadTexture("Assets/UI/X_icon.png", renderer);
+		s_upgradeTexture = TextureManager::LoadTexture("Assets/Icon/upgrade_icon.png", renderer);
+		s_deleteTexture = TextureManager::LoadTexture("Assets/Icon/X_icon.png", renderer);
 		s_textureLoaded = true;
 	}
 	src = {0,0,32,32}; //Source rectangle = full texture
