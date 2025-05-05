@@ -47,6 +47,7 @@ private:
     void createEnemyPool(int poolSize = 100);
 	void initBackgroundMusic();
     void startGame();
+    void loadAudioAssets();
 
     int cnt;
     bool isRunning;

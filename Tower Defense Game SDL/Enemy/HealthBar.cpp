@@ -28,6 +28,6 @@ void HealthBar::render(SDL_Renderer* renderer)
     int healthWidth = static_cast<int>(m_barWidth * m_proportion);
 
     SDL_Rect healthBar = { barX, barY, healthWidth, m_barHeight };
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
     SDL_RenderFillRect(renderer, &healthBar);
 }

@@ -52,7 +52,7 @@ Menu::Menu(SDL_Renderer* renderer)
         }
     }
 
-	if (!Sound::Init()) {
+	if (!Sound::Instance().Init()) {
         std::cout << "Sound initialization failed!" << std::endl;
 	}
     // Load assets

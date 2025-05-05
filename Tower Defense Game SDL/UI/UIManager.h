@@ -8,7 +8,6 @@ enum TowerSelection {
     NONE,
     ARCHER,
     CANNON,
-    SHOOTER,
 	LIGHTNING,
 };
 
@@ -28,10 +27,6 @@ public:
         return mouseX >= cannonTowerRect.x && mouseX < cannonTowerRect.x + cannonTowerRect.w &&
                mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
     }
-    bool isShooterTowerClicked(int mouseX, int mouseY) {
-        return mouseX >= shooterTowerRect.x && mouseX < shooterTowerRect.x + shooterTowerRect.w &&
-               mouseY >= shooterTowerRect.y && mouseY < shooterTowerRect.y + shooterTowerRect.h;
-    }
     bool isLightningTowerClicked(int mouseX, int mouseY) {
         return mouseX >= lightningTowerRect.x && mouseX < lightningTowerRect.x + lightningTowerRect.w &&
                mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
@@ -42,7 +37,6 @@ public:
 
     bool archerTowerHovered = false;
     bool cannonTowerHovered = false;
-    bool shooterTowerHovered = false;  
     bool lightningTowerHovered = false;
 private:
     SDL_Texture* moneyText;
@@ -50,7 +44,6 @@ private:
     SDL_Texture* healthText;
     SDL_Texture* archerTowerIcon;
     SDL_Texture* cannonTowerIcon;
-    SDL_Texture* shooterTowerIcon;  
     SDL_Texture* lightningTowerIcon;
     // Text font
     TTF_Font* font;
@@ -61,8 +54,7 @@ private:
     SDL_Rect healthTextRect = { 0, 0, 0, 0 };
     SDL_Rect archerTowerRect = { 740, 420, 32, 32 };
     SDL_Rect cannonTowerRect = { 740, 470, 32, 32 };
-    SDL_Rect shooterTowerRect = { 740, 520, 32, 32 };  
-    SDL_Rect lightningTowerRect = { 740, 570, 32, 32 };
+    SDL_Rect lightningTowerRect = { 740, 520, 32, 32 };
     // Current values
     int currentMoney;
     int currentWave;

@@ -11,7 +11,6 @@
 #include "../Tower/Tower.h"
 #include "../Tower/ArcherTower.h"
 #include "../Tower/CannonTower.h"
-#include "../Tower/ShooterTower.h"
 #include "../Tower/LightningTower.h"
 
 SDL_Renderer* Game::renderer = nullptr;
@@ -36,14 +35,12 @@ Game::Game()
 {}
 
 Game::~Game() {
-	for (auto enemy : enemyPool) 
-    {
+	for (auto enemy : enemyPool) {
 		delete enemy;
 	}
     enemyPool.clear();
 
-	for (auto tower : towers) 
-    {
+	for (auto tower : towers) {
 		delete tower;
 	}
 	towers.clear();
@@ -53,16 +50,12 @@ Game::~Game() {
     delete moneySystem;
 	delete UISystem;
     delete menuSystem;
+    Sound::Instance().StopMusic();
 
 	if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
 	if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
 	if (m_demonTexture) SDL_DestroyTexture(m_demonTexture);
 	if (m_dragonTexture) SDL_DestroyTexture(m_dragonTexture);
-    Sound::StopMusic();
-    if (backgroundMusic) {
-        Mix_FreeMusic(backgroundMusic);
-        backgroundMusic = nullptr;
-    }
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
@@ -96,12 +89,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
-    if (!Sound::Init()) 
-    {
-        std::cout << "Sound system failed to initialize!" << std::endl;
+    if (!SoundManager::Instance().Init()) {
+        std::cout << "Failed to initialize sound system!" << std::endl;
         isRunning = false;
         return;
     }
+    loadAudioAssets();
     initBackgroundMusic();
     menuSystem = new Menu(renderer);
     if (!menuSystem->init()) {
@@ -134,18 +127,17 @@ void Game::startGame() {
     inMenu = false;
 }
 
-void Game::initBackgroundMusic() 
-{
-    backgroundMusic = Sound::GetMusic("Assets/Sound/game_music.mp3");
-
-    if (!backgroundMusic) 
-    {
+void Game::loadAudioAssets() {
+    if (!SoundManager::Instance().LoadMusic("background", "Assets/Sound/game_music.mp3")) {
         std::cout << "Failed to load background music!" << std::endl;
-        return;
     }
-    Sound::SetMusicVolume(100);  // 100% volume
-    // Loop -1 = infinite
-    Sound::PlayMusic(backgroundMusic, -1);
+    SoundManager::Instance().LoadSound("tower_place", "Assets/Sound/tower_place.wav");
+    SoundManager::Instance().LoadSound("game_over", "Assets/Sound/game_over.wav");
+    SoundManager::Instance().SetMusicVolume(70);
+}
+
+void Game::initBackgroundMusic() {
+    SoundManager::Instance().PlayMusic("background", -1);
 }
 
 void Game::preloadResources() {
@@ -224,7 +216,6 @@ void Game::handleEvents() {
         case SDL_MOUSEMOTION:
             UISystem->archerTowerHovered = UISystem->isArcherTowerClicked(mouseX, mouseY);
             UISystem->cannonTowerHovered = UISystem->isCannonTowerClicked(mouseX, mouseY);
-            UISystem->shooterTowerHovered = UISystem->isShooterTowerClicked(mouseX, mouseY);
             UISystem->lightningTowerHovered = UISystem->isLightningTowerClicked(mouseX, mouseY);
             break;
         case SDL_MOUSEBUTTONDOWN:
@@ -238,15 +229,6 @@ void Game::handleEvents() {
             }
             else if (UISystem->isCannonTowerClicked(mouseX, mouseY)) {
                 UISystem->setSelectedTower(TowerSelection::CANNON);
-                buildTowerMode = !buildTowerMode;
-                if (buildTowerMode && selectedTower) {
-                    selectedTower->setSelected(false);
-                    selectedTower = nullptr;
-                }
-                return;
-            }
-            else if (UISystem->isShooterTowerClicked(mouseX, mouseY)) {
-                UISystem->setSelectedTower(TowerSelection::SHOOTER);
                 buildTowerMode = !buildTowerMode;
                 if (buildTowerMode && selectedTower) {
                     selectedTower->setSelected(false);
@@ -324,6 +306,7 @@ void Game::placeTower(int x, int y) {
         Tower* newTower = createTower(selectedType, gridX, gridY);
         if (newTower) {
             towers.push_back(newTower);
+			SoundManager::Instance().PlaySound("tower_place", 0);
         }
     }
     else {
@@ -349,12 +332,9 @@ void Game::selectTowerAt(int x, int y) {
 
 void Game::upgradeTower(Tower* tower) {
     if (!tower || !tower->canUpgrade()) return;
-    TowerType type = getTowerType(tower);
-    int level = static_cast<int>(tower->getLevel());
-    int upgradeCost = getUpgradeCost(type, level);
-
+	int upgradeCost = tower->getUpgradePrice();
     if (upgradeCost > 0 && moneySystem->spendMoney(upgradeCost)) {
-        tower->upgrade();
+        tower->Upgrade();
     }
 }
 
@@ -411,15 +391,13 @@ bool Game::isClickInDeleteUI(int mouseX, int mouseY, Tower* tower) {
 Tower* Game::createTower(TowerSelection type, int x, int y) {
     switch (type) {
     case TowerSelection::ARCHER:
-        return new ArcherTower(x, y, renderer, 25);
+        return new ArcherTower(renderer, &activeEnemies, &towers, x, y);
     case TowerSelection::CANNON:
-        return new CannonTower(x, y, renderer, 35);
-	case TowerSelection::SHOOTER:
-		return new ShooterTower(x, y, renderer, 50);
-	case TowerSelection::LIGHTNING:
-		return new LightningTower(x, y, renderer, 75);
+        return new CannonTower(renderer, &activeEnemies, &towers, x, y);
+    case TowerSelection::LIGHTNING:
+        return new LightningTower(renderer, &activeEnemies, &towers, x, y);
     default:
-        return new ArcherTower(x, y, renderer, 25);
+        return new ArcherTower(renderer, &activeEnemies, &towers, x, y);
     }
 }
 
@@ -429,8 +407,6 @@ int Game::getTowerCost(TowerSelection type) const {
         return Money::ARCHER_TOWER_COST;
     case TowerSelection::CANNON:
         return Money::CANNON_TOWER_COST;
-	case TowerSelection::SHOOTER:
-		return Money::SHOOTER_TOWER_COST;
 	case TowerSelection::LIGHTNING:
 		return Money::LIGHTNING_TOWER_COST;
     default:
@@ -445,9 +421,6 @@ TowerType Game::getTowerType(Tower* tower) const {
     if (dynamic_cast<CannonTower*>(tower)) {
         return TowerType::CANNON;
     }
-	if (dynamic_cast<ShooterTower*>(tower)) {
-		return TowerType::SHOOTER;
-	}
 	if (dynamic_cast<LightningTower*>(tower)) {
 		return TowerType::LIGHTNING;
 	}
@@ -468,12 +441,6 @@ int Game::getUpgradeCost(TowerType type, int currentLevel) const {
         if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
             return Money::CANNON_UPGRADE_LVL3_COST;
         break;
-	case TowerType::SHOOTER:
-		if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
-			return Money::SHOOTER_UPGRADE_LVL2_COST;    
-		if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
-			return Money::SHOOTER_UPGRADE_LVL3_COST;
-		break;
 	case TowerType::LIGHTNING:
 		if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
 			return Money::LIGHTNING_UPGRADE_LVL2_COST;
@@ -501,13 +468,6 @@ int Game::getRefundAmount(TowerType type, int level) const {
         if (level >= static_cast<int>(TowerLevel::LEVEL3))
             totalCost += Money::CANNON_UPGRADE_LVL3_COST;
         break;
-	case TowerType::SHOOTER:
-		totalCost = Money::SHOOTER_TOWER_COST;
-		if (level >= static_cast<int>(TowerLevel::LEVEL2))
-			totalCost += Money::SHOOTER_UPGRADE_LVL2_COST;
-		if (level >= static_cast<int>(TowerLevel::LEVEL3))
-			totalCost += Money::SHOOTER_UPGRADE_LVL3_COST;
-		break;
 	case TowerType::LIGHTNING:
 		totalCost = Money::LIGHTNING_TOWER_COST;
 		if (level >= static_cast<int>(TowerLevel::LEVEL2))
@@ -547,7 +507,7 @@ void Game::update() {
         waveSystem->startNextWave();
     }
     for (auto tower : towers) {
-        tower->Update(activeEnemies);
+        tower->Update();
     }
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
@@ -557,6 +517,8 @@ void Game::update() {
                 lives = 0;
 				gameOver = true;
 				std::cout << "Game Over!" << std::endl;
+				SoundManager::Instance().PlaySound("game_over", 0);
+				SoundManager::Instance().StopMusic();
 			}
 			(*it)->deactivate();
 			it = activeEnemies.erase(it);
@@ -671,9 +633,6 @@ void Game::render() {
         default:
             texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
-		case TowerSelection::SHOOTER:
-			texturePath = "Assets/Tower/spr_tower_shooter.png";
-			break;
 		case TowerSelection::LIGHTNING:
 			texturePath = "Assets/Tower/spr_tower_lightning.png";
 			break;
@@ -704,10 +663,9 @@ void Game::render() {
 }
 
 void Game::clean() {
+	Sound::Instance().StopMusic();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
-	Sound::Clean();
-    Sound::StopMusic();
     SDL_Quit();
     std::cout << "Game Cleaned" << std::endl;
 }

@@ -2,12 +2,15 @@
 #include<SDL.h>
 #include "../Core/TextureManager.h"
 #include "../Enemy/Enemy.h"
+#include "../Sound/SoundManager.h"
 #include <vector>
+class Enemy;
+class Projectile;
+// Forware declaring the Enemy & Projectile class to avoid circular dependency
 enum class TowerType {
 	NONE,
 	ARCHER,
 	CANNON,
-	SHOOTER,
 	LIGHTNING,
 };
 
@@ -19,40 +22,79 @@ enum class TowerLevel {
 
 class Tower {
 public:
-	Tower(int x, int y, SDL_Renderer* renderer, int damage);
+	Tower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<Tower*>* towers, int x = 0, int y = 0);
 	virtual ~Tower();
-	virtual void Update(std::vector<Enemy*>& enemies) = 0;
-	virtual void Render();
-	virtual void shoot(std::vector<Enemy*>& enemies) = 0;
-
-	int getX() const { return x; }
-	int getY() const { return y; }
+	void Update();
+	void Render();
+	void Shoot();
+	// Getters
+	int getX() const { return towerX; }
+	int getY() const { return towerY; }
 	int getDamage() const { return damage; }
-
-	bool canUpgrade() const { return m_level != TowerLevel::LEVEL3; }
-	virtual void upgrade() = 0;
-	bool isSelected() const { return m_isSelected; }
-	void setSelected(bool selected) { m_isSelected = selected; }
-	void RenderUpgradeUI();
-	TowerLevel getLevel() const { return m_level; }
-
 	float getRange() const { return range; }
-	bool isInRange(Enemy* enemy) const;
+	TowerLevel getLevel() const { return level; }
+	bool canUpgrade() const { return level != TowerLevel::LEVEL3; }
+	bool isSelected() const { return selected; }
+	int getUpgradePrice() const;
+	// Setters
+	void setX(int x) { towerX = x; }
+	void setY(int y) { towerY = y; }
+	void setSelected(bool select) { selected = select; }
 
+	virtual void Upgrade();
+	bool HandleEvents(SDL_Event* event);
+	bool IsPointInside(int x, int y) const;
 protected:
-	int x, y; //Position
-	SDL_Texture* texture;
-	SDL_Rect dest;
-	SDL_Rect src;
-	SDL_Renderer* renderer;
-	int fireRate = 0;
-	float range; 
-	int damage;
+	int towerX, towerY; // Position
+	int baseDamage;
+	float baseRange;
+	int baseFireRate;
 
-	TowerLevel m_level = TowerLevel::LEVEL1;
-	bool m_isSelected = false;
-	static SDL_Texture* s_upgradeTexture;
-	static SDL_Texture* s_deleteTexture;
-	static bool s_textureLoaded;
+	int damage;
+	float range;
+	int fireRate;
+
+	int fireCounter;
+	TowerLevel level;
+	TowerType type;
+	bool selected;
+
+	SDL_Renderer* renderer;
+	std::vector<Enemy*>* enemies;
+	std::vector<Tower*>* towers;
+	SDL_Texture* texture;
+	SDL_Rect destRect, srcRect;
+
+	std::vector<Projectile*> projectiles;
+	bool IsEnemyInRange(Enemy* enemy) const;
+	void RenderUpgradeUI();
+	Enemy* FindClosestEnemy();
+	void UpdateProjectiles();
+	void LoadTexture(const char* towerPath);
+	void UpgradeStats();
+private:
+	static SDL_Texture* upgradeTexture;
+	static SDL_Texture* deleteTexture;
+	static bool textureLoaded;
+	void InitializeSharedTextures();
+	void CleanupSharedTextures();
 };
 
+class Projectile {
+public:
+	Projectile(SDL_Renderer* renderer, int x, int y, Enemy* target, const char* texturePath, int damage, float speed);
+	virtual ~Projectile();
+	void Update();
+	void Render();
+	bool IsOutOfBounds() const;
+	bool HasHitTarget() const;
+	Enemy* GetTarget() const { return target; }
+protected:
+	int x, y;
+	float speed;
+	int damage;
+	Enemy* target;
+	SDL_Renderer* renderer;
+	SDL_Texture* texture;
+	SDL_Rect destRect, srcRect;
+};

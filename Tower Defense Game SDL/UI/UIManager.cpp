@@ -10,7 +10,6 @@ UI::UI(SDL_Renderer* renderer) :
 	, font(nullptr)
 	, archerTowerIcon(nullptr)
 	, cannonTowerIcon(nullptr)
-	, shooterTowerIcon(nullptr)
 	, lightningTowerIcon(nullptr)
 	, currentMoney(0)
 	, currentWave(0)
@@ -29,7 +28,6 @@ UI::UI(SDL_Renderer* renderer) :
 	}
 	archerTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
 	cannonTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
-	shooterTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_shooter.png", renderer);
 	lightningTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_lightning.png", renderer);
  
 	moneyTextRect = { 10, 480, 150, 20 };
@@ -38,8 +36,7 @@ UI::UI(SDL_Renderer* renderer) :
 	 
 	archerTowerRect = { 740, 420, 32, 32 };
 	cannonTowerRect = { 740, 470, 32, 32 };
-	shooterTowerRect = { 740, 520, 32, 32 };
-	lightningTowerRect = { 740, 570, 32, 32 };
+	lightningTowerRect = { 740, 520, 32, 32 };
 }
 UI::~UI() {
 	if (moneyText) SDL_DestroyTexture(moneyText);
@@ -47,12 +44,11 @@ UI::~UI() {
 	if (healthText) SDL_DestroyTexture(healthText);
 	if (archerTowerIcon) SDL_DestroyTexture(archerTowerIcon);
 	if (cannonTowerIcon) SDL_DestroyTexture(cannonTowerIcon);
-	if (shooterTowerIcon) SDL_DestroyTexture(shooterTowerIcon);
 	if (lightningTowerIcon) SDL_DestroyTexture(lightningTowerIcon);
 	if (font) TTF_CloseFont(font);
 }
 bool UI::init() {
-	if ( !archerTowerIcon || !cannonTowerIcon || !shooterTowerIcon || !lightningTowerIcon) {
+	if ( !archerTowerIcon || !cannonTowerIcon || !lightningTowerIcon) {
 		std::cout << "Error loading UI textures!" << std::endl;
 		return false;
 	}
@@ -91,7 +87,6 @@ void UI::render(SDL_Renderer* renderer) {
 void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	SDL_RenderCopy(renderer, archerTowerIcon, nullptr, &archerTowerRect);
 	SDL_RenderCopy(renderer, cannonTowerIcon, nullptr, &cannonTowerRect);
-	SDL_RenderCopy(renderer, shooterTowerIcon, nullptr, &shooterTowerRect);
 	SDL_RenderCopy(renderer, lightningTowerIcon, nullptr, &lightningTowerRect);
 
 	// Draw cost labels
@@ -115,15 +110,6 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	SDL_FreeSurface(cannonCostSurface);
 	SDL_DestroyTexture(cannonCostText);
 
-	// Shooter tower cost text
-	std::string shooterCost = std::to_string(Money::SHOOTER_TOWER_COST);
-	SDL_Surface* shooterCostSurface = TTF_RenderText_Solid(font, shooterCost.c_str(), textColor);
-	SDL_Texture* shooterCostText = SDL_CreateTextureFromSurface(renderer, shooterCostSurface);
-	SDL_Rect shooterCostRect = { shooterTowerRect.x - 50, shooterTowerRect.y + 4, shooterCostSurface->w, shooterCostSurface->h };
-	SDL_RenderCopy(renderer, shooterCostText, nullptr, &shooterCostRect);
-	SDL_FreeSurface(shooterCostSurface);
-	SDL_DestroyTexture(shooterCostText);
-
 	// Lightning tower cost text
 	std::string lightningCost = std::to_string(Money::LIGHTNING_TOWER_COST);
 	SDL_Surface* lightningCostSurface = TTF_RenderText_Solid(font, lightningCost.c_str(), textColor);
@@ -143,12 +129,6 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 	if (selectedTower == TowerSelection::CANNON || cannonTowerHovered) {
 		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  
 		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2, cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
-		SDL_RenderDrawRect(renderer, &highlightRect);
-	}
-
-	if (selectedTower == TowerSelection::SHOOTER || shooterTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255); 
-		SDL_Rect highlightRect = { shooterTowerRect.x - 2, shooterTowerRect.y - 2, shooterTowerRect.w + 4, shooterTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 

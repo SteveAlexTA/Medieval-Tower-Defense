@@ -1,78 +1,96 @@
 #include "SoundManager.h"
 #include <iostream>
-std::map<std::string, Mix_Chunk*> Sound::soundMap;
-std::map<std::string, Mix_Music*> Sound::musicMap;
-bool Sound::s_initialized = false;
 
-bool Sound::Init() {
-	if (s_initialized) {
-		return true; 
-	}
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-		std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+Sound::Sound() : m_bInitialized(false) {}
+
+Sound::~Sound() { Clean();}
+
+Sound& Sound::Instance() {
+	static Sound instance;
+	return instance;
+}
+
+bool Sound::Init(int freq, Uint16 format, int channels, int chunksize) {
+	if (Mix_OpenAudio(freq, format, channels, chunksize) < 0) {
+		std::cout << "SDL_mixer not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
 		return false;
 	}
-	s_initialized = true;
+	Mix_AllocateChannels(16);
+	m_bInitialized = true;
+	std::cout << "Sound system initialized successfully!" << std::endl;
 	return true;
 }
 
 void Sound::Clean() {
-	for (auto& sound : soundMap) {
-		Mix_FreeChunk(sound.second);
+	for (auto& sound : sfxMap) {
+		if (sound.second != nullptr) {
+			Mix_FreeChunk(sound.second);
+			sound.second = nullptr;
+		}
 	}
-	soundMap.clear();
-	Mix_CloseAudio();
-	s_initialized = false;
+	sfxMap.clear();
+	for (auto& music : musicMap) {
+		if (music.second != nullptr) {
+			Mix_FreeMusic(music.second);
+			music.second = nullptr;
+		}
+	}
+	musicMap.clear();
+	if (m_bInitialized) {
+		Mix_CloseAudio();
+		m_bInitialized = false;
+		std::cout << "Sound system cleaned up!" << std::endl;
+	}	
 }
 
-Mix_Chunk* Sound::LoadSound(const char* filename) {
-	if (!s_initialized) {
-		std::cerr << "Sound system not initialized!" << std::endl;
-		return nullptr;
+bool Sound::LoadSound(const std::string& id, const char* filename) {
+	if (sfxMap.find(id) != sfxMap.end()) {
+		std::cout << "Sound with ID " << id << " already loaded!" << std::endl;
+		return false;
 	}
 	Mix_Chunk* sound = Mix_LoadWAV(filename);
-	if (!sound) {
-		std::cerr << "Failed to load sound! SDL_mixer Error: " << Mix_GetError() << std::endl;
+	if (sound == nullptr) {
+		std::cout << "Failed to load sound: " << filename << " Error: " << Mix_GetError() << std::endl;
+		return false;
 	}
-	return sound;
+	sfxMap[id] = sound;
+	return true;
 }
 
-void Sound::PlaySound(Mix_Chunk* sound, int loops) {
-	if (sound) {
-		Mix_PlayChannel(-1, sound, loops);
-	}
-}
-
-Mix_Chunk* Sound::GetSound(const char* filename) {
-	std::string loaded = filename;
-	if (soundMap.find(loaded) != soundMap.end()) {
-		return soundMap[loaded];
-	}
-	Mix_Chunk* sound = LoadSound(filename);
-	if (sound) {
-		soundMap[loaded] = sound;
-	}
-	return sound;
-}
-
-Mix_Music* Sound::LoadMusic(const char* filename) {
-	if (!s_initialized) {
-		std::cerr << "Sound system not initialized!" << std::endl;
-		return nullptr;
+bool Sound::LoadMusic(const std::string& id, const char* filename) {
+	if (musicMap.find(id) != musicMap.end()) {
+		std::cout << "Music with ID " << id << " already loaded!" << std::endl;
+		return false;
 	}
 	Mix_Music* music = Mix_LoadMUS(filename);
-	if (!music) {
-		std::cerr << "Failed to load music! SDL_mixer Error: " << Mix_GetError() << std::endl;
+	if (music == nullptr) {
+		std::cout << "Failed to load music: " << filename << " Error: " << Mix_GetError() << std::endl;
+		return false;
 	}
-	return music;
+	musicMap[id] = music;
+	return true;
 }
 
-void Sound::PlayMusic(Mix_Music* music, int loops) {
-	if (music) {
+void Sound::PlaySound(const std::string& id, int loops, int channel) {
+	auto it = sfxMap.find(id);
+	if (it != sfxMap.end()) {
+		Mix_PlayChannel(channel, it->second, loops);
+	}
+	else {
+		std::cout << "Sound with ID " << id << " not found!" << std::endl;
+	}
+}
+
+void Sound::PlayMusic(const std::string& id, int loops) {
+	auto it = musicMap.find(id);
+	if (it != musicMap.end()) {
 		if (Mix_PlayingMusic()) {
-			Mix_HaltMusic(); 
+			Mix_HaltMusic();
 		}
-		Mix_PlayMusic(music, loops);
+		Mix_PlayMusic(it->second, loops);
+	}
+	else {
+		std::cout << "Music '" << id << "' not found!" << std::endl;
 	}
 }
 
@@ -83,7 +101,7 @@ void Sound::StopMusic() {
 }
 
 void Sound::PauseMusic() {
-	if (Mix_PlayingMusic() && !Mix_PausedMusic()) {
+	if (Mix_PlayingMusic()) {
 		Mix_PauseMusic();
 	}
 }
@@ -92,20 +110,30 @@ void Sound::ResumeMusic() {
 	if (Mix_PausedMusic()) {
 		Mix_ResumeMusic();
 	}
-}
+}	
 
 void Sound::SetMusicVolume(int volume) {
-	Mix_VolumeMusic(volume); 
+	Mix_VolumeMusic(volume);
 }
 
-Mix_Music* Sound::GetMusic(const char* filename) {
-	std::string loaded = filename;
-	if (musicMap.find(loaded) != musicMap.end()) {
-		return musicMap[loaded];
+void Sound::SetSoundVolume(const std::string& id, int volume) {
+	auto it = sfxMap.find(id);
+	if (it != sfxMap.end()) {
+		Mix_VolumeChunk(it->second, volume);
 	}
-	Mix_Music* music = LoadMusic(filename);
-	if (music) {
-		musicMap[loaded] = music;
+	else {
+		std::cout << "Sound with ID " << id << " not found!" << std::endl;
 	}
-	return music;
+}
+
+void Sound::SetAllSoundVolume(int volume) {
+	Mix_Volume(-1, volume);	
+}
+
+bool Sound::IsMusicPlaying() const {
+	return Mix_PlayingMusic() != 0;
+}
+
+bool Sound::IsMusicPaused() const {
+	return Mix_PausedMusic() != 0;
 }

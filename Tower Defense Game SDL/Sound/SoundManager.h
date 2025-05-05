@@ -6,21 +6,30 @@
 
 class Sound {
 public:
-	static bool Init();
-	static void Clean();
-	static Mix_Chunk* LoadSound(const char* filename);
-	static void PlaySound(Mix_Chunk* sound, int loops = 0);
-	static Mix_Chunk* GetSound(const char* filename);
+	static Sound& Instance();
+	bool Init(int freq = 44100, Uint16 format = MIX_DEFAULT_FORMAT, int channels = 2, int chunksize = 2048);
+	void Clean();
+	bool LoadSound(const std::string& id, const char* filename);
+	bool LoadMusic(const std::string& id, const char* filename);
+	void PlaySound(const std::string& id, int loops = 0, int channel = -1);
+	void PlayMusic(const std::string& id, int loops = -1);
 
-	static Mix_Music* LoadMusic(const char* filename);
-	static void PlayMusic(Mix_Music* music, int loops = -1);  
-	static void StopMusic();
-	static void PauseMusic();
-	static void ResumeMusic();
-	static void SetMusicVolume(int volume);  
-	static Mix_Music* GetMusic(const char* filename);
+	void StopMusic();
+	void PauseMusic();
+	void ResumeMusic();
+
+	void SetMusicVolume(int volume);
+	void SetSoundVolume(const std::string& id, int volume);
+	void SetAllSoundVolume(int volume);
+
+	bool IsMusicPlaying() const;
+	bool IsMusicPaused() const;
 private:
-	static std::map<std::string, Mix_Chunk*> soundMap;
-	static std::map<std::string, Mix_Music*> musicMap;
-	static bool s_initialized;
+	Sound();
+	~Sound();
+	std::map<std::string, Mix_Chunk*> sfxMap;
+	std::map<std::string, Mix_Music*> musicMap;
+	static Sound* s_pInstance;
+	bool m_bInitialized;
 };
+typedef Sound SoundManager;
