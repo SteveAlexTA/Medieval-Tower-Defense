@@ -19,34 +19,30 @@ WaveSystem::WaveSystem(float spawnInterval, bool easyMode)
 void WaveSystem::configureWaveDefinitions() {
 	// g = goblin, s = skeleton, d = demon, r = dragon
     if (m_easyMode) {
-        m_waveDefinitions[1] = "g,g,g,g,g,g";
-        m_waveDefinitions[2] = "g,g,g,g,g,g,g,g,g,g";
+        m_waveDefinitions[1] = "g,g,g,g,g";
+        m_waveDefinitions[2] = "g,g,g,g,g,g,g";
         m_waveDefinitions[3] = "g,g,g,g,g,g,g,g";
-        m_waveDefinitions[4] = "g,g,g,g,g,g,g,g,g,g,g,g";
+        m_waveDefinitions[4] = "g,g,g,g,g,g,g,g,g,g";
         m_waveDefinitions[5] = "s,s,s,s,s,s,s,s";
-        m_waveDefinitions[6] = "g,s,g,g,g,s,s,g,s,s,g,s,g,g,s,s";
-        m_waveDefinitions[7] = "s,s,s,s,g,s,s,s,s,g,s,s,s,s,s,s,s";
+        m_waveDefinitions[6] = "g,s,g,g,g,s,s,g,s,s,g,s,g,g,s";
+        m_waveDefinitions[7] = "s,s,s,s,g,s,s,s,s,g,s,s,s,s,s";
         m_waveDefinitions[8] = "s,s,s,s,s,s,s,s,s,s,s,s,s,s,s";
-        m_waveDefinitions[9] = "s,g,s,g,s,s,s,g,g,s,s,s,s,s,d";
+        m_waveDefinitions[9] = "s,g,s,g,s,s,s,g,g,g,g,s,s,d,d";
         m_waveDefinitions[10] = "g,g,g,g,d,g,g,s,g,s,s,g,d,s,g,g,g,s,d,g";
         m_waveDefinitions[11] = "g,s,g,g,s,s,g,s,s,g,s,s,s,g,s,s,g,s,g,d,d";
-        m_waveDefinitions[12] = "d,d,s,d,s,d,s,s,s,d,s,s,s,s";
-        m_waveDefinitions[13] = "g,s,s,d,s,g,s,s,g,s,s,s,g,s,d,g,g,s,g,g,d,d,d";
-        m_waveDefinitions[14] = "g,s,s,s,g,g,g,s,g,s,s,s,s,d,g,d,d,d,g,g,g,d";
-        m_waveDefinitions[15] = "g,s,s,s,s,s,s,s,g,s,g,s,d,s,s,d,d,s,s,s,d";
+        m_waveDefinitions[12] = "d,r,d,r,d,r,d,r";
+        m_waveDefinitions[13] = "g,s,s,d,s,g,s,s,g,s,s,s,g,s,d,g,g,s,g,g,d";
+        m_waveDefinitions[14] = "g,s,s,s,g,g,g,s,g,s,g,s,g,d,g,d,d,d,g,g,d";
+        m_waveDefinitions[15] = "g,s,s,s,g,g,g,s,g,s,g,s,d,s,s,d,d,s,s,d,d";
         m_waveDefinitions[16] = "s,g,g,g,s,s,d,d,s,d,d,s,g,g,g,g,g,s,s,s,d";
-        m_waveDefinitions[17] = "r,s,g,s,d,g,g,g,g,g,s,g,g,g,s,s,s,s,s,s,d,d,d";
-        m_waveDefinitions[18] = "d,r,r,d,s,s,d,s,s,s,r,d,d";
-        m_waveDefinitions[19] = "r,d,r,d,r,d,d,d,d,r,r,r,r,r";
-        m_waveDefinitions[20] = "d,r,d,r,r,d,r,d,d,r";
+        m_waveDefinitions[17] = "r,s,g,s,d,g,g,g,g,g,s,g,g,g,s,s,s,s,s,d,d,d,d";
+        m_waveDefinitions[18] = "d,r,r,d,s,s,d,s,s,r,r,d,d,d,r,d,r,d,r,d,r,d,r";
+        m_waveDefinitions[19] = "r,d,r,d,r,d,d,d,d,r,r,r,r,d,s,d,s,d,s,d,r,d,r,s,d,r";
+        m_waveDefinitions[20] = "r,r,r,r,r,r,r,r,r,r,r,r,r,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r";
 
     }
     else {
-        m_waveDefinitions[1] = "g,g,s,s,g";
-        m_waveDefinitions[2] = "s,s,g,g,s,g";
-        m_waveDefinitions[3] = "s,s,s,g,s,s,g";
-        m_waveDefinitions[4] = "s,s,s,s,s,s,g";
-        m_waveDefinitions[5] = "s,s,s,s,s,s,s,s";
+        m_waveDefinitions[1] = "s,s,s,s,s,s,s,s,s,s,s";
     }
 }
 

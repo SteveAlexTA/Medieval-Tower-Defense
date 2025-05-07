@@ -177,13 +177,13 @@ void Tower::UpgradeStats() {
 		rangeMultiplier = 1.0f;
 		break;
 	case TowerLevel::LEVEL2:
-		damageMultiplier = 1.2f;  // +20% damage
+		damageMultiplier = 1.2f; // +20% damage 
 		fireRateMultiplier = 0.8f;  // +20% fireRate
-		rangeMultiplier = 1.2f;  // +20% range
+		rangeMultiplier = 1.2f; // +20% range
 		break;
 	case TowerLevel::LEVEL3:
 		damageMultiplier = 1.5f;  // +50% damage
-		fireRateMultiplier = 0.5f;  // +50% fireRate
+		fireRateMultiplier = 0.5f; // +50% fireRate
 		rangeMultiplier = 1.5f;  // +50% range
 		break;
 	}

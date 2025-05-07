@@ -31,6 +31,7 @@ Game::Game()
     , m_resourcesPreloaded(false)
     , selectedTower(nullptr)
     , inMenu(true)
+    , backgroundMusic(nullptr)
     , deltaTime(0.0f)
 {
 }
@@ -96,7 +97,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         return;
     }
     loadAudioAssets();
-    initBackgroundMusic();
     menuSystem = new Menu(renderer);
     if (!menuSystem->init()) {
         std::cout << "Failed to initialize menu!" << std::endl;
@@ -111,7 +111,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     moneySystem = new Money(200);
     lives = 5;
     gameOver = false;
-    initBackgroundMusic();
     UISystem = new UI(renderer);
     if (!UISystem->init())
     {
@@ -132,13 +131,12 @@ void Game::loadAudioAssets() {
     if (!SoundManager::Instance().LoadMusic("background", "Assets/Sound/game_music.mp3")) {
         std::cout << "Failed to load background music!" << std::endl;
     }
+    else {
+        SoundManager::Instance().PlayMusic("background", -1);
+    }
     SoundManager::Instance().LoadSound("tower_place", "Assets/Sound/tower_place.wav");
     SoundManager::Instance().LoadSound("game_over", "Assets/Sound/game_over.wav");
     SoundManager::Instance().SetMusicVolume(70);
-}
-
-void Game::initBackgroundMusic() {
-    SoundManager::Instance().PlayMusic("background", -1);
 }
 
 void Game::preloadResources() {
@@ -168,7 +166,7 @@ void Game::preloadResources() {
 }
 
 void Game::createEnemyPool(int poolSize) {
-    int halfPoolSize = poolSize / 2;
+    size_t halfPoolSize = poolSize / 2;
     // Pre-create enemies for object pooling
     for (int i = 0; i < halfPoolSize; ++i) {
         enemyPool.push_back(new Goblin(0, 0, renderer, map->map, m_goblinTexture));

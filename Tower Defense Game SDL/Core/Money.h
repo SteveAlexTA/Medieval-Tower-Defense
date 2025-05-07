@@ -19,7 +19,7 @@ public:
 	static const int CANNON_UPGRADE_LVL3_COST = 1000;
 
 	static const int LIGHTNING_UPGRADE_LVL2_COST = 1000;
-	static const int LIGHTNING_UPGRADE_LVL3_COST = 1500;
+	static const int LIGHTNING_UPGRADE_LVL3_COST = 2000;
 
 	//Enemy reward
 	static const int GOBLIN_REWARD = 20;

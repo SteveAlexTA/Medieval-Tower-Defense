@@ -23,7 +23,7 @@ public:
 	float getWaveBreakTimer() const { return m_waveBreakTimer; }
 	float getTimeBetweenWaves() const { return m_timeBetweenWaves; }
 	EnemyType getNextEnemyType();
-	int getTotalWaves() const { return m_waveDefinitions.size(); }
+	int getTotalWaves() const { return static_cast<int>(m_waveDefinitions.size()); }
 	bool isLastWave() const { return m_currentWave >= m_waveDefinitions.size(); }
 	bool isWaveInProgress() const { return m_waveInProgress; }
 private:

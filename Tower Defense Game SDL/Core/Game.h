@@ -45,7 +45,6 @@ public:
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
-    void initBackgroundMusic();
     void startGame();
     void loadAudioAssets();
 
