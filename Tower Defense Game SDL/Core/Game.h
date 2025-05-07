@@ -57,24 +57,24 @@ private:
     std::vector<Enemy*> enemyPool;
     float deltaTime;
 
-    int lives = 3;
-    bool gameOver = false;
+    int lives;
+    bool gameOver;
 
     WaveSystem* waveSystem;
     Money* moneySystem;
     UI* UISystem;
     Menu* menuSystem;
 
-    SDL_Texture* m_goblinTexture = nullptr;
-    SDL_Texture* m_skeletonTexture = nullptr;
-    SDL_Texture* m_demonTexture = nullptr;
-    SDL_Texture* m_dragonTexture = nullptr;
+    SDL_Texture* m_goblinTexture;
+    SDL_Texture* m_skeletonTexture;
+    SDL_Texture* m_demonTexture;
+    SDL_Texture* m_dragonTexture;
 
-    bool m_resourcesPreloaded = false;
-    bool buildTowerMode = false;
-    bool inMenu = true;
+    bool m_resourcesPreloaded;
+    bool buildTowerMode;
+    bool inMenu;
 
-    Tower* selectedTower = nullptr;
+    Tower* selectedTower;
     void selectTowerAt(int x, int y);
     void upgradeTower(Tower* tower);
     void deleteTower(Tower* tower);
