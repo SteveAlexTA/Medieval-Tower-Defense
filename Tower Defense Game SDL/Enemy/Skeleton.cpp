@@ -1,9 +1,11 @@
 #include "Skeleton.h"
 
 Skeleton::Skeleton(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture)
-    : Enemy(x, y, SKELETON_HP, SKELETON_SPEED), m_renderer(renderer), m_texture(texture)
+    : Enemy(x, y, 0, 0), m_renderer(renderer), m_texture(texture)
 {
-    m_maxHP = SKELETON_HP;
+    m_hp = 100;
+    m_speed = 200;
+    m_maxHP = m_hp;
     initPath(map);
 }
 

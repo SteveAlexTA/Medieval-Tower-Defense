@@ -25,10 +25,10 @@ void Button::render(SDL_Renderer* renderer) {
 
     // Draw button with highlight if hovered
     if (hovered) {
-        SDL_SetTextureColorMod(texture, 255, 255, 150); 
+        SDL_SetTextureColorMod(texture, 255, 255, 150);
     }
     else {
-        SDL_SetTextureColorMod(texture, 255, 255, 255); 
+        SDL_SetTextureColorMod(texture, 255, 255, 255);
     }
     SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
@@ -52,9 +52,9 @@ Menu::Menu(SDL_Renderer* renderer)
         }
     }
 
-	if (!Sound::Instance().Init()) {
+    if (!Sound::Instance().Init()) {
         std::cout << "Sound initialization failed!" << std::endl;
-	}
+    }
     // Load assets
     backgroundTexture = TextureManager::LoadTexture("Assets/Icon/menu_background.png", renderer);
     if (!backgroundTexture) {
@@ -84,7 +84,7 @@ Menu::~Menu() {
 void Menu::createTitle(SDL_Renderer* renderer) {
     if (!titleFont) return;
 
-    SDL_Color titleColor = { 139, 69, 19, 255 }; 
+    SDL_Color titleColor = { 139, 69, 19, 255 };
     SDL_Surface* titleSurface = TTF_RenderText_Blended(titleFont, "MEDIEVAL TOWER DEFENSE", titleColor);
     if (!titleSurface) {
         std::cout << "Failed to create title surface: " << TTF_GetError() << std::endl;
@@ -115,7 +115,7 @@ void Menu::handleEvents(SDL_Event& event) {
         if (event.button.button == SDL_BUTTON_LEFT) {
             if (playButton->isClicked(mouseX, mouseY)) {
                 menuState = MenuState::PLAY;
-			}
+            }
             else if (exitButton->isClicked(mouseX, mouseY)) {
                 menuState = MenuState::EXIT;
             }

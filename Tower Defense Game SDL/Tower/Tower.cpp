@@ -229,16 +229,12 @@ bool Tower::HandleEvents(SDL_Event* e) {
 			return true;
 		}
 		// Check if upgrade button is clicked
-		else if (selected && canUpgrade() &&
-			mouseX >= towerX - 16 && mouseX <= towerX + 16 &&
-			mouseY >= towerY - 40 && mouseY <= towerY - 8) {
+		else if (selected && canUpgrade() && mouseX >= towerX - 16 && mouseX <= towerX + 16 && mouseY >= towerY - 40 && mouseY <= towerY - 8) {
 			Upgrade();
 			return true;
 		}
 		// Check if delete button is clicked
-		else if (selected &&
-			mouseX >= towerX + 16 && mouseX <= towerX + 48 &&
-			mouseY >= towerY - 40 && mouseY <= towerY - 8) {
+		else if (selected && mouseX >= towerX + 16 && mouseX <= towerX + 48 && mouseY >= towerY - 40 && mouseY <= towerY - 8) {
 			return true;
 		}
 		else {

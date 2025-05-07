@@ -1,9 +1,11 @@
 #include "Demon.h"
 
 Demon::Demon(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture)
-	: Enemy(x, y, DEMON_HP, DEMON_SPEED), m_renderer(renderer), m_texture(texture)
+	: Enemy(x, y, 0, 0), m_renderer(renderer), m_texture(texture)
 {
-	m_maxHP = DEMON_HP;
+	m_hp = 1500;
+	m_speed = 100;
+	m_maxHP = m_hp;
 	initPath(map);
 }
 

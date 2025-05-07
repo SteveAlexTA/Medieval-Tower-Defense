@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "TextureManager.h"
-#include "Menu.h"
+#include "../Screen/Menu.h"
 #include "../Map/Map.h"
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
@@ -21,50 +21,51 @@ Game::Game()
     , window(nullptr)
     , map(nullptr)
     , waveSystem(nullptr)
-	, moneySystem(nullptr)
-	, UISystem(nullptr)
-	, menuSystem(nullptr)
+    , moneySystem(nullptr)
+    , UISystem(nullptr)
+    , menuSystem(nullptr)
     , m_goblinTexture(nullptr)
     , m_skeletonTexture(nullptr)
-	, m_demonTexture(nullptr)
-	, m_dragonTexture(nullptr)
+    , m_demonTexture(nullptr)
+    , m_dragonTexture(nullptr)
     , m_resourcesPreloaded(false)
     , selectedTower(nullptr)
-	, inMenu(true)
+    , inMenu(true)
     , deltaTime(0.0f)
-{}
+{
+}
 
 Game::~Game() {
-	for (auto enemy : enemyPool) {
-		delete enemy;
-	}
+    for (auto enemy : enemyPool) {
+        delete enemy;
+    }
     enemyPool.clear();
 
-	for (auto tower : towers) {
-		delete tower;
-	}
-	towers.clear();
+    for (auto tower : towers) {
+        delete tower;
+    }
+    towers.clear();
 
-	delete waveSystem;
+    delete waveSystem;
     delete map;
     delete moneySystem;
-	delete UISystem;
+    delete UISystem;
     delete menuSystem;
     Sound::Instance().StopMusic();
 
-	if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
-	if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
-	if (m_demonTexture) SDL_DestroyTexture(m_demonTexture);
-	if (m_dragonTexture) SDL_DestroyTexture(m_dragonTexture);
+    if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
+    if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
+    if (m_demonTexture) SDL_DestroyTexture(m_demonTexture);
+    if (m_dragonTexture) SDL_DestroyTexture(m_dragonTexture);
 }
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen) {
     int flags = 0;
-    if (fullscreen) 
+    if (fullscreen)
     {
         flags = SDL_WINDOW_FULLSCREEN;
     }
-    if (SDL_Init(SDL_INIT_EVERYTHING) == 0) 
+    if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
         std::cout << "Subsystem Initialised!..." << std::endl;
         window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
@@ -83,7 +84,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
     }
     int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) 
+    if (!(IMG_Init(imgFlags) & imgFlags))
     {
         std::cout << "SDL_Image failed to load! " << IMG_GetError() << std::endl;
         isRunning = false;
@@ -102,22 +103,22 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
-	preloadResources();
+    preloadResources();
     map = new Map();
     waveSystem = new WaveSystem();
-	createEnemyPool(50);
-	waveSystem->startNextWave();
-	moneySystem = new Money(200);
+    createEnemyPool(50);
+    waveSystem->startNextWave();
+    moneySystem = new Money(200);
     lives = 5;
     gameOver = false;
-	initBackgroundMusic();
+    initBackgroundMusic();
     UISystem = new UI(renderer);
-	if (!UISystem->init()) 
+    if (!UISystem->init())
     {
-		std::cout << "Failed to initialize UI!" << std::endl;
-		isRunning = false;
+        std::cout << "Failed to initialize UI!" << std::endl;
+        isRunning = false;
         return;
-	}
+    }
 }
 
 void Game::startGame() {
@@ -152,12 +153,12 @@ void Game::preloadResources() {
             std::cout << "Failed to load skeleton texture!" << std::endl;
             isRunning = false;
         }
-		m_demonTexture = TextureManager::LoadTexture("Assets/Enemy/spr_demon.png", renderer);
-		if (!m_demonTexture) {
-			std::cout << "Failed to load demon texture!" << std::endl;
-			isRunning = false;
-		}
-		m_dragonTexture = TextureManager::LoadTexture("Assets/Enemy/spr_dragon.png", renderer);
+        m_demonTexture = TextureManager::LoadTexture("Assets/Enemy/spr_demon.png", renderer);
+        if (!m_demonTexture) {
+            std::cout << "Failed to load demon texture!" << std::endl;
+            isRunning = false;
+        }
+        m_dragonTexture = TextureManager::LoadTexture("Assets/Enemy/spr_dragon.png", renderer);
         if (!m_dragonTexture) {
             std::cout << "Failed to load dragon texture!" << std::endl;
             isRunning = false;
@@ -172,8 +173,8 @@ void Game::createEnemyPool(int poolSize) {
     for (int i = 0; i < halfPoolSize; ++i) {
         enemyPool.push_back(new Goblin(0, 0, renderer, map->map, m_goblinTexture));
         enemyPool.push_back(new Skeleton(0, 0, renderer, map->map, m_skeletonTexture));
-		enemyPool.push_back(new Demon(0, 0, renderer, map->map, m_demonTexture));
-		enemyPool.push_back(new Dragon(0, 0, renderer, map->map, m_dragonTexture));
+        enemyPool.push_back(new Demon(0, 0, renderer, map->map, m_demonTexture));
+        enemyPool.push_back(new Dragon(0, 0, renderer, map->map, m_dragonTexture));
     }
     // Deactivate all enemies initially
     for (auto& enemy : enemyPool) {
@@ -184,7 +185,7 @@ void Game::createEnemyPool(int poolSize) {
 void Game::handleEvents() {
     SDL_Event event;
     int mouseX = 0;
-	int mouseY = 0;
+    int mouseY = 0;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             isRunning = false;
@@ -271,10 +272,10 @@ void Game::handleEvents() {
                     selectedTower->setSelected(false);
                     selectedTower = nullptr;
                 }
-				if (buildTowerMode) {
-					buildTowerMode = false;
-					UISystem->resetSelectedTower();
-				}
+                if (buildTowerMode) {
+                    buildTowerMode = false;
+                    UISystem->resetSelectedTower();
+                }
             }
             break;
         default:
@@ -306,7 +307,7 @@ void Game::placeTower(int x, int y) {
         Tower* newTower = createTower(selectedType, gridX, gridY);
         if (newTower) {
             towers.push_back(newTower);
-			SoundManager::Instance().PlaySound("tower_place", 0);
+            SoundManager::Instance().PlaySound("tower_place", 0);
         }
     }
     else {
@@ -332,7 +333,7 @@ void Game::selectTowerAt(int x, int y) {
 
 void Game::upgradeTower(Tower* tower) {
     if (!tower || !tower->canUpgrade()) return;
-	int upgradeCost = tower->getUpgradePrice();
+    int upgradeCost = tower->getUpgradePrice();
     if (upgradeCost > 0 && moneySystem->spendMoney(upgradeCost)) {
         tower->Upgrade();
     }
@@ -361,15 +362,15 @@ void Game::rewardEnemyKilled(Enemy* enemy) {
     else if (dynamic_cast<Skeleton*>(enemy)) {
         moneySystem->addMoney(Money::SKELETON_REWARD);
     }
-	else if (dynamic_cast<Demon*>(enemy)) {
-		moneySystem->addMoney(Money::DEMON_REWARD);
-	}
-	else if (dynamic_cast<Dragon*>(enemy)) {
-		moneySystem->addMoney(Money::DRAGON_REWARD);
-	}
-	else {
-		std::cout << "Unknown enemy type!" << std::endl;
-	}
+    else if (dynamic_cast<Demon*>(enemy)) {
+        moneySystem->addMoney(Money::DEMON_REWARD);
+    }
+    else if (dynamic_cast<Dragon*>(enemy)) {
+        moneySystem->addMoney(Money::DRAGON_REWARD);
+    }
+    else {
+        std::cout << "Unknown enemy type!" << std::endl;
+    }
 }
 
 bool Game::isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower) {
@@ -407,8 +408,8 @@ int Game::getTowerCost(TowerSelection type) const {
         return Money::ARCHER_TOWER_COST;
     case TowerSelection::CANNON:
         return Money::CANNON_TOWER_COST;
-	case TowerSelection::LIGHTNING:
-		return Money::LIGHTNING_TOWER_COST;
+    case TowerSelection::LIGHTNING:
+        return Money::LIGHTNING_TOWER_COST;
     default:
         return Money::ARCHER_TOWER_COST;
     }
@@ -421,9 +422,9 @@ TowerType Game::getTowerType(Tower* tower) const {
     if (dynamic_cast<CannonTower*>(tower)) {
         return TowerType::CANNON;
     }
-	if (dynamic_cast<LightningTower*>(tower)) {
-		return TowerType::LIGHTNING;
-	}
+    if (dynamic_cast<LightningTower*>(tower)) {
+        return TowerType::LIGHTNING;
+    }
     return TowerType::NONE;
 }
 
@@ -441,12 +442,12 @@ int Game::getUpgradeCost(TowerType type, int currentLevel) const {
         if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
             return Money::CANNON_UPGRADE_LVL3_COST;
         break;
-	case TowerType::LIGHTNING:
-		if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
-			return Money::LIGHTNING_UPGRADE_LVL2_COST;
-		if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
-			return Money::LIGHTNING_UPGRADE_LVL3_COST;
-		break;
+    case TowerType::LIGHTNING:
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL1))
+            return Money::LIGHTNING_UPGRADE_LVL2_COST;
+        if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
+            return Money::LIGHTNING_UPGRADE_LVL3_COST;
+        break;
     }
     return 0;
 }
@@ -468,32 +469,32 @@ int Game::getRefundAmount(TowerType type, int level) const {
         if (level >= static_cast<int>(TowerLevel::LEVEL3))
             totalCost += Money::CANNON_UPGRADE_LVL3_COST;
         break;
-	case TowerType::LIGHTNING:
-		totalCost = Money::LIGHTNING_TOWER_COST;
-		if (level >= static_cast<int>(TowerLevel::LEVEL2))
-			totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
-		if (level >= static_cast<int>(TowerLevel::LEVEL3))
-			totalCost += Money::LIGHTNING_UPGRADE_LVL3_COST;
-		break;
+    case TowerType::LIGHTNING:
+        totalCost = Money::LIGHTNING_TOWER_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL2))
+            totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
+        if (level >= static_cast<int>(TowerLevel::LEVEL3))
+            totalCost += Money::LIGHTNING_UPGRADE_LVL3_COST;
+        break;
     }
-    return totalCost / 2; 
+    return totalCost / 2;
 }
 
 void Game::update() {
     static Uint32 lastFrameTime = SDL_GetTicks();
-	Uint32 currentFrameTime = SDL_GetTicks();
-	deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f; // Calculate delta time
-	if (deltaTime > 0.1f) { // Cap deltaTime to avoid large jumps
-		deltaTime = 0.1f;
-	}
-	lastFrameTime = currentFrameTime;
-	if (inMenu) {
+    Uint32 currentFrameTime = SDL_GetTicks();
+    deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f; // Calculate delta time
+    if (deltaTime > 0.1f) { // Cap deltaTime to avoid large jumps
+        deltaTime = 0.1f;
+    }
+    lastFrameTime = currentFrameTime;
+    if (inMenu) {
         menuSystem->update();
-		return;
-	}
-	if (gameOver) {
-		return;
-	}
+        return;
+    }
+    if (gameOver) {
+        return;
+    }
     if (showMaxTowersMessage && SDL_GetTicks() - messageStartTime > MESSAGE_DURATION) {
         showMaxTowersMessage = false;
     }
@@ -511,20 +512,20 @@ void Game::update() {
     }
     for (auto it = activeEnemies.begin(); it != activeEnemies.end();) {
         (*it)->move(deltaTime);
-		if ((*it)->hasReachedEnd()) {
-			lives -= 1;
-			if (lives <= 0) {
+        if ((*it)->hasReachedEnd()) {
+            lives -= 1;
+            if (lives <= 0) {
                 lives = 0;
-				gameOver = true;
-				std::cout << "Game Over!" << std::endl;
-				SoundManager::Instance().PlaySound("game_over", 0);
-				SoundManager::Instance().StopMusic();
-			}
-			(*it)->deactivate();
-			it = activeEnemies.erase(it);
-		}
-		else if ((*it)->isDead()) {
-			rewardEnemyKilled(*it);
+                gameOver = true;
+                std::cout << "Game Over!" << std::endl;
+                SoundManager::Instance().PlaySound("game_over", 0);
+                SoundManager::Instance().StopMusic();
+            }
+            (*it)->deactivate();
+            it = activeEnemies.erase(it);
+        }
+        else if ((*it)->isDead()) {
+            rewardEnemyKilled(*it);
             (*it)->deactivate();
             it = activeEnemies.erase(it);
         }
@@ -532,7 +533,7 @@ void Game::update() {
             ++it;
         }
     }
-	UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), lives); 
+    UISystem->update(moneySystem->getMoney(), waveSystem->getCurrentWave(), lives);
 }
 
 void Game::spawnEnemy() {
@@ -549,26 +550,26 @@ void Game::spawnEnemy() {
             }
         }
     }
-	else if (waveEnemyType == EnemyType::GOBLIN) {
-		for (Enemy* enemy : enemyPool) {
-			if (Goblin* goblin = dynamic_cast<Goblin*>(enemy)) {
-				if (!goblin->isAlive()) {
-					spawnedEnemy = goblin;
-					break;
-				}
-			}
-		}
-	}
-	else if (waveEnemyType == EnemyType::DEMON) {
-		for (Enemy* enemy : enemyPool) {
-			if (Demon* demon = dynamic_cast<Demon*>(enemy)) {
-				if (!demon->isAlive()) {
-					spawnedEnemy = demon;
-					break;
-				}
-			}
-		}
-	}
+    else if (waveEnemyType == EnemyType::GOBLIN) {
+        for (Enemy* enemy : enemyPool) {
+            if (Goblin* goblin = dynamic_cast<Goblin*>(enemy)) {
+                if (!goblin->isAlive()) {
+                    spawnedEnemy = goblin;
+                    break;
+                }
+            }
+        }
+    }
+    else if (waveEnemyType == EnemyType::DEMON) {
+        for (Enemy* enemy : enemyPool) {
+            if (Demon* demon = dynamic_cast<Demon*>(enemy)) {
+                if (!demon->isAlive()) {
+                    spawnedEnemy = demon;
+                    break;
+                }
+            }
+        }
+    }
     else if (waveEnemyType == EnemyType::DRAGON) {
         for (Enemy* enemy : enemyPool) {
             if (Dragon* dragon = dynamic_cast<Dragon*>(enemy)) {
@@ -580,14 +581,14 @@ void Game::spawnEnemy() {
         }
     }
     else
-    if (!spawnedEnemy) {
-        for (Enemy* enemy : enemyPool) {
-            if (!enemy->isAlive()) {
-                spawnedEnemy = enemy;
-                break;
+        if (!spawnedEnemy) {
+            for (Enemy* enemy : enemyPool) {
+                if (!enemy->isAlive()) {
+                    spawnedEnemy = enemy;
+                    break;
+                }
             }
         }
-    }
     if (spawnedEnemy) {
         spawnedEnemy->reset(map->map);
         activeEnemies.push_back(spawnedEnemy);
@@ -633,9 +634,9 @@ void Game::render() {
         default:
             texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
-		case TowerSelection::LIGHTNING:
-			texturePath = "Assets/Tower/spr_tower_lightning.png";
-			break;
+        case TowerSelection::LIGHTNING:
+            texturePath = "Assets/Tower/spr_tower_lightning.png";
+            break;
         }
         SDL_Texture* previewTexture = TextureManager::LoadTexture(texturePath, renderer);
         SDL_Rect previewRect = { gridX, gridY, 32, 32 };
@@ -663,7 +664,7 @@ void Game::render() {
 }
 
 void Game::clean() {
-	Sound::Instance().StopMusic();
+    Sound::Instance().StopMusic();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();

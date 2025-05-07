@@ -7,7 +7,7 @@ ArcherTower::ArcherTower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, s
     type = TowerType::ARCHER;
     baseDamage = 20;
     baseRange = 150.0f;
-    baseFireRate = 40;
+    baseFireRate = 50;
     LoadTexture("Assets/Tower/spr_tower_archer.png");
     Sound::Instance().LoadSound("arrow", "Assets/Sound/arrow.wav");
     UpgradeStats();

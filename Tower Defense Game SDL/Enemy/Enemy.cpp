@@ -11,13 +11,9 @@ Enemy::Enemy(float x, float y, int hp, float speed)
     , m_alive(true)
     , m_currentPathIndex(0)
     , m_reachedEnd(false) 
-{
-    m_healthBar = new HealthBar();
-};
+{};
 
-Enemy::~Enemy() {
-    delete m_healthBar;
-}
+Enemy::~Enemy() {}
 
 void Enemy::takeDamage(int damage)  {
 	m_hp -= damage;
@@ -36,11 +32,11 @@ void Enemy::renderHPBar(SDL_Renderer* renderer) const {
     // Calculate health percentage and remaining health bar width
     float healthPercentage = static_cast<float>(m_hp) / m_maxHP; 
     int healthWidth = static_cast<int>(static_cast<float>(BAR_W * healthPercentage));
-    // Draw current health bar (green)
+    // Draw current health bar (red)
     int barX = static_cast<int>(m_x - static_cast<float>(healthWidth / 2));
     int barY = static_cast<int>(m_y) + BAR_OFFSET_Y;
     SDL_Rect healthBar = { barX, barY, healthWidth, BAR_H };
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green only
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &healthBar);
 }
 

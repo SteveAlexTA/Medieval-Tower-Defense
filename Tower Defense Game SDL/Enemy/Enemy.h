@@ -1,6 +1,5 @@
 #pragma once
 #include "../Map/PathFinder.h"
-#include "HealthBar.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <string>
@@ -40,10 +39,10 @@ public:
 
 protected:
     float m_x, m_y, m_speed;
-    int m_hp, m_maxHP;
+	int m_hp; // Current health
+	int m_maxHP; // Maximum health
     bool m_alive;
     std::vector<PathFinder::Point> m_path;
     size_t m_currentPathIndex;
 	bool m_reachedEnd = false;
-    HealthBar* m_healthBar;
 };

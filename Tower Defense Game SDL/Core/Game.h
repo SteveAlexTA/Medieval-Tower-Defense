@@ -9,7 +9,7 @@
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
 #include "Money.h"
-#include "Menu.h"
+#include "../Screen/Menu.h"
 #include "../UI/UIManager.h"
 #include "../Sound/SoundManager.h"
 
@@ -33,19 +33,19 @@ public:
     void update();
     void render();
     void clean();
-    
+
     bool running() { return isRunning; }
     void placeTower(int x, int y);
     bool canPlaceTower(int x, int y);
     void spawnEnemy();
-	static SDL_Renderer* renderer;
+    static SDL_Renderer* renderer;
     bool isGameOver() const { return gameOver; }
     int getBaseLives() const { return lives; }
 
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
-	void initBackgroundMusic();
+    void initBackgroundMusic();
     void startGame();
     void loadAudioAssets();
 
@@ -59,20 +59,20 @@ private:
     float deltaTime;
 
     int lives = 3;
-	bool gameOver = false;
+    bool gameOver = false;
 
-	WaveSystem* waveSystem;
+    WaveSystem* waveSystem;
     Money* moneySystem;
     UI* UISystem;
     Menu* menuSystem;
 
     SDL_Texture* m_goblinTexture = nullptr;
-	SDL_Texture* m_skeletonTexture = nullptr;
+    SDL_Texture* m_skeletonTexture = nullptr;
     SDL_Texture* m_demonTexture = nullptr;
-	SDL_Texture* m_dragonTexture = nullptr;
+    SDL_Texture* m_dragonTexture = nullptr;
 
     bool m_resourcesPreloaded = false;
-	bool buildTowerMode = false;
+    bool buildTowerMode = false;
     bool inMenu = true;
 
     Tower* selectedTower = nullptr;
@@ -99,4 +99,3 @@ private:
 };
 
 #endif //GAME_H
-

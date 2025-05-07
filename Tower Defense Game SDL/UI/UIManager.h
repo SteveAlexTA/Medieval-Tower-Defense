@@ -8,28 +8,28 @@ enum TowerSelection {
     NONE,
     ARCHER,
     CANNON,
-	LIGHTNING,
+    LIGHTNING,
 };
 
 class UI {
 public:
-	UI(SDL_Renderer* renderer);
-	~UI();
-	bool init();
-	void update(int money, int wave, int hp);
-	void render(SDL_Renderer* renderer);
-	void renderText(const std::string& text, int x, int y, SDL_Renderer* renderer);
+    UI(SDL_Renderer* renderer);
+    ~UI();
+    bool init();
+    void update(int money, int wave, int hp);
+    void render(SDL_Renderer* renderer);
+    void renderText(const std::string& text, int x, int y, SDL_Renderer* renderer);
     bool isArcherTowerClicked(int mouseX, int mouseY) {
         return mouseX >= archerTowerRect.x && mouseX < archerTowerRect.x + archerTowerRect.w &&
-               mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
+            mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
     }
     bool isCannonTowerClicked(int mouseX, int mouseY) {
         return mouseX >= cannonTowerRect.x && mouseX < cannonTowerRect.x + cannonTowerRect.w &&
-               mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
+            mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
     }
     bool isLightningTowerClicked(int mouseX, int mouseY) {
         return mouseX >= lightningTowerRect.x && mouseX < lightningTowerRect.x + lightningTowerRect.w &&
-               mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
+            mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
     }
     TowerSelection getSelectedTower() const { return selectedTower; }
     void setSelectedTower(TowerSelection tower) { selectedTower = tower; }
@@ -47,14 +47,14 @@ private:
     SDL_Texture* lightningTowerIcon;
     // Text font
     TTF_Font* font;
-	TTF_Font* getFont() const { return font; }
+    TTF_Font* getFont() const { return font; }
     // UI positions
-    SDL_Rect moneyTextRect = { 0, 0, 0, 0 };
-    SDL_Rect waveTextRect = { 0, 0, 0, 0 };
-    SDL_Rect healthTextRect = { 0, 0, 0, 0 };
-    SDL_Rect archerTowerRect = { 740, 420, 32, 32 };
-    SDL_Rect cannonTowerRect = { 740, 470, 32, 32 };
-    SDL_Rect lightningTowerRect = { 740, 520, 32, 32 };
+    SDL_Rect moneyTextRect;
+    SDL_Rect waveTextRect;
+    SDL_Rect healthTextRect;
+    SDL_Rect archerTowerRect;
+    SDL_Rect cannonTowerRect;
+    SDL_Rect lightningTowerRect;
     // Current values
     int currentMoney;
     int currentWave;

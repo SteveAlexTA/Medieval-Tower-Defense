@@ -143,14 +143,13 @@
   <ItemGroup>
     <ClCompile Include="Core\Game.cpp" />
     <ClCompile Include="Core\main.cpp" />
-    <ClCompile Include="Core\Menu.cpp" />
+    <ClCompile Include="Screen\Menu.cpp" />
     <ClCompile Include="Core\Money.cpp" />
     <ClCompile Include="Core\TextureManager.cpp" />
     <ClCompile Include="Enemy\Demon.cpp" />
     <ClCompile Include="Enemy\Dragon.cpp" />
     <ClCompile Include="Enemy\Enemy.cpp" />
     <ClCompile Include="Enemy\Goblin.cpp" />
-    <ClCompile Include="Enemy\HealthBar.cpp" />
     <ClCompile Include="Enemy\Skeleton.cpp" />
     <ClCompile Include="Enemy\Wave.cpp" />
     <ClCompile Include="Map\Map.cpp" />
@@ -164,7 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
-    <ClInclude Include="Core\Menu.h" />
+    <ClInclude Include="Screen\Menu.h" />
     <ClInclude Include="Core\Money.h" />
     <ClInclude Include="Core\TextureManager.h" />
     <ClInclude Include="Enemy%27s Code\Pathfinder.h" />
@@ -172,7 +171,6 @@
     <ClInclude Include="Enemy\Dragon.h" />
     <ClInclude Include="Enemy\Enemy.h" />
     <ClInclude Include="Enemy\Goblin.h" />
-    <ClInclude Include="Enemy\HealthBar.h" />
     <ClInclude Include="Enemy\Skeleton.h" />
     <ClInclude Include="Enemy\Wave.h" />
     <ClInclude Include="Map\Map.h" />

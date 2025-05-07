@@ -3,9 +3,6 @@
 
 class Skeleton : public Enemy {
 public:
-	static const int SKELETON_HP = 200;
-	static const int SKELETON_SPEED = 250;
-
 	Skeleton(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture);
 	~Skeleton();
 	

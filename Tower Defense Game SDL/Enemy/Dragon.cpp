@@ -1,9 +1,11 @@
 #include "Dragon.h"
 
 Dragon::Dragon(float x, float y, SDL_Renderer* renderer, int map[20][25], SDL_Texture* texture)
-	: Enemy(x, y, DRAGON_HP, DRAGON_SPEED), m_renderer(renderer), m_texture(texture)
+	: Enemy(x, y, 0, 0), m_renderer(renderer), m_texture(texture)
 {
-	m_maxHP = DRAGON_HP;
+	m_hp = 3000;
+	m_speed = 150;
+	m_maxHP = m_hp;
 	initPath(map);
 }
 

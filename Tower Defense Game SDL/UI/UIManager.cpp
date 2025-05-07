@@ -4,7 +4,7 @@
 #include <string>
 
 UI::UI(SDL_Renderer* renderer) :
-	 moneyText(nullptr)
+	moneyText(nullptr)
 	, waveText(nullptr)
 	, healthText(nullptr)
 	, font(nullptr)
@@ -29,11 +29,11 @@ UI::UI(SDL_Renderer* renderer) :
 	archerTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
 	cannonTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
 	lightningTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_lightning.png", renderer);
- 
+
 	moneyTextRect = { 10, 480, 150, 20 };
 	healthTextRect = { 10, 500, 150, 20 };
 	waveTextRect = { 10, 520, 150, 20 };
-	 
+
 	archerTowerRect = { 740, 420, 32, 32 };
 	cannonTowerRect = { 740, 470, 32, 32 };
 	lightningTowerRect = { 740, 520, 32, 32 };
@@ -48,7 +48,7 @@ UI::~UI() {
 	if (font) TTF_CloseFont(font);
 }
 bool UI::init() {
-	if ( !archerTowerIcon || !cannonTowerIcon || !lightningTowerIcon) {
+	if (!archerTowerIcon || !cannonTowerIcon || !lightningTowerIcon) {
 		std::cout << "Error loading UI textures!" << std::endl;
 		return false;
 	}
@@ -121,26 +121,26 @@ void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
 
 	// Highlight selected tower type
 	if (selectedTower == TowerSelection::ARCHER || archerTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
 		SDL_Rect highlightRect = { archerTowerRect.x - 2, archerTowerRect.y - 2, archerTowerRect.w + 4, archerTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 
 	if (selectedTower == TowerSelection::CANNON || cannonTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);  
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
 		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2, cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 
 	if (selectedTower == TowerSelection::LIGHTNING || lightningTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255); 
+		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
 		SDL_Rect highlightRect = { lightningTowerRect.x - 2, lightningTowerRect.y - 2, lightningTowerRect.w + 4, lightningTowerRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
 	}
 }
 
 void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 255, 255, 255, 255 }; 
+	SDL_Color textColor = { 255, 255, 255, 255 };
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
@@ -154,7 +154,7 @@ void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* rendere
 }
 
 SDL_Texture* UI::createTextTexture(const std::string& text, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 255, 255, 255, 255 }; 
+	SDL_Color textColor = { 255, 255, 255, 255 };
 	SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;

@@ -5,16 +5,16 @@
 #include <SDL_image.h>  
 #include <SDL_mixer.h>
 #include "../UI/UIManager.h"  
-#include "TextureManager.h"
+#include "../Core/TextureManager.h"
 #include <string>
 
 class TextureManager;
 class Sound;
 
 enum class MenuState {
-	MAIN_MENU,
-	PLAY,
-	EXIT
+    MAIN_MENU,
+    PLAY,
+    EXIT
 };
 
 class Button {

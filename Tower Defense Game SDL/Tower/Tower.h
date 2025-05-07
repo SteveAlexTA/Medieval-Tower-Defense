@@ -4,9 +4,7 @@
 #include "../Enemy/Enemy.h"
 #include "../Sound/SoundManager.h"
 #include <vector>
-class Enemy;
-class Projectile;
-// Forware declaring the Enemy & Projectile class to avoid circular dependency
+
 enum class TowerType {
 	NONE,
 	ARCHER,
@@ -20,6 +18,9 @@ enum class TowerLevel {
 	LEVEL3
 };
 
+class Enemy;
+class Projectile;
+// Forward declaring the Enemy & Projectile class to avoid circular dependency
 class Tower {
 public:
 	Tower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<Tower*>* towers, int x = 0, int y = 0);
