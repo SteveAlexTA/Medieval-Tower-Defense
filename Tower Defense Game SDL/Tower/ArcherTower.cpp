@@ -5,7 +5,7 @@ ArcherTower::ArcherTower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, s
     : Tower(renderer, enemies, towers, x, y)
 {
     type = TowerType::ARCHER;
-    baseDamage = 20;
+    baseDamage = 50;
     baseRange = 150.0f;
     baseFireRate = 50;
     LoadTexture("Assets/Tower/spr_tower_archer.png");

@@ -5,7 +5,7 @@ CannonTower::CannonTower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, s
     : Tower(renderer, enemies, towers, x, y)
 {
     type = TowerType::CANNON;
-    baseDamage = 50;
+    baseDamage = 100;
     baseRange = 200.0f;
     baseFireRate = 30;
     LoadTexture("Assets/Tower/spr_tower_cannon.png");
