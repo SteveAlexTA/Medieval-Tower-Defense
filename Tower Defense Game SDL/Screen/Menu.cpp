@@ -22,14 +22,6 @@ Button::~Button() {
 
 void Button::render(SDL_Renderer* renderer) {
     if (!texture) return;
-
-    // Draw button with highlight if hovered
-    if (hovered) {
-        SDL_SetTextureColorMod(texture, 255, 255, 150);
-    }
-    else {
-        SDL_SetTextureColorMod(texture, 255, 255, 255);
-    }
     SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
 
@@ -104,19 +96,15 @@ bool Menu::init() {
 }
 
 void Menu::handleEvents(SDL_Event& event) {
-    int mouseX, mouseY;
-    SDL_GetMouseState(&mouseX, &mouseY);
-
-    // Update button hover states
-    playButton->setHovered(playButton->isClicked(mouseX, mouseY));
-    exitButton->setHovered(exitButton->isClicked(mouseX, mouseY));
-
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_LEFT) {
-            if (playButton->isClicked(mouseX, mouseY)) {
+            int mouseX = event.button.x;
+            int mouseY = event.button.y;
+
+            if (playButton && playButton->isClicked(mouseX, mouseY)) {
                 menuState = MenuState::PLAY;
             }
-            else if (exitButton->isClicked(mouseX, mouseY)) {
+            else if (exitButton && exitButton->isClicked(mouseX, mouseY)) {
                 menuState = MenuState::EXIT;
             }
         }

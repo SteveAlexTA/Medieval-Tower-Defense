@@ -11,7 +11,7 @@ enum class EnemyType {
 };
 class WaveSystem {
 public:
-	WaveSystem(float spawnInterval = 2.0f, bool easyMode = true);
+	WaveSystem(bool easyMode = true);
 
 	void update(float deltatime);
 	bool aboutToSpawnEnemy();

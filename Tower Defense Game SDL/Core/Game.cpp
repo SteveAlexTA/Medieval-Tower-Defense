@@ -24,6 +24,8 @@ Game::Game()
     , moneySystem(nullptr)
     , UISystem(nullptr)
     , menuSystem(nullptr)
+	, winScreen(nullptr)
+	, loseScreen(nullptr)
     , m_goblinTexture(nullptr)
     , m_skeletonTexture(nullptr)
     , m_demonTexture(nullptr)
@@ -31,7 +33,12 @@ Game::Game()
     , m_resourcesPreloaded(false)
     , selectedTower(nullptr)
     , inMenu(true)
+	, inLoseScreen(false)
+	, inWinScreen(false)
+	, buildTowerMode(false)
     , backgroundMusic(nullptr)
+	, showMaxTowersMessage(false)
+    , lives(0)
     , deltaTime(0.0f)
 {
 }
@@ -52,6 +59,8 @@ Game::~Game() {
     delete moneySystem;
     delete UISystem;
     delete menuSystem;
+	delete winScreen;
+	delete loseScreen;
     Sound::Instance().StopMusic();
 
     if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
@@ -68,7 +77,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     }
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
-        std::cout << "Subsystem Initialised!..." << std::endl;
+        std::cout << "Subsystem initialised!..." << std::endl;
         window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
         if (window) {
             std::cout << "Window created successfully!" << std::endl;
@@ -103,14 +112,24 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
+    winScreen = new WinScreen(renderer);
+    if (!winScreen->init()) {
+        std::cout << "Failed to initialize win screen!" << std::endl;
+        isRunning = false;
+        return;
+    }
+    loseScreen = new LoseScreen(renderer);
+    if (!loseScreen->init()) {
+        std::cout << "Failed to initialize lose screen!" << std::endl;
+        isRunning = false;
+        return;
+    }
     preloadResources();
     map = new Map();
     waveSystem = new WaveSystem();
     createEnemyPool(50);
-    waveSystem->startNextWave();
     moneySystem = new Money(200);
     lives = 5;
-    gameOver = false;
     UISystem = new UI(renderer);
     if (!UISystem->init())
     {
@@ -125,6 +144,7 @@ void Game::startGame() {
         waveSystem->startNextWave();
     }
     inMenu = false;
+    SoundManager::Instance().PlayMusic("background", -1);
 }
 
 void Game::loadAudioAssets() {
@@ -136,6 +156,7 @@ void Game::loadAudioAssets() {
     }
     SoundManager::Instance().LoadSound("tower_place", "Assets/Sound/tower_place.wav");
     SoundManager::Instance().LoadSound("game_over", "Assets/Sound/game_over.wav");
+    SoundManager::Instance().LoadSound("game_win", "Assets/Sound/game_win.wav");
     SoundManager::Instance().SetMusicVolume(70);
 }
 
@@ -184,19 +205,28 @@ void Game::handleEvents() {
     SDL_Event event;
     int mouseX = 0;
     int mouseY = 0;
+    //static bool isFullscreen = false;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             isRunning = false;
             return;
         }
+        if (inWinScreen) {
+            continue;
+        }
+        if (inLoseScreen) {
+            continue;
+        }
         if (inMenu) {
-            menuSystem->handleEvents(event);
-            if (menuSystem->getMenuState() == MenuState::PLAY) {
-                startGame(); // Start the game when Play is clicked
-            }
-            else if (menuSystem->getMenuState() == MenuState::EXIT) {
-                isRunning = false; // Exit the game when Exit is clicked
-                return;
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                menuSystem->handleEvents(event);
+                if (menuSystem->getMenuState() == MenuState::PLAY) {
+                    startGame(); // Start the game when Play is clicked
+                }
+                else if (menuSystem->getMenuState() == MenuState::EXIT) {
+                    isRunning = false;
+                    return;
+                }
             }
             continue;
         }
@@ -275,6 +305,10 @@ void Game::handleEvents() {
                     UISystem->resetSelectedTower();
                 }
             }
+			/*else if (event.key.keysym.sym == SDLK_RETURN && (event.key.keysym.mod & KMOD_ALT)) {
+				isFullscreen = !isFullscreen;
+                SDL_SetWindowFullscreen(window, isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+			} */
             break;
         default:
             break;
@@ -486,11 +520,22 @@ void Game::update() {
         deltaTime = 0.1f;
     }
     lastFrameTime = currentFrameTime;
-    if (inMenu) {
-        menuSystem->update();
+    if (inLoseScreen) {
+        if (loseScreen->isDisplayTimeElapsed()) {
+            inLoseScreen = false;
+            inMenu = true;
+            resetGame();
+            SoundManager::Instance().PlayMusic("background", -1);
+        }
         return;
     }
-    if (gameOver) {
+    if (inWinScreen) {
+        if (winScreen->isDisplayTimeElapsed()) {
+            inWinScreen = false;
+            inMenu = true;
+            resetGame();
+            SoundManager::Instance().PlayMusic("background", -1);
+        }
         return;
     }
     if (showMaxTowersMessage && SDL_GetTicks() - messageStartTime > MESSAGE_DURATION) {
@@ -505,6 +550,15 @@ void Game::update() {
     if (waveSystem->isWaveCompleted() && activeEnemies.empty()) {
         waveSystem->startNextWave();
     }
+    if (waveSystem->isLastWave() && activeEnemies.empty()) {
+        inWinScreen = true;
+        winScreen->resetDisplayTime();
+        SoundManager::Instance().PlaySound("game_win");
+        return;
+    }
+    else if (waveSystem->isWaveCompleted() && activeEnemies.empty()) {
+        waveSystem->startNextWave();
+    }
     for (auto tower : towers) {
         tower->Update();
     }
@@ -514,10 +568,12 @@ void Game::update() {
             lives -= 1;
             if (lives <= 0) {
                 lives = 0;
-                gameOver = true;
+                inLoseScreen = true;
+                loseScreen->resetDisplayTime();
                 std::cout << "Game Over!" << std::endl;
-                SoundManager::Instance().PlaySound("game_over", 0);
                 SoundManager::Instance().StopMusic();
+                SoundManager::Instance().PlaySound("game_over");
+                return;
             }
             (*it)->deactivate();
             it = activeEnemies.erase(it);
@@ -601,6 +657,14 @@ void Game::render() {
         menuSystem->render(renderer);
         return;
     }
+    if (inLoseScreen) {
+        loseScreen->render(renderer);
+        return;
+    }
+    if (inWinScreen) {
+        winScreen->render(renderer);
+        return;
+    }
     SDL_RenderClear(renderer);
     map->DrawMap();
     for (auto tower : towers) {
@@ -652,13 +716,33 @@ void Game::render() {
         }
         SDL_DestroyTexture(previewTexture);
     }
-    if (gameOver) {
-        SDL_Rect gameOverRect = { 200, 150, 400, 300 };
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 200);
-        SDL_RenderFillRect(renderer, &gameOverRect);
-        UISystem->renderText("GAME OVER", 320, 280, renderer);
-    }
     SDL_RenderPresent(renderer);
+}
+
+void Game::resetGame() {
+    // Clear active enemies
+    activeEnemies.clear();
+    // Deactivate all enemies in the pool
+    for (auto& enemy : enemyPool) {
+        enemy->deactivate();
+    }
+    // Delete all towers
+    for (auto tower : towers) {
+        delete tower;
+    }
+    towers.clear();
+    selectedTower = nullptr;
+    // Reset wave system
+    delete waveSystem;
+    waveSystem = new WaveSystem();
+    // Reset money
+    delete moneySystem;
+    moneySystem = new Money(200);
+    // Reset game status
+    lives = 5;
+    buildTowerMode = false;
+    showMaxTowersMessage = false;
+	std::cout << "Game reset" << std::endl;
 }
 
 void Game::clean() {

@@ -2,10 +2,10 @@
 #include <iostream>
 #include <algorithm>
 
-WaveSystem::WaveSystem(float spawnInterval, bool easyMode)
+WaveSystem::WaveSystem(bool easyMode)
     : m_currentWave(0)
     , m_remainingEnemiesInWave(0)
-    , m_spawnInterval(spawnInterval)
+    , m_spawnInterval(3.0f)
     , m_currentSpawnTimer(0.0f)
     , m_waveBreakTimer(0.0f)
     , m_timeBetweenWaves(5.0f)
@@ -42,7 +42,7 @@ void WaveSystem::configureWaveDefinitions() {
 
     }
     else {
-        m_waveDefinitions[1] = "s,s,s,s,s,s,s,s,s,s,s";
+        m_waveDefinitions[1] = "";
     }
 }
 
@@ -78,11 +78,10 @@ void WaveSystem::startNextWave() {
     m_currentWave++;
 
     if (m_waveDefinitions.find(m_currentWave) == m_waveDefinitions.end()) {
-        // Create a harder wave if it's beyond defined waves
-        std::string hardWave = "r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r";
+        // Create a super hard wave if it's beyond defined waves
+        std::string hardWave = "r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r,r";
         m_waveDefinitions[m_currentWave] = hardWave;
     }
-
     // Parse the wave definition string into enemy types
     std::string waveDefinition = m_waveDefinitions[m_currentWave];
     m_currentWaveEnemies.clear();
@@ -106,11 +105,10 @@ void WaveSystem::startNextWave() {
     m_currentEnemyIndex = 0;
     m_waveBreakTimer = 0.0f;
     m_waveInProgress = true;
-
-    // Make spawn interval slightly shorter each wave (faster spawning)
+	//Make interval shorter for harder waves (increasing difficulty each wave)
     if (m_currentWave > 1) {
         m_spawnInterval *= 0.9f;
-        if (m_spawnInterval < 0.5f) m_spawnInterval = 0.5f; 
+        if (m_spawnInterval < 0.5f) m_spawnInterval = 0.5f;
     }
     std::cout << "Starting Wave " << m_currentWave << " with " << m_remainingEnemiesInWave << " enemies!" << std::endl;
 }

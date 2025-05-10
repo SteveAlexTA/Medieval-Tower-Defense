@@ -24,7 +24,6 @@ public:
 
     void render(SDL_Renderer* renderer);
     bool isClicked(int mouseX, int mouseY);
-    void setHovered(bool isHovered) { hovered = isHovered; }
 
 private:
     SDL_Rect rect;

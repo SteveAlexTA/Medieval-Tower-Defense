@@ -10,6 +10,8 @@
 #include "../Enemy/Wave.h"
 #include "Money.h"
 #include "../Screen/Menu.h"
+#include "../Screen/LoseScreen.h"
+#include "../Screen/WinScreen.h"
 #include "../UI/UIManager.h"
 #include "../Sound/SoundManager.h"
 
@@ -17,6 +19,8 @@ class Map;
 class Tower;
 class Enemy;
 class Menu;
+class WinScreen;
+class LoseScreen;
 class UI;
 class Money;
 class WaveSystem;
@@ -39,7 +43,6 @@ public:
     bool canPlaceTower(int x, int y);
     void spawnEnemy();
     static SDL_Renderer* renderer;
-    bool isGameOver() const { return gameOver; }
     int getBaseLives() const { return lives; }
 
 private:
@@ -47,21 +50,22 @@ private:
     void createEnemyPool(int poolSize = 100);
     void startGame();
     void loadAudioAssets();
+	void resetGame();
 
     int cnt;
-    bool isRunning;
+    bool isRunning; 
     SDL_Window* window;
     Map* map;
     std::vector<Tower*> towers;
     std::vector<Enemy*> activeEnemies;
     std::vector<Enemy*> enemyPool;
     float deltaTime;
-
     int lives;
-    bool gameOver;
 
     WaveSystem* waveSystem;
     Money* moneySystem;
+    WinScreen* winScreen;
+    LoseScreen* loseScreen;
     UI* UISystem;
     Menu* menuSystem;
 
@@ -73,6 +77,8 @@ private:
     bool m_resourcesPreloaded;
     bool buildTowerMode;
     bool inMenu;
+    bool inLoseScreen;           
+    bool inWinScreen;
 
     Tower* selectedTower;
     void selectTowerAt(int x, int y);

@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Core\Game.cpp" />
     <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Screen\LoseScreen.cpp" />
     <ClCompile Include="Screen\Menu.cpp" />
     <ClCompile Include="Core\Money.cpp" />
     <ClCompile Include="Core\TextureManager.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Enemy\Wave.cpp" />
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Map\PathFinder.cpp" />
+    <ClCompile Include="Screen\WinScreen.cpp" />
     <ClCompile Include="Tower\ArcherTower.cpp" />
     <ClCompile Include="Tower\CannonTower.cpp" />
     <ClCompile Include="Tower\LightningTower.cpp" />
@@ -163,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
+    <ClInclude Include="Screen\LoseScreen.h" />
     <ClInclude Include="Screen\Menu.h" />
     <ClInclude Include="Core\Money.h" />
     <ClInclude Include="Core\TextureManager.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="Enemy\Wave.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\PathFinder.h" />
+    <ClInclude Include="Screen\WinScreen.h" />
     <ClInclude Include="Tower\ArcherTower.h" />
     <ClInclude Include="Tower\CannonTower.h" />
     <ClInclude Include="Tower\LightningTower.h" />
