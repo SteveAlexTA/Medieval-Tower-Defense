@@ -1,8 +1,10 @@
 #include "Tower.h"
 #include "../Core/TextureManager.h"
 #include "../Core/Money.h"
+
 SDL_Texture* Tower::upgradeTexture = nullptr;
 SDL_Texture* Tower::deleteTexture = nullptr;
+TTF_Font* Tower::sharedFont = nullptr;
 bool Tower::textureLoaded = false;
 
 Tower::Tower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<Tower*>* towers, int x, int y)
@@ -17,7 +19,6 @@ Tower::Tower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<T
 	InitializeSharedTextures();
 	UpgradeStats();
 }
-
 
 Tower::~Tower() { //Tower destructor
 	for (auto& projectile : projectiles) {
@@ -93,16 +94,78 @@ void Tower::Render() {
 	}
 }
 
+int Tower::calculateRefundAmount() const {
+	int totalCost = 0;
+	switch (type) {
+	case TowerType::ARCHER:
+		totalCost = Money::ARCHER_TOWER_COST;
+		if (level >= TowerLevel::LEVEL2) {
+			totalCost += Money::ARCHER_UPGRADE_LVL2_COST;
+		}
+		if (level == TowerLevel::LEVEL3) {
+			totalCost += Money::ARCHER_UPGRADE_LVL3_COST;
+		}
+		break;
+	case TowerType::CANNON:
+		totalCost = Money::CANNON_TOWER_COST;
+		if (level >= TowerLevel::LEVEL2) {
+			totalCost += Money::CANNON_UPGRADE_LVL2_COST;
+		}
+		if (level == TowerLevel::LEVEL3) {
+			totalCost += Money::CANNON_UPGRADE_LVL3_COST;
+		}
+		break;
+	case TowerType::LIGHTNING:
+		totalCost = Money::LIGHTNING_TOWER_COST;
+		if (level >= TowerLevel::LEVEL2) {
+			totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
+		}
+		if (level == TowerLevel::LEVEL3) {
+			totalCost += Money::LIGHTNING_UPGRADE_LVL3_COST;
+		}
+		break;
+	default:
+		break;
+	}
+	return totalCost / 2;
+}
+
 void Tower::RenderUpgradeUI() {
+	SDL_Color textColor = { 255, 255, 255, 255 };
+	TTF_Font* font = TTF_OpenFont("Assets/Icon/consola.ttf", 14);
+	if (!font) {
+		std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+		return;
+	}
 	if (canUpgrade()) {
 		SDL_Rect upgradeIconRect = { towerX - 16, towerY - 40, 32, 32 };
 		SDL_RenderCopy(renderer, upgradeTexture, nullptr, &upgradeIconRect);
+		int upgradeCost = getUpgradePrice();
+		std::string costText = std::to_string(upgradeCost);
+		SDL_Surface* costSurface = TTF_RenderText_Solid(font, costText.c_str(), textColor);
+		if (costSurface) {
+			SDL_Texture* costTexture = SDL_CreateTextureFromSurface(renderer, costSurface);
+			SDL_Rect costRect = { towerX - 16 + (32 - costSurface->w) / 2,  towerY - 60, costSurface->w, costSurface->h };
+			SDL_RenderCopy(renderer, costTexture, nullptr, &costRect);
+			SDL_FreeSurface(costSurface);
+			SDL_DestroyTexture(costTexture);
+		}
 	}
 	SDL_Rect deleteIconRect = { towerX + 16, towerY - 40, 32, 32 };
 	SDL_RenderCopy(renderer, deleteTexture, nullptr, &deleteIconRect);
+	int refundAmount = calculateRefundAmount();
+	std::string refundText = std::to_string(refundAmount);
+	SDL_Surface* refundSurface = TTF_RenderText_Solid(font, refundText.c_str(), textColor);
+	if (refundSurface) {
+		SDL_Texture* refundTexture = SDL_CreateTextureFromSurface(renderer, refundSurface);
+		SDL_Rect refundRect = { towerX + 16 + (32 - refundSurface->w) / 2, towerY - 60, refundSurface->w,refundSurface->h };
+		SDL_RenderCopy(renderer, refundTexture, nullptr, &refundRect);
+		SDL_FreeSurface(refundSurface);
+		SDL_DestroyTexture(refundTexture);
+	}
 }
 
-bool Tower::IsEnemyInRange(Enemy* enemy) const {
+bool Tower::IsEnemyInRange(Enemy* enemy) const { //Check if enemy is within the tower's range using Euclidean distance
 	if (!enemy || !enemy->isAlive()) return false;
 	// Calculate distance from tower center to enemy center
 	float towerCenterX = towerX + 16;
@@ -111,7 +174,7 @@ bool Tower::IsEnemyInRange(Enemy* enemy) const {
 	float enemyCenterY = enemy->getY() + 16;
 	float dx = towerCenterX - enemyCenterX;
 	float dy = towerCenterY - enemyCenterY;
-	float distanceSquared = dx * dx + dy * dy;
+	float distanceSquared = dx * dx + dy * dy; //Pythagorean theorem
 	return distanceSquared <= (range * range);
 }
 

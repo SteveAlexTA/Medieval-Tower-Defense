@@ -69,13 +69,13 @@
     <ClCompile Include="Tower\LightningTower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Screen\Menu.cpp">
+    <ClCompile Include="State\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Screen\LoseScreen.cpp">
+    <ClCompile Include="State\LoseScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Screen\WinScreen.cpp">
+    <ClCompile Include="State\WinScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,13 +134,13 @@
     <ClInclude Include="Tower\LightningTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Screen\Menu.h">
+    <ClInclude Include="State\Menu.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Screen\LoseScreen.h">
+    <ClInclude Include="State\LoseScreen.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Screen\WinScreen.h">
+    <ClInclude Include="State\WinScreen.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

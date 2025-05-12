@@ -21,15 +21,15 @@ public:
     void renderText(const std::string& text, int x, int y, SDL_Renderer* renderer);
     bool isArcherTowerClicked(int mouseX, int mouseY) {
         return mouseX >= archerTowerRect.x && mouseX < archerTowerRect.x + archerTowerRect.w &&
-            mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
+               mouseY >= archerTowerRect.y && mouseY < archerTowerRect.y + archerTowerRect.h;
     }
     bool isCannonTowerClicked(int mouseX, int mouseY) {
         return mouseX >= cannonTowerRect.x && mouseX < cannonTowerRect.x + cannonTowerRect.w &&
-            mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
+               mouseY >= cannonTowerRect.y && mouseY < cannonTowerRect.y + cannonTowerRect.h;
     }
     bool isLightningTowerClicked(int mouseX, int mouseY) {
         return mouseX >= lightningTowerRect.x && mouseX < lightningTowerRect.x + lightningTowerRect.w &&
-            mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
+               mouseY >= lightningTowerRect.y && mouseY < lightningTowerRect.y + lightningTowerRect.h;
     }
     TowerSelection getSelectedTower() const { return selectedTower; }
     void setSelectedTower(TowerSelection tower) { selectedTower = tower; }

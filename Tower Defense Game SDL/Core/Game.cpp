@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "TextureManager.h"
-#include "../Screen/Menu.h"
+#include "../State/Menu.h"
 #include "../Map/Map.h"
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
@@ -48,12 +48,10 @@ Game::~Game() {
         delete enemy;
     }
     enemyPool.clear();
-
     for (auto tower : towers) {
         delete tower;
     }
     towers.clear();
-
     delete waveSystem;
     delete map;
     delete moneySystem;
@@ -62,7 +60,6 @@ Game::~Game() {
 	delete winScreen;
 	delete loseScreen;
     Sound::Instance().StopMusic();
-
     if (m_goblinTexture) SDL_DestroyTexture(m_goblinTexture);
     if (m_skeletonTexture) SDL_DestroyTexture(m_skeletonTexture);
     if (m_demonTexture) SDL_DestroyTexture(m_demonTexture);
@@ -377,7 +374,7 @@ void Game::deleteTower(Tower* tower) {
         if (*it == tower) {
             TowerType type = getTowerType(tower);
             int level = static_cast<int>(tower->getLevel());
-            int refund = getRefundAmount(type, level);
+			int refund = tower->calculateRefundAmount();
             moneySystem->addMoney(refund);
             delete* it;
             towers.erase(it);
@@ -482,34 +479,6 @@ int Game::getUpgradeCost(TowerType type, int currentLevel) const {
         break;
     }
     return 0;
-}
-
-int Game::getRefundAmount(TowerType type, int level) const {
-    int totalCost = 0;
-    switch (type) {
-    case TowerType::ARCHER:
-        totalCost = Money::ARCHER_TOWER_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL2))
-            totalCost += Money::ARCHER_UPGRADE_LVL2_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL3))
-            totalCost += Money::ARCHER_UPGRADE_LVL3_COST;
-        break;
-    case TowerType::CANNON:
-        totalCost = Money::CANNON_TOWER_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL2))
-            totalCost += Money::CANNON_UPGRADE_LVL2_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL3))
-            totalCost += Money::CANNON_UPGRADE_LVL3_COST;
-        break;
-    case TowerType::LIGHTNING:
-        totalCost = Money::LIGHTNING_TOWER_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL2))
-            totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
-        if (level >= static_cast<int>(TowerLevel::LEVEL3))
-            totalCost += Money::LIGHTNING_UPGRADE_LVL3_COST;
-        break;
-    }
-    return totalCost / 2;
 }
 
 void Game::update() {

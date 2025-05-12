@@ -9,9 +9,9 @@
 #include "../Enemy/Enemy.h"
 #include "../Enemy/Wave.h"
 #include "Money.h"
-#include "../Screen/Menu.h"
-#include "../Screen/LoseScreen.h"
-#include "../Screen/WinScreen.h"
+#include "../State/Menu.h"
+#include "../State/LoseScreen.h"
+#include "../State/WinScreen.h"
 #include "../UI/UIManager.h"
 #include "../Sound/SoundManager.h"
 
@@ -96,7 +96,6 @@ private:
     int getTowerCost(TowerSelection type) const;
     TowerType getTowerType(Tower* tower) const;
     int getUpgradeCost(TowerType type, int currentLevel) const;
-    int getRefundAmount(TowerType type, int level) const;
 
     void rewardEnemyKilled(Enemy* enemy);
 

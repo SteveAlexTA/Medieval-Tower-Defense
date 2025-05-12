@@ -1,5 +1,6 @@
 #pragma once
 #include<SDL.h>
+#include<SDL_ttf.h>
 #include "../Core/TextureManager.h"
 #include "../Enemy/Enemy.h"
 #include "../Sound/SoundManager.h"
@@ -34,9 +35,11 @@ public:
 	int getDamage() const { return damage; }
 	float getRange() const { return range; }
 	TowerLevel getLevel() const { return level; }
+
 	bool canUpgrade() const { return level != TowerLevel::LEVEL3; }
 	bool isSelected() const { return selected; }
 	int getUpgradePrice() const;
+	int calculateRefundAmount() const;
 	// Setters
 	void setX(int x) { towerX = x; }
 	void setY(int y) { towerY = y; }
@@ -76,6 +79,7 @@ protected:
 private:
 	static SDL_Texture* upgradeTexture;
 	static SDL_Texture* deleteTexture;
+	static TTF_Font* sharedFont;
 	static bool textureLoaded;
 	void InitializeSharedTextures();
 	void CleanupSharedTextures();

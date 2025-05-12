@@ -5,7 +5,7 @@
 WaveSystem::WaveSystem(bool easyMode)
     : m_currentWave(0)
     , m_remainingEnemiesInWave(0)
-    , m_spawnInterval(3.0f)
+    , m_spawnInterval(2.0f)
     , m_currentSpawnTimer(0.0f)
     , m_waveBreakTimer(0.0f)
     , m_timeBetweenWaves(5.0f)
