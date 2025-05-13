@@ -1,6 +1,7 @@
 #include "Map.h"
 #include "../Core/TextureManager.h"
 #include "../Core/Game.h"
+
 Map::Map() { //Constructor
     dirt = TextureManager::LoadTexture("Assets/Map/spr_grass_03.png", Game::renderer);
     grass01 = TextureManager::LoadTexture("Assets/Map/spr_grass_01.png", Game::renderer);
@@ -11,6 +12,7 @@ Map::Map() { //Constructor
     src.h = dest.h = 32;
     dest.x = dest.y = 0;
 }
+
 Map::~Map() //Destructor 
 {
     if (dirt) SDL_DestroyTexture(dirt);
@@ -25,6 +27,7 @@ void Map::LoadMap(int arr[20][25]) //Load map
         }
     }
 }
+
 void Map::DrawMap() { //Draw map
     int type = 0;
     for (int row = 0; row < 20; row++) {
@@ -49,6 +52,7 @@ void Map::DrawMap() { //Draw map
         }
     }
 }
+
 bool Map::IsEnemyPath(int row, int column) const
 {
     if (row >= 0 && row < 20 && column >= 0 && column < 25) {

@@ -2,6 +2,7 @@
 #include "Map.h"
 #include <algorithm>
 #include <cmath>
+
 std::vector<PathFinder::Point> PathFinder::FindPath(int map[20][25]) {
     std::vector<Point> path;
     Point start, end;
@@ -34,7 +35,8 @@ std::vector<PathFinder::Point> PathFinder::FindPath(int map[20][25]) {
     }
     return path;
 }
-void PathFinder::FindPathStartEnd(int map[20][25], Point& start, Point& end){
+
+void PathFinder::FindPathStartEnd(int map[20][25], Point& start, Point& end) {
     start = Point(-1, -1);
     end = Point(-1, -1);
     //Find start point (Spawning area)

@@ -1,6 +1,7 @@
 #include "Tower.h"
 #include "../Core/TextureManager.h"
 #include "../Core/Money.h"
+#include <cmath>
 
 SDL_Texture* Tower::upgradeTexture = nullptr;
 SDL_Texture* Tower::deleteTexture = nullptr;
@@ -63,14 +64,16 @@ void Tower::Update() {
 
 void Tower::UpdateProjectiles() {
 	for (auto it = projectiles.begin(); it != projectiles.end();) {
-		(*it)->Update();
+		(*it)->Update(); // Move the projectile towards target
 		Enemy* target = (*it)->GetTarget();
 		bool isTargetValid = target && target->isAlive();
+		// Check if projectile has hit target
 		if (isTargetValid && (*it)->HasHitTarget()) {
-			target->takeDamage(damage);
+			target->takeDamage(damage); // Apply damage to enemy
 			delete* it;
-			it = projectiles.erase(it);
+			it = projectiles.erase(it); // Remove projectile after hit
 		}
+		// Remove projectile if out of bounds or no enemy valid
 		else if ((*it)->IsOutOfBounds() || !isTargetValid) {
 			delete* it;
 			it = projectiles.erase(it);
@@ -174,8 +177,8 @@ bool Tower::IsEnemyInRange(Enemy* enemy) const { //Check if enemy is within the 
 	float enemyCenterY = enemy->getY() + 16;
 	float dx = towerCenterX - enemyCenterX;
 	float dy = towerCenterY - enemyCenterY;
-	float distanceSquared = dx * dx + dy * dy; //Pythagorean theorem
-	return distanceSquared <= (range * range);
+	float distance= std::sqrt(dx * dx + dy * dy); //Pythagorean theorem
+	return distance <= range;
 }
 
 Enemy* Tower::FindClosestEnemy() {
@@ -360,11 +363,11 @@ bool Projectile::IsOutOfBounds() const
 bool Projectile::HasHitTarget() const
 {
 	if (!target || !target->isAlive()) return false;
-	// Calculate distance to target center
+	// Calculate distance to target center using Euclidean distance
 	int targetCenterX = target->getX() + 16;
 	int targetCenterY = target->getY() + 16;
 	int dx = x - targetCenterX;
 	int dy = y - targetCenterY;
 	float distance = sqrt(dx * dx + dy * dy);
-	return distance < 24;
+	return distance <= 24; // Collision threshold
 }
