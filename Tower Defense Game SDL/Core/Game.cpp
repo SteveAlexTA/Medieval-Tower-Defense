@@ -489,6 +489,9 @@ void Game::update() {
         deltaTime = 0.1f;
     }
     lastFrameTime = currentFrameTime;
+    if (inMenu) {
+        return;
+    }
     if (inLoseScreen) {
         if (loseScreen->isDisplayTimeElapsed()) {
             inLoseScreen = false;
