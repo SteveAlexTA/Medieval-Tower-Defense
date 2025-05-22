@@ -37,8 +37,8 @@ void WaveSystem::configureWaveDefinitions() {
         m_waveDefinitions[16] = "s,g,g,g,s,s,d,d,s,d,d,s,g,g,g,g,g,s,s,s,d";
         m_waveDefinitions[17] = "r,s,g,s,d,g,g,g,g,g,s,g,g,g,s,s,s,s,s,d,d,d,d";
         m_waveDefinitions[18] = "d,r,r,d,s,s,d,s,s,r,r,d,d,d,r,d,r,d,r,d,r,d,r";
-        m_waveDefinitions[19] = "r,d,r,d,r,d,d,d,d,r,r,r,r,d,s,d,s,d,s,d,r,d,r,s,d,r";
-        m_waveDefinitions[20] = "r,r,r,r,r,r,r,r,r,r,r,r,r,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r";
+        m_waveDefinitions[19] = "r,d,r,d,r,d,d,d,r,r,d,s,d,s,d,s,d,r,d,r,s,d,r";
+        m_waveDefinitions[20] = "r,r,r,d,r,d,r,d,r,r,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r";
 
     }
     else {

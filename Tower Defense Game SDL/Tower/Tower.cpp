@@ -49,6 +49,8 @@ void Tower::LoadTexture(const char* towerPath) {
 		SDL_DestroyTexture(texture); 
 	}
 	texture = TextureManager::LoadTexture(towerPath, renderer);
+	srcRect = { 0, 0, 32, 32 };
+	destRect = { towerX, towerY, 32, 32 };
 }
 
 void Tower::Update() {
@@ -93,6 +95,7 @@ void Tower::Render() {
 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 		SDL_Rect highlightRect = { destRect.x - 2, destRect.y - 2, destRect.w + 4, destRect.h + 4 };
 		SDL_RenderDrawRect(renderer, &highlightRect);
+		RenderRangeCircle();
 		RenderUpgradeUI();
 	}
 }
@@ -102,7 +105,7 @@ int Tower::calculateRefundAmount() const {
 	switch (type) {
 	case TowerType::ARCHER:
 		totalCost = Money::ARCHER_TOWER_COST;
-		if (level >= TowerLevel::LEVEL2) {
+		if (level == TowerLevel::LEVEL2) {
 			totalCost += Money::ARCHER_UPGRADE_LVL2_COST;
 		}
 		if (level == TowerLevel::LEVEL3) {
@@ -111,7 +114,7 @@ int Tower::calculateRefundAmount() const {
 		break;
 	case TowerType::CANNON:
 		totalCost = Money::CANNON_TOWER_COST;
-		if (level >= TowerLevel::LEVEL2) {
+		if (level == TowerLevel::LEVEL2) {
 			totalCost += Money::CANNON_UPGRADE_LVL2_COST;
 		}
 		if (level == TowerLevel::LEVEL3) {
@@ -120,7 +123,7 @@ int Tower::calculateRefundAmount() const {
 		break;
 	case TowerType::LIGHTNING:
 		totalCost = Money::LIGHTNING_TOWER_COST;
-		if (level >= TowerLevel::LEVEL2) {
+		if (level == TowerLevel::LEVEL2) {
 			totalCost += Money::LIGHTNING_UPGRADE_LVL2_COST;
 		}
 		if (level == TowerLevel::LEVEL3) {
@@ -165,6 +168,36 @@ void Tower::RenderUpgradeUI() {
 		SDL_RenderCopy(renderer, refundTexture, nullptr, &refundRect);
 		SDL_FreeSurface(refundSurface);
 		SDL_DestroyTexture(refundTexture);
+	}
+}
+
+void Tower::RenderRangeCircle() const {
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
+	int centerX = towerX + 16;
+	int centerY = towerY + 16;
+	int radius = static_cast<int>(range);
+	// Bresenham circle algorithm 
+	int x = 0;
+	int y = radius;
+	int d = 3 - 2 * radius;
+	while (y >= x) {
+		// Draw 8 points for each calculation
+		SDL_RenderDrawPoint(renderer, centerX + x, centerY + y);
+		SDL_RenderDrawPoint(renderer, centerX - x, centerY + y);
+		SDL_RenderDrawPoint(renderer, centerX + x, centerY - y);
+		SDL_RenderDrawPoint(renderer, centerX - x, centerY - y);
+		SDL_RenderDrawPoint(renderer, centerX + y, centerY + x);
+		SDL_RenderDrawPoint(renderer, centerX - y, centerY + x);
+		SDL_RenderDrawPoint(renderer, centerX + y, centerY - x);
+		SDL_RenderDrawPoint(renderer, centerX - y, centerY - x);
+		x++;
+		if (d > 0) {
+			y--;
+			d = d + 4 * (x - y) + 10;
+		}
+		else {
+			d = d + 4 * x + 6;
+		}
 	}
 }
 

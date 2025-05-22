@@ -48,6 +48,12 @@ public:
 	virtual void Upgrade();
 	bool HandleEvents(SDL_Event* event);
 	bool IsPointInside(int x, int y) const;
+
+	void RenderRangeCircle() const;
+	void setSrcRect(SDL_Rect rect) { srcRect = rect; }
+	void setDestRect(SDL_Rect rect) { destRect = rect; }
+	SDL_Rect getSrcRect() const { return srcRect; }
+	SDL_Rect getDestRect() const { return destRect; }
 protected:
 	int towerX, towerY; // Position
 	int baseDamage;

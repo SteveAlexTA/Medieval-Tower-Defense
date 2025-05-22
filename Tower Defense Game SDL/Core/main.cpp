@@ -16,6 +16,15 @@ int main(int argc, char* argv[]) {
     game = new Game();
     game->init("TowerDefense", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
+    SDL_Surface* icon = SDL_LoadBMP("gameicon.bmp");
+    if (icon) {
+        SDL_SetWindowIcon(game->getWindow(), icon);
+        SDL_FreeSurface(icon);
+    }
+    else {
+        SDL_Log("Failed to load icon: %s\n", SDL_GetError());
+    }
+
     while (game->running()) {
         frameStart = SDL_GetTicks();
         

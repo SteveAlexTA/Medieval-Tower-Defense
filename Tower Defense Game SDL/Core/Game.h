@@ -33,6 +33,7 @@ public:
     virtual ~Game();
 
     void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
+    SDL_Window* getWindow() const { return window; }
     void handleEvents();
     void update();
     void render();

@@ -13,6 +13,7 @@
 #include "../Tower/CannonTower.h"
 #include "../Tower/LightningTower.h"
 
+
 SDL_Renderer* Game::renderer = nullptr;
 
 Game::Game()
@@ -477,6 +478,8 @@ int Game::getUpgradeCost(TowerType type, int currentLevel) const {
         if (currentLevel == static_cast<int>(TowerLevel::LEVEL2))
             return Money::LIGHTNING_UPGRADE_LVL3_COST;
         break;
+    default:
+        break;
     }
     return 0;
 }
@@ -665,11 +668,13 @@ void Game::render() {
             texturePath = "Assets/Tower/spr_tower_cannon.png";
             break;
         case TowerSelection::ARCHER:
-        default:
             texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
         case TowerSelection::LIGHTNING:
             texturePath = "Assets/Tower/spr_tower_lightning.png";
+            break;
+        default:
+            texturePath = "Assets/Tower/spr_tower_archer.png";
             break;
         }
         SDL_Texture* previewTexture = TextureManager::LoadTexture(texturePath, renderer);

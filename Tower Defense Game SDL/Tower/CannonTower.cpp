@@ -9,6 +9,6 @@ CannonTower::CannonTower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, s
     baseRange = 250.0f;
 	baseFireRate = 90; //1 shot per 1.5 seconds (1.5x60fps)
     LoadTexture("Assets/Tower/spr_tower_cannon.png");
-    Sound::Instance().LoadSound("cannon", "Assets/Sound/battle_rifle.wav");
+    Sound::Instance().LoadSound("cannon", "Assets/Sound/cannon.wav");
     UpgradeStats();
 }

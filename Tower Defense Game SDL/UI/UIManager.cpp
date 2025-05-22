@@ -4,152 +4,60 @@
 #include <string>
 
 UI::UI(SDL_Renderer* renderer) :
-	moneyText(nullptr)
-	, waveText(nullptr)
-	, healthText(nullptr)
-	, font(nullptr)
-	, archerTowerIcon(nullptr)
-	, cannonTowerIcon(nullptr)
-	, lightningTowerIcon(nullptr)
-	, moneyTextRect({ 0, 0, 0, 0 })
-	, waveTextRect({ 0, 0, 0, 0 })
-	, healthTextRect({ 0, 0, 0, 0 })
-	, archerTowerRect({ 0, 0, 0, 0 })
-	, cannonTowerRect({ 0, 0, 0, 0 })
-	, lightningTowerRect({ 0, 0, 0, 0 })
-	, currentMoney(0)
-	, currentWave(0)
-	, currentHealth(0)
+	currentMoney(0),
+	currentWave(0),
+	currentHealth(0),
+	archerTowerHovered(false),
+	cannonTowerHovered(false),
+	lightningTowerHovered(false)
 {
 	if (!TTF_WasInit()) {
 		if (TTF_Init() == -1) {
-			std::cout << "Text initialize error: " << TTF_GetError() << std::endl;
+			std::cout << "Failed to initialize text: " << TTF_GetError() << std::endl;
 			return;
 		}
 	}
-	font = TTF_OpenFont("Assets/Icon/consola.ttf", 24);
-	if (!font) {
-		std::cout << "Font load error: " << TTF_GetError() << std::endl;
-		return;
-	}
-	archerTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_archer.png", renderer);
-	cannonTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_cannon.png", renderer);
-	lightningTowerIcon = TextureManager::LoadTexture("Assets/Tower/spr_tower_lightning.png", renderer);
-
-	moneyTextRect = { 10, 480, 150, 20 };
-	healthTextRect = { 10, 500, 150, 20 };
-	waveTextRect = { 10, 520, 150, 20 };
-
-	archerTowerRect = { 740, 420, 32, 32 };
-	cannonTowerRect = { 740, 470, 32, 32 };
-	lightningTowerRect = { 740, 520, 32, 32 };
+	statsBar = new StatsBar(renderer, 800);
+	towerBar = new TowerBar(renderer);
 }
+
 UI::~UI() {
-	if (moneyText) SDL_DestroyTexture(moneyText);
-	if (waveText) SDL_DestroyTexture(waveText);
-	if (healthText) SDL_DestroyTexture(healthText);
-	if (archerTowerIcon) SDL_DestroyTexture(archerTowerIcon);
-	if (cannonTowerIcon) SDL_DestroyTexture(cannonTowerIcon);
-	if (lightningTowerIcon) SDL_DestroyTexture(lightningTowerIcon);
-	if (font) TTF_CloseFont(font);
+	if (statsBar) delete statsBar;
+	if (towerBar) delete towerBar;
 }
+
 bool UI::init() {
-	if (!archerTowerIcon || !cannonTowerIcon || !lightningTowerIcon) {
-		std::cout << "Error loading UI textures!" << std::endl;
+	if (!statsBar->init() || !towerBar->init()) {
+		std::cout << "Failed to initialize UI!" << std::endl;
 		return false;
 	}
 	return true;
 }
+
 void UI::update(int money, int wave, int health) {
-	if (money != currentMoney) {
-		currentMoney = money;
-		if (moneyText) SDL_DestroyTexture(moneyText);
-		moneyText = nullptr;
-	}
-	if (wave != currentWave) {
-		currentWave = wave;
-		if (waveText) SDL_DestroyTexture(waveText);
-		waveText = nullptr;
-	}
-	if (health != currentHealth) {
-		currentHealth = health;
-		if (healthText) SDL_DestroyTexture(healthText);
-		healthText = nullptr;
-	}
-}
-void UI::render(SDL_Renderer* renderer) {
-	if (!moneyText) updateMoneyText(renderer);
-	if (!waveText) updateWaveText(renderer);
-	if (!healthText) updateHealthText(renderer);
+	currentMoney = money;
+	currentWave = wave;
+	currentHealth = health;
 
-	// Render text 
-	renderText("Money: " + std::to_string(currentMoney), 10, 478, renderer);
-	renderText("Lives: " + std::to_string(currentHealth), 10, 508, renderer);
-	renderText("Wave: " + std::to_string(currentWave), 10, 538, renderer);
+	statsBar->update(money, health, wave);
 
-	renderTowerSelectionPanel(renderer);
-}
-
-void UI::renderTowerSelectionPanel(SDL_Renderer* renderer) {
-	SDL_RenderCopy(renderer, archerTowerIcon, nullptr, &archerTowerRect);
-	SDL_RenderCopy(renderer, cannonTowerIcon, nullptr, &cannonTowerRect);
-	SDL_RenderCopy(renderer, lightningTowerIcon, nullptr, &lightningTowerRect);
-
-	// Draw cost labels
-	SDL_Color textColor = { 255, 255, 255, 255 };
-
-	// Archer tower cost text (next to the icon)
-	std::string archerCost = std::to_string(Money::ARCHER_TOWER_COST);
-	SDL_Surface* archerCostSurface = TTF_RenderText_Solid(font, archerCost.c_str(), textColor);
-	SDL_Texture* archerCostText = SDL_CreateTextureFromSurface(renderer, archerCostSurface);
-	SDL_Rect archerCostRect = { archerTowerRect.x - 50, archerTowerRect.y + 4, archerCostSurface->w, archerCostSurface->h };
-	SDL_RenderCopy(renderer, archerCostText, nullptr, &archerCostRect);
-	SDL_FreeSurface(archerCostSurface);
-	SDL_DestroyTexture(archerCostText);
-
-	// Cannon tower cost text (next to the icon)
-	std::string cannonCost = std::to_string(Money::CANNON_TOWER_COST);
-	SDL_Surface* cannonCostSurface = TTF_RenderText_Solid(font, cannonCost.c_str(), textColor);
-	SDL_Texture* cannonCostText = SDL_CreateTextureFromSurface(renderer, cannonCostSurface);
-	SDL_Rect cannonCostRect = { cannonTowerRect.x - 50, cannonTowerRect.y + 4, cannonCostSurface->w, cannonCostSurface->h };
-	SDL_RenderCopy(renderer, cannonCostText, nullptr, &cannonCostRect);
-	SDL_FreeSurface(cannonCostSurface);
-	SDL_DestroyTexture(cannonCostText);
-
-	// Lightning tower cost text
-	std::string lightningCost = std::to_string(Money::LIGHTNING_TOWER_COST);
-	SDL_Surface* lightningCostSurface = TTF_RenderText_Solid(font, lightningCost.c_str(), textColor);
-	SDL_Texture* lightningCostText = SDL_CreateTextureFromSurface(renderer, lightningCostSurface);
-	SDL_Rect lightningCostRect = { lightningTowerRect.x - 50, lightningTowerRect.y + 4, lightningCostSurface->w, lightningCostSurface->h };
-	SDL_RenderCopy(renderer, lightningCostText, nullptr, &lightningCostRect);
-	SDL_FreeSurface(lightningCostSurface);
-	SDL_DestroyTexture(lightningCostText);
-
-	// Highlight selected tower type
-	if (selectedTower == TowerSelection::ARCHER || archerTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-		SDL_Rect highlightRect = { archerTowerRect.x - 2, archerTowerRect.y - 2, archerTowerRect.w + 4, archerTowerRect.h + 4 };
-		SDL_RenderDrawRect(renderer, &highlightRect);
-	}
-
-	if (selectedTower == TowerSelection::CANNON || cannonTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-		SDL_Rect highlightRect = { cannonTowerRect.x - 2, cannonTowerRect.y - 2, cannonTowerRect.w + 4, cannonTowerRect.h + 4 };
-		SDL_RenderDrawRect(renderer, &highlightRect);
-	}
-
-	if (selectedTower == TowerSelection::LIGHTNING || lightningTowerHovered) {
-		SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
-		SDL_Rect highlightRect = { lightningTowerRect.x - 2, lightningTowerRect.y - 2, lightningTowerRect.w + 4, lightningTowerRect.h + 4 };
-		SDL_RenderDrawRect(renderer, &highlightRect);
-	}
+	towerBar->archerTowerHovered = archerTowerHovered;
+	towerBar->cannonTowerHovered = cannonTowerHovered;
+	towerBar->lightningTowerHovered = lightningTowerHovered;
 }
 
 void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 255, 255, 255, 255 };
+	SDL_Color textColor = { 255, 255, 255, 255 }; // White text
+	// Create a font for rendering text
+	TTF_Font* font = TTF_OpenFont("Assets/Icon/consola.ttf", 18);
+	if (!font) {
+		std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+		return;
+	}
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), textColor);
 	if (!surface) {
 		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
+		TTF_CloseFont(font);
 		return;
 	}
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -157,32 +65,10 @@ void UI::renderText(const std::string& text, int x, int y, SDL_Renderer* rendere
 	SDL_RenderCopy(renderer, texture, nullptr, &destRect);
 	SDL_FreeSurface(surface);
 	SDL_DestroyTexture(texture);
+	TTF_CloseFont(font);
 }
 
-SDL_Texture* UI::createTextTexture(const std::string& text, SDL_Renderer* renderer) {
-	SDL_Color textColor = { 255, 255, 255, 255 };
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-	if (!surface) {
-		std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
-		return nullptr;
-	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
-	return texture;
-}
-
-void UI::updateMoneyText(SDL_Renderer* renderer) {
-	if (moneyText) SDL_DestroyTexture(moneyText);
-	moneyText = createTextTexture(std::to_string(currentMoney), renderer);
-}
-
-void UI::updateWaveText(SDL_Renderer* renderer) {
-	if (waveText) SDL_DestroyTexture(waveText);
-	std::string waveStr = "Wave: " + std::to_string(currentWave);
-	waveText = createTextTexture(waveStr, renderer);
-}
-
-void UI::updateHealthText(SDL_Renderer* renderer) {
-	if (healthText) SDL_DestroyTexture(healthText);
-	healthText = createTextTexture(std::to_string(currentHealth), renderer);
+void UI::render(SDL_Renderer* renderer) {
+	statsBar->render(renderer);
+	towerBar->render(renderer);
 }

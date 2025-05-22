@@ -161,10 +161,13 @@
     <ClCompile Include="Tower\LightningTower.cpp" />
     <ClCompile Include="Tower\Tower.cpp" />
     <ClCompile Include="Sound\SoundManager.cpp" />
+    <ClCompile Include="UI\StatsBar.cpp" />
+    <ClCompile Include="UI\TowerBar.cpp" />
     <ClCompile Include="UI\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="State\LoseScreen.h" />
     <ClInclude Include="State\Menu.h" />
     <ClInclude Include="Core\Money.h" />
@@ -184,7 +187,16 @@
     <ClInclude Include="Tower\LightningTower.h" />
     <ClInclude Include="Tower\Tower.h" />
     <ClInclude Include="Sound\SoundManager.h" />
+    <ClInclude Include="UI\StatsBar.h" />
+    <ClInclude Include="UI\TowerBar.h" />
     <ClInclude Include="UI\UIManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gameicon.bmp" />
+    <Image Include="gameicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

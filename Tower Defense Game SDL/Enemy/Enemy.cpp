@@ -27,7 +27,7 @@ void Enemy::renderHPBar(SDL_Renderer* renderer) const {
     if (!m_alive) return;
     // Set up health bar dimensions
     const int BAR_W = 30;
-    const int BAR_H = 5;
+    const int BAR_H = 3;
     const int BAR_OFFSET_Y = -20; 
     // Calculate health percentage and remaining health bar width
     float healthPercentage = static_cast<float>(m_hp) / m_maxHP; 
@@ -36,7 +36,7 @@ void Enemy::renderHPBar(SDL_Renderer* renderer) const {
     int barX = static_cast<int>(m_x - static_cast<float>(healthWidth / 2));
     int barY = static_cast<int>(m_y) + BAR_OFFSET_Y;
     SDL_Rect healthBar = { barX, barY, healthWidth, BAR_H };
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     SDL_RenderFillRect(renderer, &healthBar);
 }
 
