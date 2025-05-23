@@ -7,7 +7,7 @@ LightningTower::LightningTower(SDL_Renderer* renderer, std::vector<Enemy*>* enem
     type = TowerType::LIGHTNING;
     baseDamage = 100;
     baseRange = 300.0f;
-	baseFireRate = 180; //1 shot every 3 seconds (3x60fps)
+	baseFireRate = 120; //1 shot every 2 seconds (2x60fps)
     LoadTexture("Assets/Tower/spr_tower_lightning.png");
     Sound::Instance().LoadSound("lightning", "Assets/Sound/lightning_strike.wav");
     UpgradeStats();

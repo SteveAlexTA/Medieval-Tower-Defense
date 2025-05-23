@@ -29,16 +29,16 @@ void WaveSystem::configureWaveDefinitions() {
         m_waveDefinitions[8] = "s,s,s,s,s,s,s,s,s,s,s,s,s,s,s";
         m_waveDefinitions[9] = "s,g,s,g,s,s,s,g,g,g,g,s,s,d,d";
         m_waveDefinitions[10] = "g,g,g,g,d,g,g,s,g,s,s,g,d,s,g,g,g,s,d,g";
-        m_waveDefinitions[11] = "g,s,g,g,s,s,g,s,s,g,s,s,s,g,s,s,g,s,g,d,d";
+        m_waveDefinitions[11] = "g,s,g,g,s,s,g,s,s,g,s,s,s,g,s,s,g,s,g,d";
         m_waveDefinitions[12] = "d,r,d,r,d,r,d,r";
         m_waveDefinitions[13] = "g,s,s,d,s,g,s,s,g,s,s,s,g,s,d,g,g,s,g,g,d";
         m_waveDefinitions[14] = "g,s,s,s,g,g,g,s,g,s,g,s,g,d,g,d,d,d,g,g,d";
         m_waveDefinitions[15] = "g,s,s,s,g,g,g,s,g,s,g,s,d,s,s,d,d,s,s,d,d";
         m_waveDefinitions[16] = "s,g,g,g,s,s,d,d,s,d,d,s,g,g,g,g,g,s,s,s,d";
-        m_waveDefinitions[17] = "r,s,g,s,d,g,g,g,g,g,s,g,g,g,s,s,s,s,s,d,d,d,d";
-        m_waveDefinitions[18] = "d,r,r,d,s,s,d,s,s,r,r,d,d,d,r,d,r,d,r,d,r,d,r";
-        m_waveDefinitions[19] = "r,d,r,d,r,d,d,d,r,r,d,s,d,s,d,s,d,r,d,r,s,d,r";
-        m_waveDefinitions[20] = "r,r,r,d,r,d,r,d,r,r,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r";
+        m_waveDefinitions[17] = "r,s,g,s,d,g,g,g,g,g,s,g,g,g,s,s,s,s,s,d,d,d";
+        m_waveDefinitions[18] = "d,r,r,d,s,s,d,s,s,r,r,d,d,d,r,d,r,d,r,d,r,d";
+        m_waveDefinitions[19] = "r,d,r,d,r,d,s,d,r,s,d,s,d,s,d,s,d,r,d,r,s,d";
+        m_waveDefinitions[20] = "r,d,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r,d,r";
 
     }
     else {
