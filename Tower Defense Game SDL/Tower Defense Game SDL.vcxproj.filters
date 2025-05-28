@@ -15,19 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sound\SoundManager.cpp">
+    <ClCompile Include="Managers\SoundManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UI\UIManager.cpp">
+    <ClCompile Include="Managers\UIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tower\ArcherTower.cpp">
+    <ClCompile Include="Towers\ArcherTower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tower\CannonTower.cpp">
+    <ClCompile Include="Towers\CannonTower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tower\Tower.cpp">
+    <ClCompile Include="Towers\Tower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Map\Map.cpp">
@@ -36,16 +36,16 @@
     <ClCompile Include="Map\PathFinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Enemy.cpp">
+    <ClCompile Include="Enemies\Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Goblin.cpp">
+    <ClCompile Include="Enemies\Goblin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Skeleton.cpp">
+    <ClCompile Include="Enemies\Skeleton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Wave.cpp">
+    <ClCompile Include="Enemies\Wave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Game.cpp">
@@ -54,28 +54,28 @@
     <ClCompile Include="Core\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Money.cpp">
+    <ClCompile Include="Systems\Money.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\TextureManager.cpp">
+    <ClCompile Include="Managers\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Demon.cpp">
+    <ClCompile Include="Enemies\Demon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy\Dragon.cpp">
+    <ClCompile Include="Enemies\Dragon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="State\Menu.cpp">
+    <ClCompile Include="States\Menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="State\LoseScreen.cpp">
+    <ClCompile Include="States\LoseScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="State\WinScreen.cpp">
+    <ClCompile Include="States\WinScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tower\LightningTower.cpp">
+    <ClCompile Include="Towers\LightningTower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UI\TowerBar.cpp">
@@ -84,24 +84,27 @@
     <ClCompile Include="UI\StatsBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Systems\InputSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Enemy%27s Code\Pathfinder.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sound\SoundManager.h">
+    <ClInclude Include="Managers\SoundManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UI\UIManager.h">
+    <ClInclude Include="Managers\UIManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tower\ArcherTower.h">
+    <ClInclude Include="Towers\ArcherTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tower\CannonTower.h">
+    <ClInclude Include="Towers\CannonTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tower\Tower.h">
+    <ClInclude Include="Towers\Tower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Map\Map.h">
@@ -110,43 +113,43 @@
     <ClInclude Include="Map\PathFinder.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Enemy.h">
+    <ClInclude Include="Enemies\Enemy.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Goblin.h">
+    <ClInclude Include="Enemies\Goblin.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Skeleton.h">
+    <ClInclude Include="Enemies\Skeleton.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Wave.h">
+    <ClInclude Include="Enemies\Wave.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Game.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Money.h">
+    <ClInclude Include="Systems\Money.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\TextureManager.h">
+    <ClInclude Include="Managers\TextureManager.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Demon.h">
+    <ClInclude Include="Enemies\Demon.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy\Dragon.h">
+    <ClInclude Include="Enemies\Dragon.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State\Menu.h">
+    <ClInclude Include="States\Menu.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State\LoseScreen.h">
+    <ClInclude Include="States\LoseScreen.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State\WinScreen.h">
+    <ClInclude Include="States\WinScreen.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tower\LightningTower.h">
+    <ClInclude Include="Towers\LightningTower.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UI\TowerBar.h">
@@ -156,6 +159,9 @@
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Resource Files\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Systems\InputSystem.h">
       <Filter>Resource Files\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -168,7 +174,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource.rc">
+    <ResourceCompile Include="resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "Tower.h"
-#include "../Core/TextureManager.h"
-#include "../Core/Money.h"
+#include "../Managers/TextureManager.h"
+#include "../Systems/Money.h"
 #include <cmath>
 
 SDL_Texture* Tower::upgradeTexture = nullptr;
@@ -318,8 +318,8 @@ int Tower::getUpgradePrice() const {
 	return 0;
 }
 
-bool Tower::HandleEvents(SDL_Event* e) {
-	if (e->type == SDL_MOUSEBUTTONDOWN) {
+bool Tower::HandleEvents(SDL_Event* event) {
+	if (event->type == SDL_MOUSEBUTTONDOWN) {
 		int mouseX, mouseY;
 		SDL_GetMouseState(&mouseX, &mouseY);
 		// Check if tower is clicked

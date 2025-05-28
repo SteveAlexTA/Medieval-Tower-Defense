@@ -1,5 +1,5 @@
 #include "UIManager.h"
-#include "../Core/TextureManager.h"
+#include "../Managers/TextureManager.h"
 #include <SDL_ttf.h>
 #include <string>
 

@@ -143,60 +143,62 @@
   <ItemGroup>
     <ClCompile Include="Core\Game.cpp" />
     <ClCompile Include="Core\main.cpp" />
-    <ClCompile Include="State\LoseScreen.cpp" />
-    <ClCompile Include="State\Menu.cpp" />
-    <ClCompile Include="Core\Money.cpp" />
-    <ClCompile Include="Core\TextureManager.cpp" />
-    <ClCompile Include="Enemy\Demon.cpp" />
-    <ClCompile Include="Enemy\Dragon.cpp" />
-    <ClCompile Include="Enemy\Enemy.cpp" />
-    <ClCompile Include="Enemy\Goblin.cpp" />
-    <ClCompile Include="Enemy\Skeleton.cpp" />
-    <ClCompile Include="Enemy\Wave.cpp" />
+    <ClCompile Include="States\LoseScreen.cpp" />
+    <ClCompile Include="States\Menu.cpp" />
+    <ClCompile Include="Systems\Money.cpp" />
+    <ClCompile Include="Managers\TextureManager.cpp" />
+    <ClCompile Include="Enemies\Demon.cpp" />
+    <ClCompile Include="Enemies\Dragon.cpp" />
+    <ClCompile Include="Enemies\Enemy.cpp" />
+    <ClCompile Include="Enemies\Goblin.cpp" />
+    <ClCompile Include="Enemies\Skeleton.cpp" />
+    <ClCompile Include="Enemies\Wave.cpp" />
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Map\PathFinder.cpp" />
-    <ClCompile Include="State\WinScreen.cpp" />
-    <ClCompile Include="Tower\ArcherTower.cpp" />
-    <ClCompile Include="Tower\CannonTower.cpp" />
-    <ClCompile Include="Tower\LightningTower.cpp" />
-    <ClCompile Include="Tower\Tower.cpp" />
-    <ClCompile Include="Sound\SoundManager.cpp" />
+    <ClCompile Include="States\WinScreen.cpp" />
+    <ClCompile Include="Systems\InputSystem.cpp" />
+    <ClCompile Include="Towers\ArcherTower.cpp" />
+    <ClCompile Include="Towers\CannonTower.cpp" />
+    <ClCompile Include="Towers\LightningTower.cpp" />
+    <ClCompile Include="Towers\Tower.cpp" />
+    <ClCompile Include="Managers\SoundManager.cpp" />
     <ClCompile Include="UI\StatsBar.cpp" />
     <ClCompile Include="UI\TowerBar.cpp" />
-    <ClCompile Include="UI\UIManager.cpp" />
+    <ClCompile Include="Managers\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Game.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="State\LoseScreen.h" />
-    <ClInclude Include="State\Menu.h" />
-    <ClInclude Include="Core\Money.h" />
-    <ClInclude Include="Core\TextureManager.h" />
+    <ClInclude Include="States\LoseScreen.h" />
+    <ClInclude Include="States\Menu.h" />
+    <ClInclude Include="Systems\Money.h" />
+    <ClInclude Include="Managers\TextureManager.h" />
     <ClInclude Include="Enemy%27s Code\Pathfinder.h" />
-    <ClInclude Include="Enemy\Demon.h" />
-    <ClInclude Include="Enemy\Dragon.h" />
-    <ClInclude Include="Enemy\Enemy.h" />
-    <ClInclude Include="Enemy\Goblin.h" />
-    <ClInclude Include="Enemy\Skeleton.h" />
-    <ClInclude Include="Enemy\Wave.h" />
+    <ClInclude Include="Enemies\Demon.h" />
+    <ClInclude Include="Enemies\Dragon.h" />
+    <ClInclude Include="Enemies\Enemy.h" />
+    <ClInclude Include="Enemies\Goblin.h" />
+    <ClInclude Include="Enemies\Skeleton.h" />
+    <ClInclude Include="Enemies\Wave.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\PathFinder.h" />
-    <ClInclude Include="State\WinScreen.h" />
-    <ClInclude Include="Tower\ArcherTower.h" />
-    <ClInclude Include="Tower\CannonTower.h" />
-    <ClInclude Include="Tower\LightningTower.h" />
-    <ClInclude Include="Tower\Tower.h" />
-    <ClInclude Include="Sound\SoundManager.h" />
+    <ClInclude Include="States\WinScreen.h" />
+    <ClInclude Include="Systems\InputSystem.h" />
+    <ClInclude Include="Towers\ArcherTower.h" />
+    <ClInclude Include="Towers\CannonTower.h" />
+    <ClInclude Include="Towers\LightningTower.h" />
+    <ClInclude Include="Towers\Tower.h" />
+    <ClInclude Include="Managers\SoundManager.h" />
     <ClInclude Include="UI\StatsBar.h" />
     <ClInclude Include="UI\TowerBar.h" />
-    <ClInclude Include="UI\UIManager.h" />
+    <ClInclude Include="Managers\UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="gameicon.bmp" />
     <Image Include="gameicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
+    <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

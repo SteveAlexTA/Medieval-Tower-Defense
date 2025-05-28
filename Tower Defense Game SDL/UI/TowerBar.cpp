@@ -1,5 +1,5 @@
 #include "TowerBar.h"
-#include "../Core/TextureManager.h"
+#include "../Managers/TextureManager.h"
 #include <iostream>
 
 TowerBar::TowerBar(SDL_Renderer* renderer) :

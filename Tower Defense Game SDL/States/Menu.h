@@ -4,8 +4,8 @@
 #include <SDL_ttf.h>  
 #include <SDL_image.h>  
 #include <SDL_mixer.h>
-#include "../UI/UIManager.h"  
-#include "../Core/TextureManager.h"
+#include "../Managers/UIManager.h"  
+#include "../Managers/TextureManager.h"
 #include <string>
 
 class TextureManager;
@@ -37,7 +37,7 @@ public:
     ~Menu();
 
     bool init();
-    void handleEvents(SDL_Event& event);
+    void handleEvents(const SDL_Event& event);
     void update();
     void render(SDL_Renderer* renderer);
 

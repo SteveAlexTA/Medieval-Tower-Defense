@@ -2,8 +2,8 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <iostream>
-#include "StatsBar.h"
-#include "TowerBar.h"
+#include "../UI/StatsBar.h"
+#include "../UI/TowerBar.h"
 
 class UI {
 public:

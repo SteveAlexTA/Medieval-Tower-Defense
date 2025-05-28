@@ -1,17 +1,17 @@
 #include "Game.h"
-#include "TextureManager.h"
-#include "../State/Menu.h"
+#include "../Managers/TextureManager.h"
+#include "../States/Menu.h"
 #include "../Map/Map.h"
-#include "../Enemy/Enemy.h"
-#include "../Enemy/Wave.h"
-#include "../Enemy/Goblin.h"
-#include "../Enemy/Skeleton.h"
-#include "../Enemy/Demon.h"
-#include "../Enemy/Dragon.h"
-#include "../Tower/Tower.h"
-#include "../Tower/ArcherTower.h"
-#include "../Tower/CannonTower.h"
-#include "../Tower/LightningTower.h"
+#include "../Enemies/Enemy.h"
+#include "../Enemies/Wave.h"
+#include "../Enemies/Goblin.h"
+#include "../Enemies/Skeleton.h"
+#include "../Enemies/Demon.h"
+#include "../Enemies/Dragon.h"
+#include "../Towers/Tower.h"
+#include "../Towers/ArcherTower.h"
+#include "../Towers/CannonTower.h"
+#include "../Towers/LightningTower.h"
 
 
 SDL_Renderer* Game::renderer = nullptr;
@@ -25,6 +25,7 @@ Game::Game()
     , moneySystem(nullptr)
     , UISystem(nullptr)
     , menuSystem(nullptr)
+	, inputSystem(nullptr)
 	, winScreen(nullptr)
 	, loseScreen(nullptr)
     , m_goblinTexture(nullptr)
@@ -58,6 +59,7 @@ Game::~Game() {
     delete moneySystem;
     delete UISystem;
     delete menuSystem;
+	delete inputSystem;
 	delete winScreen;
 	delete loseScreen;
     Sound::Instance().StopMusic();
@@ -135,6 +137,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         isRunning = false;
         return;
     }
+    inputSystem = new InputSystem(this);
+    if (!inputSystem) {
+        std::cout << "Failed to initialize input system!" << std::endl;
+        isRunning = false;
+		return;
+    }
 }
 
 void Game::startGame() {
@@ -200,118 +208,9 @@ void Game::createEnemyPool(int poolSize) {
 }
 
 void Game::handleEvents() {
-    SDL_Event event;
-    int mouseX = 0;
-    int mouseY = 0;
-    //static bool isFullscreen = false;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            isRunning = false;
-            return;
-        }
-        if (inWinScreen) {
-            continue;
-        }
-        if (inLoseScreen) {
-            continue;
-        }
-        if (inMenu) {
-            if (event.type == SDL_MOUSEBUTTONDOWN) {
-                menuSystem->handleEvents(event);
-                if (menuSystem->getMenuState() == MenuState::PLAY) {
-                    startGame(); // Start the game when Play is clicked
-                }
-                else if (menuSystem->getMenuState() == MenuState::EXIT) {
-                    isRunning = false;
-                    return;
-                }
-            }
-            continue;
-        }
-        if (event.type == SDL_MOUSEMOTION) {
-            mouseX = event.motion.x;
-            mouseY = event.motion.y;
-        }
-        else if (event.type == SDL_MOUSEBUTTONDOWN) {
-            mouseX = event.button.x;
-            mouseY = event.button.y;
-        }
-        switch (event.type) {
-        case SDL_QUIT:
-            isRunning = false;
-            break;
-        case SDL_MOUSEMOTION:
-            UISystem->archerTowerHovered = UISystem->isArcherTowerClicked(mouseX, mouseY);
-            UISystem->cannonTowerHovered = UISystem->isCannonTowerClicked(mouseX, mouseY);
-            UISystem->lightningTowerHovered = UISystem->isLightningTowerClicked(mouseX, mouseY);
-            break;
-        case SDL_MOUSEBUTTONDOWN:
-            if (UISystem->isArcherTowerClicked(mouseX, mouseY)) {
-                buildTowerMode = !buildTowerMode;
-                if (buildTowerMode && selectedTower) {
-                    selectedTower->setSelected(false);
-                    selectedTower = nullptr;
-                }
-                return;
-            }
-            else if (UISystem->isCannonTowerClicked(mouseX, mouseY)) {
-                UISystem->setSelectedTower(TowerSelection::CANNON);
-                buildTowerMode = !buildTowerMode;
-                if (buildTowerMode && selectedTower) {
-                    selectedTower->setSelected(false);
-                    selectedTower = nullptr;
-                }
-                return;
-            }
-            else if (UISystem->isLightningTowerClicked(mouseX, mouseY)) {
-                UISystem->setSelectedTower(TowerSelection::LIGHTNING);
-                buildTowerMode = !buildTowerMode;
-                if (buildTowerMode && selectedTower) {
-                    selectedTower->setSelected(false);
-                    selectedTower = nullptr;
-                }
-                return;
-            }
-            if (buildTowerMode) {
-                placeTower(mouseX, mouseY);
-                buildTowerMode = false;
-                UISystem->resetSelectedTower();
-                return;
-            }
-            if (event.button.button == SDL_BUTTON_LEFT) {
-                if (selectedTower) {
-                    if (isClickInUpgradeUI(mouseX, mouseY, selectedTower)) {
-                        upgradeTower(selectedTower);
-                        return;
-                    }
-                    else if (isClickInDeleteUI(mouseX, mouseY, selectedTower)) {
-                        deleteTower(selectedTower);
-                        return;
-                    }
-                }
-                selectTowerAt(mouseX, mouseY);
-            }
-            break;
-        case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_ESCAPE) {
-                if (selectedTower) {
-                    selectedTower->setSelected(false);
-                    selectedTower = nullptr;
-                }
-                if (buildTowerMode) {
-                    buildTowerMode = false;
-                    UISystem->resetSelectedTower();
-                }
-            }
-			/*else if (event.key.keysym.sym == SDLK_RETURN && (event.key.keysym.mod & KMOD_ALT)) {
-				isFullscreen = !isFullscreen;
-                SDL_SetWindowFullscreen(window, isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
-			} */
-            break;
-        default:
-            break;
-        }
-    }
+    if (inputSystem) {
+        inputSystem->handleEvents();
+	}
 }
 
 bool Game::canPlaceTower(int x, int y) {
@@ -401,22 +300,6 @@ void Game::rewardEnemyKilled(Enemy* enemy) {
     else {
         std::cout << "Unknown enemy type!" << std::endl;
     }
-}
-
-bool Game::isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower) {
-    if (!tower || !tower->canUpgrade()) return false;
-    int towerX = tower->getX();
-    int towerY = tower->getY();
-    SDL_Rect upgradeRect = { towerX - 16, towerY - 40, 32, 32 };
-    return (mouseX >= upgradeRect.x && mouseX < upgradeRect.x + upgradeRect.w && mouseY >= upgradeRect.y && mouseY < upgradeRect.y + upgradeRect.h);
-}
-
-bool Game::isClickInDeleteUI(int mouseX, int mouseY, Tower* tower) {
-    if (!tower) return false;
-    int towerX = tower->getX();
-    int towerY = tower->getY();
-    SDL_Rect deleteRect = { towerX + 16, towerY - 40, 32, 32 };
-    return (mouseX >= deleteRect.x && mouseX < deleteRect.x + deleteRect.w && mouseY >= deleteRect.y && mouseY < deleteRect.y + deleteRect.h);
 }
 
 Tower* Game::createTower(TowerSelection type, int x, int y) {
@@ -657,7 +540,7 @@ void Game::render() {
         SDL_RenderFillRect(renderer, &messageRect);
         UISystem->renderText("Maximum towers placed!", 280, 215, renderer);
     }
-    if (buildTowerMode) {
+    if (buildTowerMode) { // Preview towers when drag and place
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
         int gridX = (mouseX / 32) * 32;

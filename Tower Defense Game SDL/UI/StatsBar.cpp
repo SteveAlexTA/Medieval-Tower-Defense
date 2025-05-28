@@ -1,5 +1,5 @@
 #include "StatsBar.h"
-#include "../Core/TextureManager.h"
+#include "../Managers/TextureManager.h"
 #include <iostream>
 
 // Define static member for medieval theme

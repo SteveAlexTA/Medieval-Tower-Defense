@@ -1,9 +1,9 @@
 #pragma once
 #include<SDL.h>
 #include<SDL_ttf.h>
-#include "../Core/TextureManager.h"
-#include "../Enemy/Enemy.h"
-#include "../Sound/SoundManager.h"
+#include "../Managers/TextureManager.h"
+#include "../Enemies/Enemy.h"
+#include "../Managers/SoundManager.h"
 #include <vector>
 
 enum class TowerType {

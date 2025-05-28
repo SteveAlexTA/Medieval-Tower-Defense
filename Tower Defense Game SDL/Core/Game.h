@@ -5,15 +5,16 @@
 #include <iostream>
 #include <vector>
 #include "../Map/Map.h"
-#include "../Tower/Tower.h"
-#include "../Enemy/Enemy.h"
-#include "../Enemy/Wave.h"
-#include "Money.h"
-#include "../State/Menu.h"
-#include "../State/LoseScreen.h"
-#include "../State/WinScreen.h"
-#include "../UI/UIManager.h"
-#include "../Sound/SoundManager.h"
+#include "../Towers/Tower.h"
+#include "../Enemies/Enemy.h"
+#include "../Enemies/Wave.h"
+#include "../Systems/Money.h"
+#include "../States/Menu.h"
+#include "../States/LoseScreen.h"
+#include "../States/WinScreen.h"
+#include "../Managers/UIManager.h"
+#include "../Managers/SoundManager.h"
+#include "../Systems/InputSystem.h"
 
 class Map;
 class Tower;
@@ -46,10 +47,28 @@ public:
     static SDL_Renderer* renderer;
     int getBaseLives() const { return lives; }
 
+	void setRunning(bool running) { isRunning = running; }
+	bool isInMenu() const { return inMenu; }
+	bool isInWinScreen() const { return inWinScreen; }
+	bool isInLoseScreen() const { return inLoseScreen; }
+	bool isBuildTowerMode() const { return buildTowerMode; }
+	void setBuildTowerMode(bool mode) { buildTowerMode = mode; }
+
+	Tower* getSelectedTower() const { return selectedTower; }
+	void setSelectedTower(Tower* tower) { selectedTower = tower; }
+
+	Menu* getMenuSystem() const { return menuSystem; }
+
+	UI* getUISystem() const { return UISystem; }
+
+    void startGame();
+	void selectTowerAt(int x, int y);
+	void upgradeTower(Tower* tower);
+	void deleteTower(Tower* tower);
+
 private:
     void preloadResources();
     void createEnemyPool(int poolSize = 100);
-    void startGame();
     void loadAudioAssets();
 	void resetGame();
 
@@ -57,6 +76,7 @@ private:
     bool isRunning; 
     SDL_Window* window;
     Map* map;
+    Mix_Music* backgroundMusic;
     std::vector<Tower*> towers;
     std::vector<Enemy*> activeEnemies;
     std::vector<Enemy*> enemyPool;
@@ -69,6 +89,7 @@ private:
     LoseScreen* loseScreen;
     UI* UISystem;
     Menu* menuSystem;
+	InputSystem* inputSystem;
 
     SDL_Texture* m_goblinTexture;
     SDL_Texture* m_skeletonTexture;
@@ -82,13 +103,7 @@ private:
     bool inWinScreen;
 
     Tower* selectedTower;
-    void selectTowerAt(int x, int y);
-    void upgradeTower(Tower* tower);
-    void deleteTower(Tower* tower);
-    bool isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower);
-    bool isClickInDeleteUI(int mouseX, int mouseY, Tower* tower);
-
-    static const int MAX_TOWERS = 8;
+    static const int MAX_TOWERS = 12;
     bool showMaxTowersMessage = false;
     Uint32 messageStartTime = 0;
     const Uint32 MESSAGE_DURATION = 2000;
@@ -97,10 +112,8 @@ private:
     int getTowerCost(TowerSelection type) const;
     TowerType getTowerType(Tower* tower) const;
     int getUpgradeCost(TowerType type, int currentLevel) const;
-
     void rewardEnemyKilled(Enemy* enemy);
 
-    Mix_Music* backgroundMusic;
 };
 
 #endif //GAME_H

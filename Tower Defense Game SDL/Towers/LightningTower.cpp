@@ -1,5 +1,5 @@
 #include "LightningTower.h"
-#include "../Sound/SoundManager.h"
+#include "../Managers/SoundManager.h"
 
 LightningTower::LightningTower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<Tower*>* towers, int x, int y)
     : Tower(renderer, enemies, towers, x, y)

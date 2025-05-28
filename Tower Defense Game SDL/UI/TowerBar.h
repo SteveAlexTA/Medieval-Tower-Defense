@@ -2,7 +2,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <string>
-#include "../Core/Money.h"
+#include "../Systems/Money.h"
 
 enum TowerSelection {
     NONE,

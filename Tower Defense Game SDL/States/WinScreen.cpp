@@ -1,8 +1,8 @@
-#include "LoseScreen.h"
-#include "../Core/TextureManager.h"
+#include "WinScreen.h"
+#include "../Managers/TextureManager.h"
 #include <SDL_ttf.h>
 
-LoseScreen::LoseScreen(SDL_Renderer* renderer)
+WinScreen::WinScreen(SDL_Renderer* renderer)
     : renderer(renderer)
     , titleText(nullptr)
     , titleRect{ 0, 0, 0, 0 }
@@ -12,14 +12,14 @@ LoseScreen::LoseScreen(SDL_Renderer* renderer)
 {
 }
 
-LoseScreen::~LoseScreen() {
+WinScreen::~WinScreen() {
     if (titleText) SDL_DestroyTexture(titleText);
     if (backgroundTexture) SDL_DestroyTexture(backgroundTexture);
     if (font) TTF_CloseFont(font);
 }
 
-bool LoseScreen::init() {
-    backgroundTexture = TextureManager::LoadTexture("Assets/Icon/lose_background.png", renderer);
+bool WinScreen::init() {
+    backgroundTexture = TextureManager::LoadTexture("Assets/Icon/win_background.png", renderer);
     if (!backgroundTexture) {
         return false;
     }
@@ -30,7 +30,7 @@ bool LoseScreen::init() {
     }
 
     SDL_Color textColor = { 255, 255, 255, 255 };
-    SDL_Surface* surface = TTF_RenderText_Solid(font, "YOU LOSE", textColor);
+    SDL_Surface* surface = TTF_RenderText_Solid(font, "YOU WIN", textColor);
     titleText = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
@@ -39,19 +39,18 @@ bool LoseScreen::init() {
 
     titleRect = { (800 - textWidth) / 2, (600 - textHeight) / 2, textWidth, textHeight };
     resetDisplayTime();
-
     return true;
 }
 
-void LoseScreen::resetDisplayTime() {
+void WinScreen::resetDisplayTime() {
     displayStartTime = SDL_GetTicks();
 }
 
-bool LoseScreen::isDisplayTimeElapsed() const {
+bool WinScreen::isDisplayTimeElapsed() const {
     return SDL_GetTicks() - displayStartTime >= DISPLAY_DURATION;
 }
 
-void LoseScreen::render(SDL_Renderer* renderer) {
+void WinScreen::render(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 

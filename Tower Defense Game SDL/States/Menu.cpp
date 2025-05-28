@@ -1,5 +1,5 @@
 #include "Menu.h"
-#include "../Sound/SoundManager.h"
+#include "../Managers/SoundManager.h"
 #include <iostream>
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
@@ -95,7 +95,7 @@ bool Menu::init() {
     return backgroundTexture && playButton && exitButton;
 }
 
-void Menu::handleEvents(SDL_Event& event) {
+void Menu::handleEvents(const SDL_Event& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         if (event.button.button == SDL_BUTTON_LEFT) {
             int mouseX = event.button.x;

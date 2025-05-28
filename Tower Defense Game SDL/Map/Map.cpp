@@ -1,5 +1,5 @@
 #include "Map.h"
-#include "../Core/TextureManager.h"
+#include "../Managers/TextureManager.h"
 #include "../Core/Game.h"
 
 Map::Map() { //Constructor
