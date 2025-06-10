@@ -3,10 +3,16 @@
 #include "../Managers/UIManager.h"
 #include "../States/Menu.h"
 #include "../Towers/Tower.h"
+#include "../Towers/ArcherTower.h"
+#include "../Towers/CannonTower.h"
+#include "../Towers/LightningTower.h"
 #include "../Managers/SoundManager.h"
 
-InputSystem::InputSystem(Game* game) : m_game(game) {}
-InputSystem::~InputSystem() {}
+InputSystem::InputSystem(Game* game) : m_game(game), previewTower(nullptr), isDraggingTower(false) {}
+
+InputSystem::~InputSystem() {
+	if (previewTower) delete previewTower;
+}
 
 void InputSystem::handleEvents() {
 	SDL_Event event;
@@ -67,6 +73,11 @@ void InputSystem::handleMouseMotion(const SDL_Event& event) {
         uiSystem->cannonTowerHovered = uiSystem->isCannonTowerClicked(mouseX, mouseY);
         uiSystem->lightningTowerHovered = uiSystem->isLightningTowerClicked(mouseX, mouseY);
     }
+    else if (previewTower) {
+		previewTower->RenderRangeCircleWhileDraggingTower(mouseX, mouseY);
+        previewTower->setX(mouseX - 16); 
+        previewTower->setY(mouseY - 16);
+    }
 }
 
 void InputSystem::handleMouseButtonUp(const SDL_Event& event) {}
@@ -82,6 +93,12 @@ void InputSystem::handleMouseButtonDown(const SDL_Event& event) {
         // Handle tower placement mode
         if (m_game->isBuildTowerMode()) {
             handleTowerPlacement(mouseX, mouseY);
+            if (previewTower) {
+                delete previewTower; // Clean up previous tower preview
+                previewTower = nullptr; // Reset preview tower
+			}
+			m_game->setBuildTowerMode(false);
+			m_game->getUISystem()->resetSelectedTower(); 
             return;
         }
         // Handle tower selection and upgrade/delete
@@ -124,6 +141,11 @@ bool InputSystem::handleUIClick(int mouseX, int mouseY) {
     // Check tower type selection buttons
     if (ui->isArcherTowerClicked(mouseX, mouseY)) {
         ui->setSelectedTower(TowerSelection::ARCHER);
+        if (previewTower) {
+            delete previewTower; // Clean up previous tower preview
+		}
+		previewTower = new ArcherTower(m_game->renderer, nullptr, nullptr); // Create current preview tower
+		previewTower->setPreviewModeWhileDragging(true); // Set preview circle range mode for the tower
         m_game->setBuildTowerMode(!m_game->isBuildTowerMode()); 
         if (m_game->isBuildTowerMode() && m_game->getSelectedTower()) {
             m_game->getSelectedTower()->setSelected(false);
@@ -133,6 +155,11 @@ bool InputSystem::handleUIClick(int mouseX, int mouseY) {
     }
     if (ui->isCannonTowerClicked(mouseX, mouseY)) {
         ui->setSelectedTower(TowerSelection::CANNON);
+        if (previewTower) {
+            delete previewTower; // Clean up previous tower preview
+        }
+		previewTower = new CannonTower(m_game->renderer, nullptr, nullptr); // Create current preview tower
+		previewTower->setPreviewModeWhileDragging(true); // Set preview circle range mode for the tower
         m_game->setBuildTowerMode(!m_game->isBuildTowerMode()); 
         if (m_game->isBuildTowerMode() && m_game->getSelectedTower()) {
             m_game->getSelectedTower()->setSelected(false);
@@ -142,6 +169,11 @@ bool InputSystem::handleUIClick(int mouseX, int mouseY) {
     }
     if (ui->isLightningTowerClicked(mouseX, mouseY)) {
         ui->setSelectedTower(TowerSelection::LIGHTNING);
+        if (previewTower) {
+            delete previewTower; // Clean up previous tower preview
+		}
+		previewTower = new LightningTower(m_game->renderer, nullptr, nullptr); // Create current preview tower
+		previewTower->setPreviewModeWhileDragging(true); // Set preview circle range mode for the tower
         m_game->setBuildTowerMode(!m_game->isBuildTowerMode());
         if (m_game->isBuildTowerMode() && m_game->getSelectedTower()) {
             m_game->getSelectedTower()->setSelected(false);
@@ -189,4 +221,16 @@ void InputSystem::handleTowerSelection(int mouseX, int mouseY) {
         }
     }
     m_game->selectTowerAt(mouseX, mouseY);
+}
+
+void InputSystem::renderPreviewTowerWhenClicked() {
+    if (m_game->isBuildTowerMode() && previewTower) {
+        // Render the range circle first
+        previewTower->RenderRangeCircleWhileDraggingTower(
+            previewTower->getX() + 16,
+            previewTower->getY() + 16
+        );
+        // Then render the tower preview
+        previewTower->Render();
+    }
 }

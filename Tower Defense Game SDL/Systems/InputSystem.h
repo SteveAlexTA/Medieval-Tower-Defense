@@ -8,8 +8,10 @@ public:
 	InputSystem(Game* game);
 	~InputSystem();
 	void handleEvents();
+	void renderPreviewTowerWhenClicked();
 private:
 	Game* m_game;
+	Tower* previewTower; 
 	void handleMouseMotion(const SDL_Event& event);
 	void handleMouseButtonDown(const SDL_Event& event);
 	void handleMouseButtonUp(const SDL_Event& event);
@@ -21,4 +23,5 @@ private:
 	bool handleUIClick(int mouseX, int mouseY);
 	bool isClickInUpgradeUI(int mouseX, int mouseY, Tower* tower) const;
 	bool isClickInSellUI(int mouseX, int mouseY, Tower* tower) const;
+	bool isDraggingTower;
 };

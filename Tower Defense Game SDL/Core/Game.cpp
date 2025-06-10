@@ -576,6 +576,9 @@ void Game::render() {
         }
         SDL_DestroyTexture(previewTexture);
     }
+    if (inputSystem) {
+        inputSystem->renderPreviewTowerWhenClicked();
+    }
     SDL_RenderPresent(renderer);
 }
 

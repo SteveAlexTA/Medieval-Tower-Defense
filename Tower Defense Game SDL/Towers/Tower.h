@@ -44,12 +44,15 @@ public:
 	void setX(int x) { towerX = x; }
 	void setY(int y) { towerY = y; }
 	void setSelected(bool select) { selected = select; }
+    void setPreviewModeWhileDragging(bool preview) { isPreviewRange = preview; }
+    bool isPreviewMode() const { return isPreviewRange; }
 
 	virtual void Upgrade();
 	bool HandleEvents(SDL_Event* event);
 	bool IsPointInside(int x, int y) const;
 
 	void RenderRangeCircle() const;
+	void RenderRangeCircleWhileDraggingTower(int mouseX, int mouseY) const;
 	void setSrcRect(SDL_Rect rect) { srcRect = rect; }
 	void setDestRect(SDL_Rect rect) { destRect = rect; }
 	SDL_Rect getSrcRect() const { return srcRect; }
@@ -82,6 +85,7 @@ protected:
 	void UpdateProjectiles();
 	void LoadTexture(const char* towerPath);
 	void UpgradeStats();
+    bool isPreviewRange;
 private:
 	static SDL_Texture* upgradeTexture;
 	static SDL_Texture* deleteTexture;

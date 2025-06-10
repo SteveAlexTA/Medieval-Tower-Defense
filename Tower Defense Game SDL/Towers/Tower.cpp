@@ -10,10 +10,10 @@ bool Tower::textureLoaded = false;
 
 Tower::Tower(SDL_Renderer* renderer, std::vector<Enemy*>* enemies, std::vector<Tower*>* towers, int x, int y)
 	: renderer(renderer), enemies(enemies), towers(towers), towerX(x), towerY(y),
-	baseDamage(0), baseRange(150.0f), baseFireRate(60),
+	baseDamage(0), baseRange(0.0f), baseFireRate(60),
 	damage(0), range(150.0f), fireRate(60),
 	fireCounter(0), level(TowerLevel::LEVEL1), type(TowerType::NONE),
-	selected(false), texture(nullptr)
+	selected(false), isPreviewRange(false), texture(nullptr)
 {
 	srcRect = { 0, 0, 32, 32 }; 
 	destRect = { towerX, towerY, 32, 32 }; 
@@ -87,16 +87,26 @@ void Tower::UpdateProjectiles() {
 }
 
 void Tower::Render() {
-	SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
-	for (auto& projectile : projectiles) {
-		projectile->Render();
+	if (isPreviewRange) {
+		SDL_SetTextureAlphaMod(texture, 128);  
+		SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+		SDL_SetTextureAlphaMod(texture, 255);  
 	}
-	if (selected) {
-		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-		SDL_Rect highlightRect = { destRect.x - 2, destRect.y - 2, destRect.w + 4, destRect.h + 4 };
-		SDL_RenderDrawRect(renderer, &highlightRect);
-		RenderRangeCircle();
-		RenderUpgradeUI();
+	else {
+		SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+	}
+	// Only render projectiles and UI for placed towers
+	if (!isPreviewRange) {
+		for (auto& projectile : projectiles) {
+			projectile->Render();
+		}
+		if (selected) {
+			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+			SDL_Rect highlightRect = { destRect.x - 2, destRect.y - 2, destRect.w + 4, destRect.h + 4 };
+			SDL_RenderDrawRect(renderer, &highlightRect);
+			RenderRangeCircle();
+			RenderUpgradeUI();
+		}
 	}
 }
 
@@ -190,6 +200,34 @@ void Tower::RenderRangeCircle() const {
 		SDL_RenderDrawPoint(renderer, centerX - y, centerY + x);
 		SDL_RenderDrawPoint(renderer, centerX + y, centerY - x);
 		SDL_RenderDrawPoint(renderer, centerX - y, centerY - x);
+		x++;
+		if (d > 0) {
+			y--;
+			d = d + 4 * (x - y) + 10;
+		}
+		else {
+			d = d + 4 * x + 6;
+		}
+	}
+}
+
+void Tower::RenderRangeCircleWhileDraggingTower(int mouseX, int mouseY) const {
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
+	int radius = static_cast<int>(range);
+	// Bresenham circle algorithm 
+	int x = 0;
+	int y = radius;
+	int d = 3 - 2 * radius;
+	while (y >= x) {
+		// Draw 8 points for each calculation
+		SDL_RenderDrawPoint(renderer, mouseX + x, mouseY + y);
+		SDL_RenderDrawPoint(renderer, mouseX - x, mouseY + y);
+		SDL_RenderDrawPoint(renderer, mouseX + x, mouseY - y);
+		SDL_RenderDrawPoint(renderer, mouseX - x, mouseY - y);
+		SDL_RenderDrawPoint(renderer, mouseX + y, mouseY + x);
+		SDL_RenderDrawPoint(renderer, mouseX - y, mouseY + x);
+		SDL_RenderDrawPoint(renderer, mouseX + y, mouseY - x);
+		SDL_RenderDrawPoint(renderer, mouseX - y, mouseY - x);
 		x++;
 		if (d > 0) {
 			y--;
