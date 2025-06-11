@@ -42,6 +42,7 @@ Game::Game()
 	, showMaxTowersMessage(false)
     , lives(0)
     , deltaTime(0.0f)
+    , m_isFullScreen(false)
 {
 }
 
@@ -74,6 +75,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     if (fullscreen)
     {
         flags = SDL_WINDOW_FULLSCREEN;
+        m_isFullScreen = true;
     }
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
     {
@@ -608,6 +610,11 @@ void Game::resetGame() {
 	std::cout << "Game reset" << std::endl;
 }
 
+void Game::toggleFullScreen() {
+    m_isFullScreen = !m_isFullScreen;
+    SDL_SetWindowFullscreen(window, m_isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+}
+
 void Game::clean() {
     Sound::Instance().StopMusic();
     SDL_DestroyWindow(window);
@@ -615,3 +622,4 @@ void Game::clean() {
     SDL_Quit();
     std::cout << "Game Cleaned" << std::endl;
 }
+

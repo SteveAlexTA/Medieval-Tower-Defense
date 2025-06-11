@@ -46,14 +46,14 @@ public:
     void spawnEnemy();
     static SDL_Renderer* renderer;
     int getBaseLives() const { return lives; }
-
 	void setRunning(bool running) { isRunning = running; }
 	bool isInMenu() const { return inMenu; }
 	bool isInWinScreen() const { return inWinScreen; }
 	bool isInLoseScreen() const { return inLoseScreen; }
 	bool isBuildTowerMode() const { return buildTowerMode; }
+    bool isFullScreen() const { return m_isFullScreen; }
+    void toggleFullScreen();
 	void setBuildTowerMode(bool mode) { buildTowerMode = mode; }
-
 	Tower* getSelectedTower() const { return selectedTower; }
 	void setSelectedTower(Tower* tower) { selectedTower = tower; }
 
@@ -97,6 +97,7 @@ private:
     SDL_Texture* m_dragonTexture;
 
     bool m_resourcesPreloaded;
+    bool m_isFullScreen;
     bool buildTowerMode;
     bool inMenu;
     bool inLoseScreen;           

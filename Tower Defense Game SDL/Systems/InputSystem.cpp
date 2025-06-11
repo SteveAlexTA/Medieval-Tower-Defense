@@ -119,18 +119,21 @@ void InputSystem::handleKeyDown(const SDL_Event& event) {
             m_game->getUISystem()->resetSelectedTower();
         }
         break;
-        /*
-        case SDLK_RETURN:
-            if (event.key.keysym.mod & KMOD_ALT) {
-                // Toggle fullscreen
-                static bool isFullscreen = false;
-                isFullscreen = !isFullscreen;
-                SDL_SetWindowFullscreen(m_game->getWindow(),
-                    isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+    case SDLK_RETURN:  
+        if (event.key.keysym.mod & KMOD_ALT) {  // Check if Alt is pressed
+            SDL_Window* window = m_game->getWindow();
+            if (window) {
+                Uint32 flags = SDL_GetWindowFlags(window);
+                if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+                    SDL_SetWindowFullscreen(window, 0);
+                    std::cout << "Switching to windowed mode" << std::endl;
+                } else {
+                    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                    std::cout << "Switching to fullscreen mode" << std::endl;
+                }
             }
-            break;
-        */
-
+        }
+        break;
     default:
         break;
     }
