@@ -12,7 +12,7 @@ Medieval Tower Defense is a tower defense/strategy game. Your objective is to pr
 # How to download and play 
 - Donwload game: Download zip file at https://github.com/SteveAlexTA/Medieval-Tower-Defense/releases/tag/published, extract and run Tower Defense Game SDL.exe to play.
 - Download game & source code: Download <a href="https://lazyfoo.net/tutorials/SDL/01_hello_SDL/windows/msvc2019/index.php" target="_blank">SDL2 and Visual Studio</a>, then <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository" target="_blank">clone this repository</a> and run project through file Medieval Tower Defense.sln.
-# Game mechanics & feature
+# Game mechanics & features
 - Use drag and drop to interact and place towers.
 - ESC to exit upgrade/sell state.
 - Carefull calculate economy and positions to place towers, then hang back to watch the battle unfolds.
@@ -23,17 +23,11 @@ Medieval Tower Defense is a tower defense/strategy game. Your objective is to pr
 - Collision detection & path finding algorithm.
 ## Algorithms used in game development (Visualize)
 ### Simple greedy pathfinding algorithm 
-Updating to A*...
+Currently updating to A*...
 ### Enemy in range detection system 
 ![DemonstrateEnemyisinRange](https://github.com/user-attachments/assets/7bcc745e-6d54-4ccf-bfe1-56c61e603e72)
 ### Collision detection
 ![DemonstrateCollisionDetection](https://github.com/user-attachments/assets/a3b07881-1b0b-4dad-bf4e-f25c37b6a8d1)
-## Incoming features
-- New towers.
-- Upgraded UI.
-- New map and difficulty levels.
-- Boss fight.
-- More coming in the next overhaul...
 # Documents referenced in game development
 - Referenced from <a href ="https://lazyfoo.net/tutorials/SDL//" target="_blank">Lazy Foo' Productions</a>.
 - Referenced from [johnmryan/TowerDefense](https://github.com/johnmryan/TowerDefense)
